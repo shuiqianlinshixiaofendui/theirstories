@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<object style="border:0px" type="text/x-scriptlet" data="import.htm" width=100% height=30></object> 
+	<div id="list">
+
+	</div>
+</body>
+</html>
+<script>
+var r = random.nextFrame($("#list").get(0));
+//引入 template 目录下的 defaultimagetemplate.html这个模板
+var template = //
+// 传入一个当前页面的dom元素用来显示所有图片
+var list = customelist.initialize(dom,r,template);
+// 获取后端资源,目前可以在res目录下随便扔几张用相对路径来实现
+var imglist =  getResource();
+// 遍历图片结果并且显示出来
+for( img in imglist){
+	list.addNewImg(img);
+}
+</script>
