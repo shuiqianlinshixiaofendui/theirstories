@@ -12,13 +12,13 @@
 </html>
 <script>
 var r = random.nextFrame($("#list").get(0));
-//ÒıÈë template Ä¿Â¼ÏÂµÄ defaultimagetemplate.htmlÕâ¸öÄ£°å
+//å¼•å…¥ template ç›®å½•ä¸‹çš„ defaultimagetemplate.htmlè¿™ä¸ªæ¨¡æ¿
 var template = //
-// ´«ÈëÒ»¸öµ±Ç°Ò³ÃæµÄdomÔªËØÓÃÀ´ÏÔÊ¾ËùÓĞÍ¼Æ¬
+// ä¼ å…¥ä¸€ä¸ªå½“å‰é¡µé¢çš„domå…ƒç´ ç”¨æ¥æ˜¾ç¤ºæ‰€æœ‰å›¾ç‰‡
 var list = customelist.initialize(dom,r,template);
-// »ñÈ¡ºó¶Ë×ÊÔ´,Ä¿Ç°¿ÉÒÔÔÚresÄ¿Â¼ÏÂËæ±ãÈÓ¼¸ÕÅÓÃÏà¶ÔÂ·¾¶À´ÊµÏÖ
+// è·å–åç«¯èµ„æº,ç›®å‰å¯ä»¥åœ¨resç›®å½•ä¸‹éšä¾¿æ‰”å‡ å¼ ç”¨ç›¸å¯¹è·¯å¾„æ¥å®ç°
 var imglist =  getResource();
-// ±éÀúÍ¼Æ¬½á¹û²¢ÇÒÏÔÊ¾³öÀ´
+// éå†å›¾ç‰‡ç»“æœå¹¶ä¸”æ˜¾ç¤ºå‡ºæ¥
 for( img in imglist){
 	list.addNewImg(img);
 }

@@ -7,7 +7,7 @@ var customelist.initialize = function(dom,controller,template){
 		template.setX(postion.y);
 		template.setX(postion.width);
 		template.setX(postion.height);
-		// Ìí¼Óµ½Ò³ÃæµÄÖ¸¶¨µÄdomÔªËØÉÏ
+		// æ·»åŠ åˆ°é¡µé¢çš„æŒ‡å®šçš„domå…ƒç´ ä¸Š
 		dom.addChildren(template);
 	};
 	return customeframe;
