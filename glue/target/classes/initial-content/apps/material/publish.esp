@@ -1,0 +1,88 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+response.setCharacterEncoding("UTF-8");
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+
+// out.println("test publish!!!");
+
+//获取并设置所需全局变量
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_WorkSpace;
+var GVAR_RootNode;
+
+
+GVAR_CurrentNode = currentNode;
+GVAR_Session = currentNode.getSession();
+
+
+
+//获取路径信息。
+var RequestPathInfo = request.getRequestPathInfo();
+// out.println("RequestPathInfo : " + RequestPathInfo);
+//获取mime map service.
+var mimeService = sling.getService(Packages.org.apache.sling.commons.mime.MimeTypeService);
+
+//首先尝试获取suffix。
+var extension;
+var targetpath = String(RequestPathInfo.getSuffix());
+
+// out.println("targetpath : " + targetpath);
+
+var tarpatharr = targetpath.split("/");
+// out.println("tarpatharr : " + tarpatharr[1]);
+
+//判断发布位置，确定是否切换到管理员身份
+if(String(tarpatharr[1]) == String("content") && String(tarpatharr[2]) == String("modellib"))
+{
+	// out.println("admin");
+	//切换到管理员身份
+	var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+	var adminSession = slingRepos.loginAdministrative(null);
+	GVAR_Session = adminSession;
+}
+
+GVAR_WorkSpace = GVAR_Session.getWorkspace();
+GVAR_RootNode = GVAR_Session.getRootNode();
+
+var targetnode;
+if(GVAR_RootNode.hasNode(targetpath.substring(1,targetpath.length)))
+{
+	//targetnode = GVAR_RootNode.getNode(targetpath.substring(1,targetpath.length));
+	//提示节点已经存在
+	out.println("target node is exists!!!");
+}
+else
+{
+	//复制节点
+	GVAR_WorkSpace.copy(GVAR_CurrentNode.getPath(),targetpath);
+	GVAR_RootNode.save();
+	
+	targetnode = GVAR_RootNode.getNode(targetpath.substring(1,targetpath.length));
+	
+	var tarnodePath = GVAR_system.getNodePath(targetnode,true);
+	var srcnodePath = GVAR_system.getNodePath(currentNode,true);
+	
+	var srcfile = new Packages.java.io.File(srcnodePath);
+	
+	var tarfile = new Packages.java.io.File(tarnodePath);
+	
+	Packages.org.apache.commons.io.FileUtils.copyDirectory(srcfile,tarfile);
+	
+	Packages.java.lang.System.out.println("copy files from " + srcnodePath + " to " + tarfile);
+}
+%>

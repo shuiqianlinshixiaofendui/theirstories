@@ -1,0 +1,102 @@
+<%
+var GVAR_LoadLibrary = true;
+
+load("/apps/util/sysconfig.esp");
+load("/apps/util/request.esp");
+
+response.setCharacterEncoding("UTF-8");
+response.setContentType("application/json");
+//处理文件，如果是zip文件，解压并删除源文件。否则什么也不做。
+function handleFile(file){
+	var fileName = file.getName();
+	if(fileName.toLowerCase().endsWith("zip")){
+		try{
+			var uncompressSuccess = GVAR_system.runTool("7za", ["x -aoa "+file.getPath()," -o"+file.getParent()]);
+			if(uncompressSuccess.contains(new Packages.java.lang.String("ERROR"))){
+				uncompressSuccess = false;
+			}else{
+				uncompressSuccess =true;
+			}
+			if(uncompressSuccess){
+				Packages.org.apache.commons.io.FileUtils.forceDelete(file);
+			}else{
+				return {success:false,reason:"file \""+fileName +"\" uncompress failed"}
+			}
+		}catch(e){
+			Packages.java.lang.System.out.println(e);
+			return {success:false,reason:e.message};
+		}
+	}
+	return {success:true};
+}
+
+//响应的json字符串
+var r1 = new Packages.org.apache.sling.commons.json.JSONObject();
+var targetDir = request.getParameter('targetDir');
+var useNginx_str = request.getParameter('useNginx');
+var useNginx=false;
+if(useNginx_str == "true"){
+	useNginx = true;
+}		
+if(targetDir){
+	targetDir =	GVAR_system.getGlueSharePath() + targetDir;
+	var dir = new Packages.java.io.File(targetDir);
+	if(dir.exists() && dir.isDirectory()){
+		//获取上传的文件放在指定目录下
+		if(useNginx){
+			var upfileinfo = Packages.org.spolo.apps.util.UploadFileInfo.getNginxUploadInfo(request);
+			if(!upfileinfo || upfileinfo.length<1){
+				response.sendError(404,"未找到上传的文件");
+			}else{
+				//现将上传的文件copy到另一个zip文件中，因为从nginx copy来的文件名称没有后缀（不知道原因），则在解压时会出错
+				//所以先将文件copy到temp目录中的以上传文件命名的文件中
+				for(var index;index<upfileinfo.length;index++){
+					var ui = upfileinfo[index];
+					var uploadFileName = ui.originalname;
+					var uploadFile = new Packages.java.io.File(ui.localfilepath);
+					var importFile = new Packages.java.io.File(dir.getPath() + GVAR_system.path_separator + uploadFileName);
+					if(!importFile.exists()){
+						importFile.createNewFile();
+					}
+					Packages.org.apache.commons.io.FileUtils.copyFile(uploadFile,importFile);
+					var result = handleFile(importFile);
+					var json_result = new Packages.org.apache.sling.commons.json.JSONObject();
+					if(result.success){
+						json_result.put("success",true);
+					}else{
+						json_result.put("success",false);
+						json_result.put("reason",result.reason);
+					}
+					r1.put(uploadFileName,json_result);
+				}	
+			}
+		}else{
+			var lastFileParam;
+			GVAR_uploader.foreach(function(name,param){
+				if(!param.isFormField()){
+					lastFileParam = param;
+					var uploadFileName = lastFileParam.getFileName();
+					var file = GVAR_uploader.copyFile(lastFileParam,dir.getPath());
+					var result = handleFile(file);
+					var json_result = new Packages.org.apache.sling.commons.json.JSONObject();
+					if(result.success){
+						json_result.put("success",true);
+					}else{
+						json_result.put("success",false);
+						json_result.put("reason",result.reason);
+					}
+					r1.put(uploadFileName,json_result);
+				}
+			});
+			if(!lastFileParam){
+				response.sendError(404,"未找到上传的文件");
+			}
+		}
+		out.print(r1.toString());
+	}else{
+		response.sendError(404,"找不到targetDir："+targetDir);	
+	}
+}else{
+	response.sendError(404,"请求参数targetDir为空");
+}
+%>

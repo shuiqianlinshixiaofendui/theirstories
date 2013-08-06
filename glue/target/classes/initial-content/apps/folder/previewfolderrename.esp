@@ -1,0 +1,99 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+response.setCharacterEncoding("UTF-8");
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/file.esp")
+
+//遍历
+function recursionFile(filename){
+
+	if(filename.isDirectory()){
+		var tmp = filename.listFiles();
+		for(var param = 0; param < tmp.length; param++){
+			recursionFile(tmp[param]);
+		}
+	}else{
+		//out.println(filename);
+		//添加rename函数
+		reName(filename);
+	}
+	return ;
+}
+
+//重命名
+function reName(srcName){
+	////out.println(srcName);
+	var d = new Date()
+	var tmpName = "preview" + d.getTime();
+	//out.println(srcName.getParent());
+	//获取扩展名
+	var extension = srcName.toString().substring(srcName.toString().indexOf('.') + 1);
+	//重命名
+	var tmpDir = new Packages.java.io.File(srcName.getParent() + GVAR_system.path_separator + tmpName + "." + extension);
+	//out.println(tmpDir);
+	var result = srcName.renameTo(tmpDir);
+	//out.println("result: " + result);
+}
+
+var nodeLists = currentNode.getNodes();
+//如果有子节点则执行
+if(nodeLists){
+
+	//第一次对文件重命名
+	for(var i = 0; i < nodeLists.length; i++){
+		//out.println(nodeLists[i]);
+		var nodePath = GVAR_system.getNodePath(nodeLists[i], false);
+		var previewPath = nodePath + GVAR_system.path_separator + "preview";
+		var previewDir = new Packages.java.io.File(previewPath);
+		var fileLists = previewDir.listFiles();
+
+		if (fileLists){
+			for(var ii = 0; ii < fileLists.length; ii++){
+				//out.println(fileLists[ii]);
+				//遍历文件进行重命名
+				recursionFile(fileLists[ii]);
+			}
+		}
+	}
+
+	//第二次再对文件夹进行重命名
+	/*
+	for(var i = 0; i < nodeLists.length; i++){
+		//out.println(nodeLists[i]);
+		var nodePath = GVAR_system.getNodePath(nodeLists[i], false);
+		var previewPath = nodePath + GVAR_system.path_separator + "preview";
+		var previewDir = new Packages.java.io.File(previewPath);
+		var fileLists = previewDir.listFiles();
+
+		if (fileLists){
+			for(var ii = 0; ii < fileLists.length; ii++){
+				if(fileLists[ii].isDirectory()){
+					//out.println(fileLists[ii]);
+					var d = new Date()
+					var tmpName = "spm" + d.getTime();
+					//重命名
+					var tmpDir = new Packages.java.io.File(fileLists[ii].getParent() + GVAR_system.path_separator + tmpName);
+					//out.println(tmpDir);
+					var result = fileLists[ii].renameTo(tmpDir);
+					//out.println("result: " + result);
+
+				}
+			}
+		}
+	}
+	*/		
+}
+%>

@@ -1,0 +1,107 @@
+._Pagination {
+	width: 632px;
+	height: 26px;
+	margin-top: 10px;
+	font-size: 12px;
+	overflow: hidden;
+}
+
+._Pagination a{
+	
+}
+
+._Pagination ._First{
+	background-image: url(../image/page-first.png);
+}
+._Pagination ._Prev{
+	background-image: url(../image/page-prev.png);
+}
+._Pagination ._Next{
+	background-image: url(../image/page-next.png);
+}
+._Pagination ._End{
+	background-image: url(../image/page-last.png);
+}
+._cube{
+	display: inline-block;
+	
+	
+	zoom: 1;
+	cursor: pointer;
+	white-space: nowrap;
+	vertical-align: middle;
+	text-decoration: none;
+	
+	border-width: 1px;
+	border-color:white;
+	right: auto;
+	left: 0px;
+	margin: 0px;
+	top: 1px;
+	
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-ms-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px; 
+	padding: 3px 3px 3px 3px;
+	border-width: 1px;
+	border-style: solid;
+	background-image: none;
+	background-color: transparent;
+}
+._cube span{
+	height:16px;
+	width:16px;
+	display: block;
+}
+._Pagination a:hover{
+	cursor: pointer;
+	
+	border-color: #e1e1e1;
+	background-image: none;
+	background-color: #ebebeb;
+	background-image: -webkit-gradient(linear,50% 0,50% 100%,color-stop(0%,#ededed),color-stop(50%,#ebebeb),color-stop(51%,#dfdfdf),color-stop(100%,#ebebeb));
+	background-image: -webkit-linear-gradient(top,#ededed,#ebebeb 50%,#dfdfdf 51%,#ebebeb);
+	background-image: -moz-linear-gradient(top,#ededed,#ebebeb 50%,#dfdfdf 51%,#ebebeb);
+	background-image: -o-linear-gradient(top,#ededed,#ebebeb 50%,#dfdfdf 51%,#ebebeb);
+	background-image: -ms-linear-gradient(top,#ededed,#ebebeb 50%,#dfdfdf 51%,#ebebeb);
+	background-image: linear-gradient(top,#ededed,#ebebeb 50%,#dfdfdf 51%,#ebebeb);
+}
+ ._attr{
+	line-height:16px;
+	vertical-align: middle;
+ }
+ ._pageNumber{
+	width: 50px;
+	font: normal 13px helvetica,arial,verdana,sans-serif;
+	color: black;
+	 
+	background: white repeat-x 0 0;
+	border-width: 1px;
+	border-style: solid;
+	border-color: silver #d9d9d9 #d9d9d9;
+	height: 20px;
+	line-height: 20px;
+	
+	border-collapse: separate;
+	border-spacing: 2px;
+	
+	vertical-align:middle;
+    *padding: 8px 0;/*IE7 and IE6*/
+    *height:30px;/*IE7 and IE6*/
+ }
+
+._aSelected{
+	filter: alpha(opacity=50);
+	opacity: .5;
+}
+.pageSelected{
+
+}
+.aUnSelected{
+	
+}
+._cube .span{
+	
+}

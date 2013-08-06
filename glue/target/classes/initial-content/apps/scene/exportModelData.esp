@@ -1,0 +1,109 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+var GVAR_LoadLibrary = true; 
+load("/apps/util/sysconfig.esp");
+load("/apps/util/file.esp");
+
+response.setCharacterEncoding("UTF-8");
+
+
+var modelNode = currentNode.getNode("model");
+var models = modelNode.getNodes();
+var modelsCount = models.length;
+
+var zipFiles = new Array();
+var tempFolder = GVAR_File.createTempFolder();
+
+var zipName = currentNode["resourceName"] ? currentNode["resourceName"] : currentNode.name
+zipName = new Packages.java.net.URLEncoder.encode(zipName, "UTF-8");
+
+try{
+   var modelJSON = new Packages.org.apache.sling.commons.json.JSONObject();
+   for(var i = 0; i < modelsCount; ++i)
+   {
+      var model = models[i];
+      var modelID = model["ID"]
+      if(modelID)
+      {
+         var modelBrandPath = model["brandPath"];
+         var modelCategoryPath = model["categoryPath"];
+         var modelMadeOfPath = model["madeOfPath"];
+         var modelStylePath = model["stylePath"];
+         var modelPrice = model["price"];
+         var modelName = model["resourceName"];
+         var modelIntro = model["introduction"];
+         var modelKeyInfo = model["keyInfo"];
+         
+         var modelData = new Packages.org.apache.sling.commons.json.JSONObject();
+         
+         if(modelBrandPath){
+            modelData.put("brandPath", modelBrandPath);
+         }
+         if(modelCategoryPath){
+            modelData.put("categoryPath", modelCategoryPath);
+         }
+         if(modelMadeOfPath){
+            modelData.put("madeOfPath", modelMadeOfPath);
+         }
+         if(modelStylePath){
+            modelData.put("stylePath", modelStylePath);
+         }
+         if(modelPrice){
+            modelData.put("price", modelPrice);
+         }
+         if(modelName){
+            modelData.put("resourceName", modelName);
+         }
+         if(modelIntro){
+            modelData.put("introduction", modelName);
+         }
+         if(modelKeyInfo){
+            modelData.put("keyInfo", modelName);
+         }
+         
+         var modelPath = GVAR_system.getNodePath(model, false);
+         if(modelPath)
+         {
+            var modelDataPath = modelPath + GVAR_system.path_separator + "data";
+            var modelPreFilePath = modelDataPath + GVAR_system.path_separator + "preview.jpg";
+            var modelPreFile = new Packages.java.io.File(modelPreFilePath);
+            if(modelPreFile.exists()){
+               var tempPreFilepaath = tempFolder.path + GVAR_system.path_separator + model.name + ".jpg";
+               var tempPreFile = new Packages.java.io.File(tempPreFilepaath);
+               Packages.org.apache.commons.io.FileUtils.copyFile(modelPreFile, tempPreFile);
+               modelData.put("preview", tempPreFile.name);
+               
+               zipFiles.push(tempPreFile);
+            }
+         }
+         
+         modelJSON.put(modelID, modelData);
+      }
+   }
+   var tempJSONFilePath = tempFolder.path + GVAR_system.path_separator + "modeldata_backup.json";
+   var tempJSONFile = new Packages.java.io.File(tempJSONFilePath);
+   Packages.org.apache.commons.io.FileUtils.writeStringToFile(tempJSONFile, modelJSON.toString(), 'UTF-8');
+   zipFiles.push(tempJSONFile);
+}catch(e){
+   var errorFilePath = tempFolder.path + GVAR_system.path_separator + "error.txt";
+   var errorFile = new Packages.java.io.File(errorFilePath);
+   Packages.org.apache.commons.io.FileUtils.writeStringToFile(errorFile, e, "UTF-8")
+   zipFiles = [];
+   zipFiles.push(errorFile);
+}finally{
+   response.setHeader("Content-Disposition", "attachment; filename=\"" + zipName + "_backup.zip\"");
+   GVAR_File.zipFiles(response.getOutputStream(), zipFiles);
+   GVAR_File.deleteFile(tempFolder);
+}
+%>

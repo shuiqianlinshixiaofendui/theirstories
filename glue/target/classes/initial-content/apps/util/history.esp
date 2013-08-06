@@ -1,0 +1,125 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8"); 
+load("/apps/util/sysconfig.esp");
+var GVAR_Git_History;
+(function(){
+if( !GVAR_Git_History && GVAR_LoadLibrary ){
+	GVAR_Git_History = {};
+	/**
+	*查看所有文件的历史记录
+	*/
+	GVAR_Git_History.showAllHistory = function(option){
+		var par = getParameter(option);
+		var result =GVAR_system.runGit(par.parameter,par.workDir);	
+		var jsonstr = parserResult(result).toString();
+		/**Packages.java.lang.System.out.println(result);*/
+		return jsonstr;	
+	};		
+	/**
+	*查看指定文件的所有历史记录
+	*/
+	GVAR_Git_History.showHistory = function(option) {
+		//所要查看的文件名
+		var par = getParameter(option);
+		var result =GVAR_system.runGit(par.parameter,par.workDir);		
+		var jsonstr = parserResult(result).toString();
+		/**Packages.java.lang.System.out.println(history);*/
+		return jsonstr;		
+	};
+	/**
+	*获取最新版本号
+	*/
+	GVAR_Git_History.showNewestVersion = function(option) {
+		//所要查看的文件名
+		option = {"version":"-1"}
+		var par = getParameter(option);
+		var result =GVAR_system.runGit(par.parameter,par.workDir);
+		var json = parserResult(result);
+		/**Packages.java.lang.System.out.println(history);*/
+      var success = json.getString("success");
+      if(success.equals("true")) {
+         var history = json.get("history");
+         var historyKey = history.keys();
+         while(historyKey.hasNext()) {
+            return historyKey.next();
+         }
+      }
+      return null;
+	};
+	
+	/**
+	*恢复指定文件到指定版本
+	*/
+	GVAR_Git_History.reVersion = function(option){
+		//var file = option.file;
+		var node = currentNode;
+		var result = null;
+		if(option&&option.version){			
+			var version = option.version;
+			var nodepath = GVAR_system.getNodePath(node);
+			var separator =Packages.java.io.File.separator;
+			var parameter = new Array();		
+			parameter[0] = " checkout "+version;
+			parameter[1] = "";
+			var result = GVAR_system.runGit(parameter,nodepath+separator+"data");
+			if(result.contains("error")){
+				result = '{"success":"false","info":"The version number is not specified"}';
+			}else{
+				result = '{"success":"true"}';
+			}
+		}else{
+			result = '{"success":"false","info":"reVersion failed"}';
+		}
+		return result;
+	};
+	/*对返回后的结果做json的拼接*/
+	var parserResult = function(result){
+		if(result&&result.length()>0){
+			var substr = result.substring(0,result.length() - 2);
+			result = '{'+substr+'}';
+			
+			var jsonstr = null;
+			try{
+				var all = new Packages.org.apache.sling.commons.json.JSONObject();
+				var resultObj = new Packages.org.apache.sling.commons.json.JSONObject(result);
+				all.put("success", "true");
+				all.put("history", resultObj);
+			}catch(e){
+            all.put("success", "false");
+            all.put("info", "Not a git repository")
+			}
+		}
+		return all;
+	};
+	/*执行参数的判断生成命令行*/
+	var getParameter = function(option){
+		var par = {};
+		var parameter = new Array();	
+		var node = currentNode;
+		var nodepath = GVAR_system.getNodePath(node);
+		var separator =Packages.java.io.File.separator;		
+		parameter[0] = " lg";
+		if(option&&option.version){		
+			var version = option.version;	
+			parameter[1] = version;
+		}else{
+			parameter[1] = " ";
+		}                                             
+		par.parameter = parameter;
+		par.workDir = nodepath+separator+"data";
+		return par;
+	};	
+}
+}());
+%>

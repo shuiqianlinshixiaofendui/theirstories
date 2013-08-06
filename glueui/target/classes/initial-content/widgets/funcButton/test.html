@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"templates",
+						location: "/widgets/funcButton/templates"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="css/funcButton.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div class="wrapper">
+			<!-- 顶部 -->
+			<div class="glue-header-bar"></div>
+			
+			<!-- 左侧栏 -->
+			<div class="left_content">
+				<div id="testContainer"></div>
+			</div>
+			
+			<!-- 中间 iframe -->
+			<div class="middle_content" id="middle_content">
+				<iframe id="mainFrame" width="100%" height="100%" frameborder="0" scrolling="no" src="">
+				</iframe>
+			</div>
+			
+			<!-- 右侧栏 -->
+			<div class="right_content"></div>
+			
+			<script>
+				/* New button */
+				require([
+					"widgets/funcButton/funcButton",
+					"dojo/on",
+					"dojo/dom",
+					"dojo/domReady!"
+				],function(funcButton, on, dom){
+					var btn1 = {
+						label:"场景编辑",
+						btnImg:"image/SceneEdit.png",
+						href:"/modules/scenedetail/editlist.html",
+						alt:"场景编辑(活动)",
+						id:"EditScene",
+						markCls:"ES",
+						movCls:"mov_ES"
+					};
+					var btn2 = {
+						label:"缺少资源",
+						btnImg:"image/Lack.png",
+						href:"/modules/scenedetail/lacklist.html",
+						alt:"缺少资源(活动)",
+						id:"LackRes",
+						markCls:"LR",
+						movCls:"mov_LR"
+					};
+					
+					var btn3 = {
+						label:"更新场景",
+						btnImg:"image/Update.png",
+						href:"/modules/scenedetail/update.html",
+						alt:"更新场景(活动)",
+						id:"UpdateScene",
+						markCls:"US",
+						movCls:"mov_US"
+					};
+					
+					var btn4 = {
+						label:"三维编辑",
+						btnImg:"image/3DEdit.png",
+						href:"/modules/web3d/index.html?path=",
+						alt:"三维编辑(活动)",
+						id:"3DEdit",
+						markCls:"3DE",
+						movCls:"mov_3DE"
+					};
+					
+					var btn5 = {
+						label:"模型列表",
+						btnImg:"image/ModelList.png",
+						href:"/modules/scenedetail/modellist.html",
+						alt:"模型列表(活动)",
+						id:"ModelList",
+						markCls:"MoL",
+						movCls:"mov_MoL"
+					};
+					
+					var btn6 = {
+						label:"材质列表",
+						btnImg:"image/MatList.png",
+						href:"/modules/scenedetail/materiallist.html",
+						alt:"材质列表(活动)",
+						id:"MaterialList",
+						markCls:"MaL",
+						movCls:"mov_MaL"
+					};
+					
+					var btn7 = {
+						label:"渲染编辑",
+						btnImg:"image/Blender.png",
+						href:"/modules/renderer",
+						alt:"渲染编辑(活动)",
+						id:"RenderEdit",
+						markCls:"RE",
+						movCls:"mov_RE"
+					};
+					
+					var btn8 = {
+						label:"渲染任务",
+						btnImg:"image/Task.png",
+						href:"/modules/scenedetail/renderjob.html",
+						alt:"渲染任务(活动)",
+						id:"RenderTask",
+						markCls:"RT",
+						movCls:"mov_RT"
+					};
+					
+					var btn9 = {
+						label:"下载场景",
+						btnImg:"image/Download.png",
+						href:"/modules/scenedetail/download.html",
+						alt:"下载场景(活动)",
+						id:"DownlandScene",
+						markCls:"DS",
+						movCls:"mov_DS"
+					};
+					
+					var btnArray = new Array();
+					
+					btnArray.push(btn1);
+					btnArray.push(btn2);
+					btnArray.push(btn3);
+					btnArray.push(btn4);
+					btnArray.push(btn5);
+					btnArray.push(btn6);
+					btnArray.push(btn7);
+					btnArray.push(btn8);
+					btnArray.push(btn9);
+					
+					for(var index = 0; index < btnArray.length; index ++){
+						var widget = new funcButton(btnArray[index]).placeAt("testContainer");
+						on(widget, "btnClick", function(e){
+							var iframe = dom.byId("mainFrame");
+							iframe.src = e.href;
+						})
+					}
+				
+				});
+				
+			</script>
+		</div>
+	</body>
+	
+</html>

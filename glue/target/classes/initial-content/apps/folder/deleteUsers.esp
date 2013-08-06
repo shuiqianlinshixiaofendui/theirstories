@@ -1,0 +1,77 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/ 
+
+
+var jcrSession = request.getResourceResolver().adaptTo(Packages.javax.jcr.Session);
+var res = Packages.org.apache.sling.commons.json.JSONObject();
+var result = Packages.org.apache.sling.commons.json.JSONObject();
+var usersString = request.getParameter("userName");
+// out.println(usersString);
+var userArray = new Array();
+userArray = usersString.split(",");
+// out.println(userArray.length);
+
+result.put("success",false);
+
+if (jcrSession.getUserManager().getAuthorizable(jcrSession.getUserID()).isAdmin())    // 判断当前用户是否是管理员
+		var result = deleteUsers(userArray);
+else
+		result.put("reason","You have no permission!");
+
+out.println(result.toString());
+
+function deleteUsers(userArray) {                                                                 //删除用户
+   if (userArray != null) {
+		for (i = 0; i < userArray.length; i++) {                                                       // 遍历用户数组
+
+			var user = jcrSession.getUserManager().getAuthorizable(userArray[i]);
+			//out.println(user);
+			if (user != null) {
+				user.remove();
+				res.put(userArray[i]," has deleted!");
+				result.put("Info",res);
+				deleteExcessNode(userArray[i]);
+			}
+			else {
+					var strRe = "username: '"+userArray[i]+"' is not exsit";
+					result.put("success",true);
+					result.put("reason",strRe);
+					return result;
+				}
+		}
+		result.put("success",true);
+		return result;
+	}
+	else {
+	      var strRe = " parameter must not be null";
+		  result.put("reason",strRe);
+		  return result;		
+			}		
+}
+
+
+function deleteExcessNode (path) {                                                     //  删除用户后，相应删除"/content/users"下的对应的用户节点信息
+
+var nodePath = "/content/users/"+path;
+
+try {
+		jcrSession.getNode(nodePath);
+		jcrSession.removeItem(nodePath);
+		jcrSession.save();
+}catch(e){
+		res.put(nodePath," is not exist!");
+		result.append("reason",res);
+}
+}
+
+%>

@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="utf-8">
+		<title>用户权限</title>
+		<script>
+			dojoConfig = {
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					}
+				],
+			};
+		</script> 
+		<link href="/libs/dojo/resources/dojo.css" rel="stylesheet">
+		<link href="/libs/dijit/themes/claro/claro.css" rel="stylesheet">
+		<style>
+			html, body{
+				width : 100%;
+				height : 100%;
+				margin : 0;
+			}
+		
+		</style>
+	
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" >
+			require(
+				[
+					"dojo/parser",
+					"dojo/ready",
+					"dojo/query",
+					"spolo/data/grant",
+					"dijit/form/Select",
+					"dojo/_base/window",
+					"dojo/store/Memory",
+					"dijit/form/CheckBox",
+					"dijit/registry",
+					"dojo/dom",
+					"dojo/dom-construct",
+					"dojo/on",
+					"dijit/Dialog",
+					"dijit/form/TextBox",
+					"dijit/form/Button",
+					"dojo/_base/array",
+					"dojo/_base/lang",
+					"dojo/dom-style",
+					"dijit/layout/BorderContainer",
+					"dijit/layout/ContentPane"
+				],
+				function(
+					parser, ready,query, grant_cls, Select, win, Memory,
+					CheckBox, registry, dom, domConstruct, on, Dialog,
+					TextBox, Button, arrayUtil, lang, domStyle
+				){
+					var grant_class = new grant_cls();
+					var en_cn_Array = new Array();
+					
+					ready(function(){
+						parser.parse();
+						/*
+						var groupName = new Select({
+							name : "groupName",
+							id : "groupName",
+							style : "position:absolute;left:10%;height:5%;width:20%;",
+							options : [{"label":"请选择分组名称", "value":"请选择分组名称"}],
+							onChange : function(value){
+								// 下拉列表的值  groupName
+								groupsNameItemValue(value);
+							}
+						}).placeAt("select");
+						*/
+						var welcome = document.getElementById("welcomeToGrant");
+						welcome.innerHTML = "对不起，您不是管理员用户！";
+						var userName = Spolo.getUserId();
+						if(userName == "admin")
+						{
+							var dthis = this;
+							welcome.innerHTML = "欢迎来到用户权限管理界面";
+							var groupNameDialog = initDialog(
+								"请出入创建的组名称", 
+								doGroupNameDialog,
+								1
+							);
+								
+							var resetPassWordDialog = initDialog(
+								"请输入两次新密码",
+								doResetPassWordDialog,
+								2
+							);
+							
+							dthis.json = {
+								"云端模型库" : {
+									id : "modellib",
+									value : "/content/modellib",
+									categoryValue : "云端模型库分类",
+									category : "/content/modellibcategory"
+								},
+								"云端材质库" : {
+									id : "materiallib",
+									value : "/content/materiallib",
+									categoryValue : "云端模型库分类",
+									category : "/content/materiallibcategory"
+								},
+								"云端预览图库" : {
+									id : "previewlib",
+									value : "/content/previewlib",
+									categoryValue : "云端模型库分类",
+									category : "/content/previewcategory"
+								}
+							};
+							
+							initLibData.call(this)
+							
+							// 动态给button事件
+							on(query(".addUsersToGroupButton"), "click", function(){
+								addUsersItemToGroup();
+							});
+							
+							on(query(".createdGroupNameButton"), "click", function(){
+								createdGroupName(groupNameDialog);
+							});
+							
+							on(query(".deleteGroupNameButton"), "click", function(){
+								deleteGroupName();
+							});
+							
+							on(query(".resetPassWord"), "click", function(){
+								var users = getSelectedArray("form11");
+								if(users.length > 1)
+								{
+									Spolo.notify({
+										"text" : "请确认选择一个用户!",
+										"type" : "error",
+										"timeout" : 1000
+									});
+									return false;
+								}
+								else
+								{
+									resetPassWordDialog.show();
+								}
+							});
+							
+							var listUsersJSON = {
+								"success" : function(json){
+									// 显示用户列表
+									displayUsersItem.call(dthis, json);
+								},
+								"failed" : function(error){
+									throw error;
+								}
+							};
+							grant_class.listUsers(listUsersJSON);
+							
+							// 下拉菜单
+							var listGroupsJSON = {
+								success : function(json){
+									// 下拉菜单内容
+									displayGroupsItem(json, "groupName")
+								},
+								failed : function(error){
+									throw error;
+								}
+							};
+							grant_class.listGroups(listGroupsJSON);
+						}
+					});
+					
+					function initLibData()
+					{
+						var _this = this;
+						var groupName = registry.byId("groupName");
+						for(var index in _this.json)
+						{
+							if(typeof _this.json[index] == "object")
+							{
+								// 创建 CheckBox
+								console.log(_this.json[index]["id"])
+								var checkBox = new CheckBox({
+									id : _this.json[index]["id"],
+									value : index,
+									category : _this.json[index]["category"],
+									categoryValue : _this.json[index]["categoryValue"],
+									path : _this.json[index]["value"],
+									checked : false,
+									onClick : function(event)
+									{
+										// if(groupName.value == "请选择分组名称")
+										// {
+											// this.set("checked", false);
+											// return false;
+										// }
+										if(this.checked)
+										{
+											// 直接给分组赋权限
+											// libDataClickTrue.call(this);
+											
+											// 直接给用户赋权限
+											var _this = this;
+											var users = getSelectedArray("form11");
+											if(users.length <= 0)
+											{
+												this.set("checked", false);
+												Spolo.notify({
+													"text" : "请先选择用户",
+													"type" : "error",
+													"timeout" : 1000
+												});
+												return false;
+											}
+											var args = {
+												"nodePath" : _this.path,
+												"principalId" : users,
+												"grant" : "3",
+												"success" :function(){
+													grant_class.setGroupPermissions({
+														"nodePath" : _this.category,
+														"principalId" : users,
+														"grant" : "3",
+														"success" :function(){
+															destroyElements("form33");
+															for(var index = 0; index < users.length; index ++)
+															{
+																var userName = Spolo.decodeUname(users[index])
+																var value = "“" + userName + "”和“" + _this.value + "”关联添加完成!";
+																var style = "font-weight:bold;padding:3px;font-size:150%;" +
+																			"display:inline;";
+																var htmlJson = {
+																	"value" : value,
+																	"style" : style,
+																	"formID" : "form33",
+																	"aBr" : false
+																};
+																domConstructCreate(htmlJson);
+																
+																var categoryValue = "“" + userName + "”和“" + _this.categoryValue + "”关联添加完成!";
+																var categorystyle = "font-weight:bold;padding:3px;font-size:150%;" +
+																			"display:inline;";
+																var categoryhtmlJson = {
+																	"value" : categoryValue,
+																	"style" : categorystyle,
+																	"formID" : "form33",
+																	"aBr" : false
+																};
+																domConstructCreate(categoryhtmlJson);
+																
+															}
+														},
+														"failed" : function(error){
+															throw error;
+														}
+													});
+													
+												},
+												"failed" : function(error){
+													throw error;
+												}
+											};
+											grant_class.setGroupPermissions(args);
+											
+										}
+										else
+										{
+											// 直接恢复分组权限
+											// libDataClickFalse.call(this);
+											
+											// 直接恢复用户权限
+											var _this = this;
+											var users = getSelectedArray("form11");
+											var args = {
+												"nodePath" : _this.path,
+												"principalId" : users,
+												"grant" : "1",
+												"success" :function(){
+													grant_class.setGroupPermissions({
+														"nodePath" : _this.path,
+														"principalId" : users,
+														"grant" : "1",
+														"success" :function(){
+															destroyElements("form33");
+															for(var index = 0; index < users.length; index ++)
+															{
+																var userName = Spolo.decodeUname(users[index])
+																var value = "“" + userName + "”和“" + _this.value + "”取消关联成功!";
+																var style = "font-weight:bold;padding:3px;font-size:150%;" +
+																			"display:inline;";
+																var htmlJson = {
+																	"value" : value,
+																	"style" : style,
+																	"formID" : "form33",
+																	"aBr" : false
+																};
+																domConstructCreate(htmlJson);
+																
+																var categoryValue = "“" + userName + "”和“" + _this.categoryValue + "”取消关联成功!";
+																var categorystyle = "font-weight:bold;padding:3px;font-size:150%;" +
+																			"display:inline;";
+																var categoryhtmlJson = {
+																	"value" : categoryValue,
+																	"style" : categorystyle,
+																	"formID" : "form33",
+																	"aBr" : false
+																};
+																domConstructCreate(categoryhtmlJson);
+															}
+														},
+														"failed" : function(error){
+															throw error;
+														}
+													});
+												},
+												"failed" : function(error){
+													throw error;
+												}
+											};
+											grant_class.setGroupPermissions(args);
+										}
+									},
+									onChange : function(bool){
+									}
+								}).placeAt("form55");
+								
+								var style = "padding:3px;font-size:150%;" + 
+											"background-image:url(images/a.png);font-weight:bold;" + 
+											"color:#000;display:inline;"
+								var htmlJson = {
+									"value" : index,
+									"style" : style,
+									"formID" : "form55",
+									"aBr" : true
+								}
+								domConstructCreate(htmlJson, function(dthis, form){
+									// for(var index = 0; index < form.children.length; index ++)
+									// {
+										// if(form.children[index]["localName"] == "a")
+										// {
+											// form.children[index].style["background-image"] = "url(images/a.png)";
+										// }
+									// }
+									// dthis.style["background"] = "#33ff66";
+									// groupsPathItemValue(dthis.innerHTML);
+								});
+							}
+						}
+					}
+					
+					
+					function domConstructCreate(json, callback)
+					{
+						var form = document.getElementById(json["formID"]);
+						
+						if(!json["aBr"])
+						{
+							domConstruct.create("br", {}, form);
+							domConstruct.create("br", {}, form);
+						}
+						
+						var a = domConstruct.create("a",
+							{
+								innerHTML :  json["value"],
+								style : json["style"],
+								id : json["id"]
+							}, form
+						);
+						on(a, "click", function(e){
+							callback(this, form);
+						});
+						
+						if(json["aBr"])
+						{
+							domConstruct.create("br", {}, form);
+							domConstruct.create("br", {}, form);
+						}
+					}
+					
+					function getSelectedArray(formID)
+					{
+						var elements = document.getElementById(formID).elements;
+						var users = [];
+						for(var index = 0; index < elements.length; index ++)
+						{
+							if(elements[index].checked)
+							{
+								users.push(elements[index].value);
+							}
+						}
+						return users;
+					}
+					
+					
+					function chineseToEnglish(value)
+					{
+						var newValue = "";
+						for(var index = 0; index < en_cn_Array.length; index++)
+						{
+							if(en_cn_Array[index] == value)
+							{
+								return newValue = en_cn_Array[index-1];
+							}
+						}
+					}
+					
+					function libDataClickTrue()
+					{
+						var _this = this;
+						var groupName = registry.byId("groupName");
+						var newValue = chineseToEnglish(groupName.value);
+						var args = {
+							"nodePath" : _this.path,
+							"principalId" : newValue,
+							"grant" : "2",
+							"success" :function(){
+								destroyElements("form33");
+								var value = "“" + _this.value + "”和“" + groupName.value + "”关联添加完成!";
+								var style = "font-weight:bold;padding:3px;font-size:150%;" +
+											"display:inline;";
+								var htmlJson = {
+									"value" : value,
+									"style" : style,
+									"formID" : "form33",
+									"aBr" : false
+								};
+								domConstructCreate(htmlJson);
+								destroyElements("form66");
+								getPermissionsByGroupName(function(num, value){
+									var htmlValue = "“" + value + "”包含“" + num + "”的权限!";
+									var style = "font-weight:bold;padding:3px;font-size:150%;" + 
+											"display:inline;";
+									var htmlJson = {
+										"value" : htmlValue,
+										"style" : style,
+										"formID" : "form66",
+										"aBr" : false
+									};
+									domConstructCreate(htmlJson);
+								});
+							},
+							"failed" : function(error){
+								throw error;
+							}
+						};
+						grant_class.setGroupPermissions(args);
+					}
+					
+					
+					function libDataClickFalse()
+					{
+						var _this = this;
+						var groupName = registry.byId("groupName");
+						var newValue = chineseToEnglish(groupName.value);
+						var deleteArgs = {
+							"nodePath" : _this.path,
+							":applyTo" : newValue,
+							"success" : function(){
+								destroyElements("form33");
+								var value = "“" + _this.value + "”和“" + groupName.value + "”取消关联成功!";
+								var style = "font-weight:bold;padding:3px;font-size:150%;" + 
+											"display:inline;";
+								var htmlJson = {
+									"value" : value,
+									"style" : style,
+									"formID" : "form33",
+									"aBr" : false
+								};
+								domConstructCreate(htmlJson);
+								destroyElements("form66");
+								getPermissionsByGroupName(function(num, value){
+									var htmlValue = "“" + value + "”包含“" + num + "”的权限!";
+									var style = "font-weight:bold;padding:3px;font-size:150%;" + 
+											"display:inline;";
+									var htmlJson = {
+										"value" : htmlValue,
+										"style" : style,
+										"formID" : "form66",
+										"aBr" : false
+									};
+									domConstructCreate(htmlJson);
+								});
+							},
+							"failed" : function(error){
+								throw error;
+							}
+						};
+						grant_class.deletePermissions(deleteArgs);
+					}
+					
+					
+					// 根据组名获得该组下的所有权限
+					// TODO 封装成callback函数
+					function getPermissionsByGroupName(callback)
+					{
+						var dthis = this;
+						var arrayItems = new Array();
+						for(var index in dthis.json)
+						{
+							arrayItems.push(dthis.json[index]["value"]);
+						}
+						// for循环处理异步
+						arrayUtil.forEach(arrayItems, function(item){
+							var getArgs = {
+								"nodePath" : item,
+								"success" :function(json){
+									var groupArray = new Array();
+									// console.log(json)
+									for(var i in json)
+									{
+										// console.log(en_cn_Array)
+										for(var index = 0; index < en_cn_Array.length; index++)
+										{
+											if(en_cn_Array[index] == i)
+											{
+												var value = en_cn_Array[index+1];
+												if(value == registry.byId("groupName").value)
+												{
+													groupArray.push(item);
+													for(var j in dthis.json)
+													{
+														if(item == dthis.json[j]["value"])
+														{
+															callback(j, value);
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"failed" : function(error){
+									throw error;
+								}
+							};
+							grant_class.getPermissions(getArgs);
+						});
+					}
+					
+					
+					// 销毁给定的form ID
+					function destroyElements(formID)
+					{
+						var form = document.getElementById(formID);
+						for(var index = 0; index < form.children.length; index ++)
+						{
+							domConstruct.destroy(form.children[index]);
+							index --;
+						}
+					}
+					
+					// 显示用户所在的Group名字
+					function displayUsersInGroup(userItemID)
+					{
+						var dthis = this;
+						grant_class.getGroupNameArrByUserName(
+							dthis.id,
+							function(data){
+								data.sort(function(a,b){
+									return a.toLowerCase().localeCompare(b.toLowerCase());                           
+								});
+								for(var i = 0; i < data.length; i++)
+								{
+									if(typeof data[i] == "string")
+									{
+										var htmlValue = "Group" + (i+1) +" :&nbsp;&nbsp;&nbsp;&nbsp;" + data[i];
+										var style = "padding:3px;font-size:150%;" + 
+														"background-image:url(images/a.png);font-weight:bold;" + 
+														"color:#fff;cursor:pointer;display:inline;";
+										var htmlJson = {
+											"value" : htmlValue,
+											"style" : style,
+											"formID" : "form44",
+											"aBr" : true
+										}
+										domConstructCreate(htmlJson, function(dthis, form){
+											for(var index = 0; index < form.children.length; index ++)
+											{
+												if(form.children[index]["localName"] == "a")
+												{
+													form.children[index].style["background-image"] = "url(images/a.png)";
+												}
+											}
+											dthis.style["background"] = "#f00";
+											var value = dthis.innerHTML.split(";")[dthis.innerHTML.split(";").length-1];
+											var groupName = registry.byId("groupName");
+											groupName.set("value", value)
+										});
+									}
+								}
+							},
+							function(error){
+								throw error;
+							}
+						);
+					}
+					
+					// 显示用户列表
+					function displayUsersItem(json)
+					{
+						var _this = this;
+						var orderArray = new Array();
+						for(var index in json)
+						{
+							orderArray.push(index);
+						}
+						// 不区分大小写的正序
+						orderArray.sort(function(a,b){
+							return a.toLowerCase().localeCompare(b.toLowerCase());                           
+						});
+						for(var index = 0; index < orderArray.length; index ++)
+						{
+							var jsonChild = orderArray[index];
+							if(jsonChild != "admin" && jsonChild != "anonymous")
+							{
+								var box = new CheckBox({
+									id : jsonChild,
+									value : jsonChild,
+									checked : false,
+									onChange : function(name)
+									{
+										var elements = document.getElementById("form11").elements;
+										var leftDIV = document.getElementById("resetPassWordID");
+										// 遍历form11所有元素
+										for(var index = 0; index < elements.length; index ++)
+										{
+											// 确定谁被选中
+											if(elements[index].checked)
+											{
+												leftDIV.style.display = "block";
+												break;
+											}
+											else
+											{
+												leftDIV.style.display = "none";
+											}
+										}
+									}
+								}).placeAt("form11");
+								
+								var userName = Spolo.decodeUname(jsonChild);
+								var style = "font-family:arial,sans-serif;padding:2px;" + 
+											"font-size:150%;font-weight:bolder;" + 
+											"cursor:pointer;background:#9999ff;"
+								var htmlJson = {
+									"value" : userName,
+									"style" : style,
+									"formID" : "form11",
+									"aBr" : true,
+									"id" : jsonChild
+								}
+								domConstructCreate(htmlJson, function(dthis, form){
+									var form11 = document.getElementById("form11");
+									for(var index = 0; index < form11.children.length; index ++)
+									{
+										if(form11.children[index]["localName"] == "a")
+										{
+											var id = form11.children[index].id;
+											var checkbox = registry.byId(id);
+											checkbox.set("checked", false);
+											form11.children[index].style["background"] = "#9999ff";
+										}
+									}
+									var box = registry.byId(dthis.id);
+									box.set("checked", true);
+									dthis.style["background"] = "#33ff66";
+									// destroyElements("formk44");
+									var user = Spolo.decodeUname(dthis.id);
+									console.log(user);
+									grant_class.getUserPermissions({
+										"user" : user,
+										"success" : function(data){
+											console.log(data);
+											// 清空box选中状态											
+											for(var a in _this.json)
+											{
+												var box = registry.byId(_this.json[a]["id"]);
+												box.set("checked", false);		
+											}
+											destroyElements("form33");
+											
+											for(var i in data)
+											{
+												var array = i.split("/");
+												for(var a in _this.json)
+												{
+													if(_this.json[a]["id"] == array[array.length - 1])
+													{
+														var box = registry.byId(array[array.length - 1]);
+														box.set("checked", true);
+														var value = "“" + user + "”有“" + a + "”的权限!";
+														var style = "font-weight:bold;padding:3px;font-size:150%;" +
+																	"display:inline;";
+														var htmlJson = {
+															"value" : value,
+															"style" : style,
+															"formID" : "form33",
+															"aBr" : false
+														};
+														domConstructCreate(htmlJson);
+													}
+												}
+											}
+										},
+										"failed" : function(error){
+											throw error;
+										}
+									});
+									// destroyElements("form22");
+									// var selectGroup = registry.byId("groupName");
+									// selectGroup.set('value', "请选择分组名称");
+									// 在form44中显示点击的用户所在的Group
+									// displayUsersInGroup.call(dthis, jsonChild);
+								});
+							}
+						}
+					}
+					
+					
+					function initDialog(title, callback, textNum)
+					{
+						var resetPassWordDlg = new Dialog({
+							title : title,
+							style : "width : auto; height : auto"
+						});
+						var array = new Array();
+						for(var index = 0; index < textNum; index ++)
+						{
+							var textBox = new TextBox({
+							});
+							textBox.set("value", "");
+							textBox.placeAt(resetPassWordDlg);
+							on(textBox, "change", function(e){
+								array.push(this)
+							});
+						}
+						
+						var buttonSure = new Button({
+							label : "确定"
+						});
+						buttonSure.placeAt(resetPassWordDlg);
+						on(buttonSure, "click", function(e){
+							callback(resetPassWordDlg, array);
+						});
+						
+						var buttonCancel = new Button({
+							label : "取消"
+						});
+						buttonCancel.placeAt(resetPassWordDlg);
+						on(buttonCancel, "click", function(e){
+							resetPassWordDlg.hide();
+						});
+						resetPassWordDlg.hide();
+						return resetPassWordDlg;
+					}
+					
+					function createdGroupName(dialog)
+					{
+						dialog.show()
+					}
+					
+					// 删除分组
+					function deleteGroupName()
+					{
+						var groupName = registry.byId("groupName");
+						if(groupName.value == "请选择分组名称")
+						{
+							alert("请选择需要操作的分组名称!");
+							return false;
+						}
+						var newValue = chineseToEnglish(groupName.value)
+						var deleteGroupNameJSON = {
+							groupName : newValue, 
+							success : function(data){
+								// 下拉菜单
+								var newJSON = {
+									label : groupName.value,
+									value : groupName.value
+								};
+								select.removeOption(newJSON);
+								// 如果该组存在用户需要将已经添加的用户列表清空
+								destroyElements("form22");
+							},
+							failed : function(error){
+								throw error;
+							}
+						};
+						grant_class.deleteGroup(deleteGroupNameJSON);
+					}
+					
+					
+					// 下拉菜单内容
+					function displayGroupsItem(json, groupName)
+					{
+						var orderArray = new Array();
+						for(var index in json)
+						{
+							if(index != "UserAdmin" && index != "GroupAdmin" && index != "administrators")
+							{
+								if(json[index]["chineseName"])
+								{
+									orderArray.push(json[index]["chineseName"]);
+									en_cn_Array.push(index);
+									en_cn_Array.push(json[index]["chineseName"]);
+								}
+								else
+								{
+									en_cn_Array.push(index);
+									en_cn_Array.push(index);
+									orderArray.push(index);
+								}
+							}
+						}
+						orderArray.sort(function(a,b){
+							return a.toLowerCase().localeCompare(b.toLowerCase());                           
+						});
+						var selectGroup = registry.byId(groupName);
+						
+						for(var index = 0; index < orderArray.length; index ++)
+						{
+							selectGroup.addOption({
+								disabled:false,
+								label : orderArray[index],
+								value : orderArray[index]
+							});
+						}
+					}
+					
+					// 将用户添加到Group中
+					function addUsersItemToGroup()
+					{
+						var users = getSelectedArray("form11");
+						if(!users.length)
+						{
+							alert("请在用户列表中选择操作的用户!");
+							return false;
+						}
+						var groupName = registry.byId("groupName");
+						if(groupName.value == "请选择分组名称")
+						{
+							alert("请选择分组名称!");
+							return false;
+						}
+						var newValue = chineseToEnglish(groupName.value);
+						var updateGroupJSON = {
+							groupName : newValue, 
+							":member" : users ,
+							"rep:privileges" : "jcr:write",
+							success : function(data){
+								// 创建UI
+								users.sort(function(a,b){
+									return a.toLowerCase().localeCompare(b.toLowerCase());                           
+								});
+								for(var usersIndex = 0; usersIndex < users.length; usersIndex ++)
+								{
+									var valueInHtml = Spolo.decodeUname(users[usersIndex]);
+									var jsonCreated = {
+										valueInHtml : valueInHtml,
+									}
+									created(jsonCreated);
+								}
+							},
+							failed : function(error){
+								throw error;
+							}	
+						};
+						grant_class.updateGroup(updateGroupJSON);
+					}
+					
+					// 删除Group中用户
+					function deleteUsersItem(itemPar)
+					{
+						var form22 = document.getElementById("form22");
+						for(var index = 0;index < form22.children.length; index ++)
+						{
+							var flag = false;
+							var node = form22.children[index];
+							var id = node["id"];
+							if(id == itemPar["id"])
+							{
+								id = Spolo.encodeUname(id);
+								var flag = true;
+							}
+							if(flag)
+							{
+								var indexFlag = index;
+								var groupName = registry.byId("groupName");
+								var newValue = chineseToEnglish(groupName.value)
+								var updateGroupJSON = {
+									// 下拉值
+									groupName : newValue, 
+									":member@Delete" : [id],
+									"rep:privileges" : "jcr:write",
+									success : function(data){
+										// destroy UI
+										domConstruct.destroy(form22.children[indexFlag]);
+										domConstruct.destroy(form22.children[indexFlag-1]);
+										domConstruct.destroy(form22.children[indexFlag-2]);
+									},
+									failed : function(error){
+										throw error;
+									}	
+								};
+								grant_class.updateGroup(updateGroupJSON);
+							}
+						}
+					}
+					
+					// 在form22中创建列表
+					function created(jsonCreated)
+					{
+						var valueInHtml = jsonCreated["valueInHtml"];
+						var form22 = document.getElementById("form22");
+						var flag = true;
+						for(var index = 0; index < form22.children.length; index ++)
+						{
+							if(form22.children[index]["id"] == valueInHtml)
+							{
+								flag = false;
+								break;
+							}
+						}
+						if(flag)
+						{
+							domConstruct.create("br", {}, form22);
+							domConstruct.create("br", {}, form22);
+							var div = domConstruct.create("div", 
+								{ 
+									class : "categoryTemplate_selectedListItem",
+									id : valueInHtml,
+									style : "font-weight:bold;padding:1px;font-size:150%;" + 
+											"border:1px solid #ccc;" + 
+											"display:inline;"
+								}, form22
+							);
+							var a = domConstruct.create("a", 
+								{ 
+									innerHTML :  valueInHtml
+								}, div
+							);
+							var closeDiv = domConstruct.create("div", 
+								{ 
+									class : "categoryTemplate_selectedListItem_close",
+									innerHTML : "  X",
+									style : "color:#f00;cursor:pointer;display:inline;"
+								}, div
+							);
+							var dThis = this;
+							on(closeDiv, "click", function(){
+								var parEle = this.parentElement
+								deleteUsersItem(parEle);
+							});
+						}
+					}
+					
+					// 通过下拉菜单的值，来动态变化html上的提示
+					function groupsNameItemValue(value)
+					{
+						var dthis = this;
+						var newValue = chineseToEnglish(value);
+						grant_class.getGroup(
+						{
+							groupName : newValue,
+							success : function(json){
+								destroyElements("form22");
+								// 重置成未选中状态.
+								for(var i in dthis.json)
+								{
+									var box = registry.byId(dthis.json[i]["id"]);
+									box.set("checked", false);
+								}
+								getPermissionsByGroupName(function(num){
+									var box = registry.byId(dthis.json[num]["id"]);
+									box.set("checked", true);
+								});
+								if(json["members"].length)
+								{
+									var orderArray = json["members"].sort(function(a,b){
+										return a.toLowerCase().localeCompare(b.toLowerCase());                           
+									});
+									for(var index = 0; index < orderArray.length; index ++)
+									{
+										var arrayMember = orderArray[index].split("/");
+										// 动态创建出已经添加的用户列表
+										var userName = arrayMember[arrayMember.length-1]
+										var valueInHtml = Spolo.decodeUname(userName);
+										var jsonCreated = {
+											valueInHtml : valueInHtml,
+										};
+										created(jsonCreated);
+									}
+								}
+								else
+								{
+									destroyElements("form22");
+								}
+							},
+							failed : function(error){
+								throw error;
+							}
+						});
+						destroyElements("form66");
+						getPermissionsByGroupName(function(num, value){
+							var htmlValue = "“" + value + "”包含“" + num + "”的权限!";
+							var style = "font-weight:bold;padding:3px;font-size:150%;" + 
+									"display:inline;";
+							var htmlJson = {
+								"value" : htmlValue,
+								"style" : style,
+								"formID" : "form66",
+								"aBr" : false
+							};
+							domConstructCreate(htmlJson);
+						});
+					}
+					
+					function displayTypeList(jsonSu, value)
+					{
+						function isEmpty(obj)
+						{
+							for (var property in obj)
+							{
+								return true;
+							}
+							return false;
+						}
+						var bool = isEmpty(jsonSu);
+						if(bool)
+						{
+							for(var index in jsonSu)
+							{
+								for(var j = 0; j < en_cn_Array.length; j++)
+								{
+									if(en_cn_Array[j] == index)
+									{
+										var htmlValue = "“" + value + "”已经和“" + en_cn_Array[j + 1] + "”关联在一起。";
+										var style = "font-weight:bold;padding:3px;font-size:150%;" + 
+														"display:inline;";
+										var htmlJson = {
+											"value" : htmlValue,
+											"style" : style,
+											"formID" : "form33",
+											"aBr" : false
+										}
+										domConstructCreate(htmlJson);
+									}
+								}
+							}
+						}
+						else
+						{
+							destroyElements("form33");
+						}
+					}
+					
+					// 显示权限和组的关系
+					function groupsPathItemValue(value)
+					{
+						var dthis = this;
+						for(var i in dthis.json)
+						{
+							if(i == value)
+							{
+								destroyElements("form33");
+								var getArgs = {
+									"nodePath" : dthis.json[i]["value"],
+									"success" :function(jsonSu){
+										displayTypeList(jsonSu, value);
+									},
+									"failed" : function(error){
+										throw error;
+									}
+								};
+								grant_class.getPermissions(getArgs);
+							}
+						}
+					}
+					
+					function doGroupNameDialog(createGroupDlg, array)
+					{
+						var groupNodeName = Spolo.CreateNodeName("group");
+						// 判断即将创建的Group是否存在
+						var selectGroup = registry.byId("groupName");
+						var ops = selectGroup.getOptions();
+						for(var i in ops)
+						{
+							if(typeof ops[i] == "object")
+							{
+								if(ops[i]["label"] == array[0].get("value"))
+								{
+									alert("该名称组已经存在，无需重新创建!");
+									createGroupDlg.hide();
+									array[0].set("value", "");
+									return false;
+								}
+							}
+						}
+						if(!array[0].get("value"))
+						{
+							alert("请在第一个输入框中数据需要创建的组的名称!!");
+							return false;
+						}
+						var newJSON = {
+							label : array[0].get("value"),
+							value : array[0].get("value"),
+							selected : true
+						};
+						en_cn_Array.push(groupNodeName);
+						en_cn_Array.push(array[0].get("value"));
+						var createGroupJSON = {
+							"groupName" : groupNodeName,
+							"groupName_CN" : array[0].get("value"),
+							"success" : function(data){
+								createGroupDlg.hide();
+								// 下拉菜单
+								var listGroupsJSON = {
+									success : function(json){
+										// 下拉菜单内容
+										selectGroup.addOption(newJSON);
+										selectGroup.set('value', newJSON.value);
+										array[0].set("value", "");
+									},
+									failed : function(error){
+										throw error;
+									}
+								};
+								grant_class.listGroups(listGroupsJSON);
+							},
+							"failed" : function(error){
+								throw error;
+							}
+						};
+						grant_class.creatGroup(createGroupJSON);
+					}
+					
+					function doResetPassWordDialog(resetPassWordDlg, array)
+					{
+						if(array[0].get("value").length < 6 || array[1].get("value").length < 6)
+						{
+							Spolo.notify({
+								"text" : "请出入6位及以上的密码位数",
+								"type" : "error",
+								"timeout" : 1000
+							});
+							return false;
+						}
+						if(array[0].get("value") != array[1].get("value"))
+						{
+							Spolo.notify({
+								"text" : "两次输入密码不一致，请重新输入!",
+								"type" : "error",
+								"timeout" : 1000
+							});
+							array[0].set("value", "");
+							array[1].set("value", "");
+							return false;
+						}
+						
+						var userName = getSelectedArray("form11")[0];
+						userName = Spolo.decodeUname(userName);
+						grant_class.changePwd({
+							userName : userName,//用户名
+							newPwd   : array[0].get("value"),//新密码
+							newPwdConfirm : array[1].get("value"),//新密码重置
+							success  : function(){
+								//执行成功的回调函数
+								resetPassWordDlg.hide();
+								Spolo.notify({
+									"text" : "为" + userName + "重置密码成功!",
+									"type" : "success",
+									"timeout" : 1000
+								});
+							},
+							failed   : function(error){
+								//执行失败的回调函数
+								throw error;
+								Spolo.notify({
+									"text" : "为" + userName + "重置密码失败!",
+									"type" : "error",
+									"timeout" : 1000
+								});
+							}
+						});
+					}
+					
+				});
+		</script>
+	</head>
+	<body class="claro">
+		 <div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%;background-color:grey" >
+			<!--top 顶部-->
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="height:5%;text-align:center;">
+				<label style="font-family:黑体, 宋体(GB);font-weight:bolder;font-size:300%;" id="welcomeToGrant"></label>
+			</div>
+			<!---->
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'leading'" style="width:30%;" id="left">
+				<label style="font-weight:bolder;font-size:200%;background-image:url(images/a.png);">用户列表：</label>
+				<label style="font-weight:bolder;font-size:200%;">(请点击用户名)</label>
+				<br/>
+				<br/>
+				<br/>
+				<form id="form11" style="position:absolute;left:5%;">
+				</form>
+				<input id="resetPassWordID" class="resetPassWord" type="button" value="重置当前选中用户的密码"  style="position:absolute;right:5%;top:10%;height:5%;width:35%;display:none"/>
+			</div>
+			 
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'" style="width:66%;">
+				<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'shang'" style="height:30%;">
+					<!---->
+					<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" style="height:15%;width:50%;" id="select">
+						<form id="form55" style="position:absolute;left:35%;height:5%;width:20%;">
+						</form>
+						<!--
+						<input class="addUsersToGroupButton" type="button" value="用户加入到分组列表中"  style="position:absolute;right:20%;top:4%;height:5%;width:20%;"/>
+						<input class="createdGroupNameButton" type="button" value="创建新分组"  style="position:absolute;right:20%;top:10%;height:5%;width:20%;"/>
+						<input class="deleteGroupNameButton" type="button" value="删除分组"  style="position:absolute;right:20%;top:16%;height:5%;width:20%;"/>
+						-->
+					</div>
+					<!---->
+				</div>
+				 
+				<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'xia'" style="height:60%;">
+					<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'aaaa'" style="height:90%;width:30%;">
+						<!--
+						<label style="position:absolute;left:0%;font-weight:bolder;font-size:200%;background-image:url(images/a.png);">该组拥有的权限：</label>
+						<label style="position:absolute;left:33%;font-weight:bolder;font-size:200%;background-image:url(images/a.png);">已经添加的用户列表：</label>
+						-->
+						<label style="position:absolute;left:33%;font-weight:bolder;font-size:200%;background-image:url(images/a.png);">分组权限类型列表：</label>
+						<br />
+						<!--
+						<form id="form66" style="position:absolute;left:0%;">
+						</form>
+						<form id="form22" style="position:absolute;left:33%;">
+						</form>
+						-->
+						<form id="form33" style="position:absolute;left:33%;">
+						</form>
+					</div>
+				</div>
+			
+			</div>
+			<!--
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="height:20%;">
+				
+				<label style="font-weight:bolder;font-size:200%;background-image:url(images/a.png);">用户所在权限组列表：</label>
+				<br/>
+				<br/>
+				<form id="form44" style="position:absolute;left:5%;">
+				</form>
+				
+			</div>
+			-->
+		</div>
+	</body>
+</html>	

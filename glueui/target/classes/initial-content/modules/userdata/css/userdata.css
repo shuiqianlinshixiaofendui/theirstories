@@ -1,0 +1,273 @@
+@charset "utf-8";
+/* CSS Document */
+div {
+	margin: 0 auto;
+}
+#container {
+position: relative;
+margin-top:40px;
+}
+.win1000 {
+width: 1000px;
+}
+body {
+font-size: 12px;
+font-family: arial,"宋体"!important;
+color: #333;
+}
+p, form, ul, dl, ol, li, dt, dd, h1, h2, h3 {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+.lmenu li.open,.butt, .btns,.nav ul li{
+background: url(../images/btn.gif) no-repeat;
+}
+
+.nav {
+background: url(../images/nav.gif) no-repeat;
+}
+
+.nav {
+background-position: 0 -76px;
+background-repeat: repeat-x;
+font-size: 21px;
+padding-left: 15px;
+padding-top: 10px;
+font-weight: bold;
+}
+#wraper {
+position: relative;
+background: url(../images/wraper.gif) right repeat-y;
+border-top: #dfdfdf 1px solid;
+border-bottom: #dfdfdf 1px solid;
+margin-top: 10px;
+}
+
+.clearfix {
+display: block;
+}
+.left {
+float: left;
+}
+.title{
+margin-right:25px;
+}
+.lmenu li i{
+background: url(../images/icon.gif) no-repeat;
+}
+.lmenu {
+width: 150px;
+min-height: 420px;
+padding: 0 0 10px 0;
+line-height: 28px;
+}
+.lmenu ul {
+padding: 10px 0;
+}
+
+.lmenu li {
+position: relative;
+width: 99%;
+text-indent: 40px;
+font-size: 12px;
+}
+.lmenu li i {
+position: absolute;
+display: block;
+width: 9px;
+height: 9px;
+top: 9px;
+left: 22px;
+overflow: hidden;
+}
+.lmenu li.open {
+display: block;
+position: relative;
+left: -2px;
+height: 28px;
+line-height: 28px;
+padding: 1px 0 4px;
+background-position: 0 -84px;
+text-indent: 42px;
+}
+.lmenu li i.closed {
+background-position: 0 -416px;
+}
+.lmenu li i.opened {
+background-position: 0 -440px;
+}
+.lmenu li span {
+cursor: pointer;
+}
+.lmenu ul ul {
+padding: 0 0 10px 0;
+}
+ol ul, ul ol, ul ul, ol ol {
+-webkit-margin-before: 0px;
+-webkit-margin-after: 0px;
+}
+.clearfix::after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+.lmenu li a {
+text-decoration: none;
+font-weight: normal;
+}
+.lmenu li.open a {
+color: #000;
+text-decoration: none;
+}
+
+#right-con-user {
+width: 800px;
+padding: 20px 15px 0px;
+background: none;
+}
+.right {
+float: right;
+}
+h2.balance-h2 {
+background-color: #f8f8f8;
+height: 30px;
+line-height: 30px;
+color: #000;
+font-size: 14px;
+font-weight: bold;
+padding: 0 20px;
+}
+
+.mt20 {
+margin-top: 20px;
+}
+
+td {
+table-layout: fixed;
+word-wrap: break-word;
+}
+input {
+font: 100% Tahoma,Helvetica,Arial,sans-serif;
+vertical-align: middle;
+}
+.userInfo {
+width: 100%;
+border: none;
+border-collapse: collapse;
+margin: 15px auto 50px;
+}
+img {
+border: 0;
+}
+.userInfo td a {
+margin-right: 5px;
+}
+a {
+color: #2255DD;
+text-decoration: none;
+}
+.inp {
+border: 1px solid #C8C8C8;
+line-height: 26px;
+height: 26px;
+margin-right: 3px;
+padding: 2px 3px;
+font-size: 14px;
+}
+.inw {
+width: 228px;
+margin-bottom: 3px;
+}
+.userInfo td input.inp {
+margin-right: 10px;
+}
+.red {
+color: #ff0000;
+}
+.userInfo th {
+text-align: right;
+font-size: 14px;
+font-weight: normal;
+color: #666;
+line-height: 2;
+}
+tr {
+display: table-row;
+vertical-align: inherit;
+border-color: inherit;
+}
+.userInfo th {
+width: 140px;
+text-align: right;
+font-size: 14px;
+font-weight: normal;
+color: #666;
+padding: 0px 10px 0px 0;
+line-height: 2;
+}
+.userInfo td strong {
+font-size: 16px;
+line-height: 1.8;
+margin-right: 5px;
+}
+
+.r-6 {
+margin-right: 6px;
+}
+.textarea {
+height: 100px;
+overflow: hidden;
+width: 347px;
+border: 1px solid #C8C8C8;
+line-height: 20px;
+font-size: 12px;
+display:none;
+}
+.userInfo input,label {
+display:none;
+}
+.fgrey {
+color: #aaa;
+display:inline-block;
+}
+.none{
+display:none;
+}
+.butt {
+padding-right: 1px;
+display: inline-block;
+font-weight: 700;
+height: 34px;
+margin-left: 180px;
+margin-bottom: 60px;
+}
+.btns {
+padding: 8px 20px 6px 20px;
+display: block;
+background-position: 0 0;
+border: none;
+color: #fff;
+font-size: 14px;
+font-weight: bold;
+cursor: pointer;
+margin: auto;
+
+}
+.t_pwd{
+margin-top: 25px;
+margin-left: 15px;
+margin-bottom:50px;
+}
+.green {
+color: #009900;
+display:block;
+}
+.txtSign{
+font-size: 16px;
+line-height: 1.8;
+margin-right: 5px;
+font-weight: bold;
+}

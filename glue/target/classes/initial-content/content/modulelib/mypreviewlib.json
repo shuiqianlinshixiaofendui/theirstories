@@ -1,0 +1,8 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"resourceName":"我的效果图",
+		"description":"个人效果图信息",
+		"isActive":true,
+		"isTopMenu":true
+}

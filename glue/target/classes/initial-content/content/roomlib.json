@@ -1,0 +1,6 @@
+{
+	"resourceName":"户型库",
+	"sling:resourceType":"folder/modellib",
+	"sling:resourceSuperType":"folder",
+	"jcr:primaryType":"sling:Folder"
+}

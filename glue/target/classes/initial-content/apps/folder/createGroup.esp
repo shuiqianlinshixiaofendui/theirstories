@@ -1,0 +1,58 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+var groupName = request.getParameter("groupName");
+var result = new Packages.org.apache.sling.commons.json.JSONObject();
+
+//var groupName = "textGroup";
+var result = createGroups(groupName);
+out.println(result.toString());
+
+ function createGroups(groupName) {
+	if ( groupName != null && groupName != "") {
+			var session = currentNode.getSession();
+			var userManager = Packages.org.apache.sling.jcr.base.util.AccessControlUtil.getUserManager(session);
+			var principal = new Packages.org.apache.jackrabbit.core.security.principal.PrincipalImpl(groupName);
+			try {
+					userManager.createGroup(principal);
+			}
+			catch(e) {
+					if (session.getUserManager().getAuthorizable(session.getUserID()).isAdmin()) {   //判断当前用户是否是管理员
+						var strRe = "groupname is already exist";
+						//out.println(strRe);
+						result.put("success", false);
+						result.put("reason", strRe);
+						return result;
+					}
+					else {
+						var strRe = " Permission denied";
+						//out.println(strRe);
+						result.put("success", false);
+						result.put("reason", strRe);
+						return result;
+					}
+			}	
+			result.put("success", true);
+			return result;
+    }
+	else {
+		var strRe = "groupname must not be null";
+		result.put("success", false);
+		result.put("reason", strRe);
+		return result;
+	}
+}
+
+%>

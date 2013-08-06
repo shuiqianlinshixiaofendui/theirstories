@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>上传材质</title>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script> 
+		<script type="text/javascript" src="/script/spolo/ui/noty/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/libs/jquery/jquery-ui.js"></script>
+		<link rel="stylesheet" href="/libs/jquery/jquery-ui.css" media="screen">
+		<!-- noty -->
+		<script type="text/javascript" src="/script/spolo/ui/noty/jquery.noty.js"></script>
+		<!-- layouts -->
+		<script type="text/javascript" src="/script/spolo/ui/noty/layouts/topCenter.js"></script>
+		<!-- themes -->
+		<script type="text/javascript" src="/script/spolo/ui/noty/themes/default.js"></script>
+		<style>
+			html, body{
+				width : 100%;
+				height : 100%;
+				margin : 0;
+			}
+		</style>
+		<script type="text/javascript">
+			// 标志此为根节点
+			Spolo.isRoot = true;
+		</script>
+	</head>	
+	<body>
+		<iframe style="width:100%;height:100%;" id="iframeModelLib" frameborder="0" src="/modules/uploadmaterial/index.html?isGutil=true"></iframe>
+	</body>
+</html>

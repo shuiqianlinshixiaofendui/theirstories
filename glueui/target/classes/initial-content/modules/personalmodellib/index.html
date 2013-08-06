@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>个人模型库</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link href="/libs/dijit/themes/claro/claro.css" rel="stylesheet">
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/CategorySelect/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelLib/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelEdit/css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+				background:#fff;
+			}
+			#ModelLibContainer{
+				width:1110px;
+				margin:0 auto;
+				border:1px solid #d1d1d1;
+			}
+		</style>
+		<script type="text/javascript">
+			var dojoConfig = {
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+	</head>
+	<body id="root61" class="claro">
+		<div id="ModelLibContainer"></div>
+		<script>
+			require([
+				"widgets/ModelLib/ModelLib",
+				"dojo/domReady!"
+				],
+				function(ModelLib){
+					
+					var uid = Spolo.getUserId();
+					var userNodePath = "/content/users/"+uid;
+					var modellibPath = userNodePath + '/' + "modellib";
+					
+					var json = {
+						path: modellibPath,
+						limit: 15,
+						hasCategory: true,     //是否需要分类控件，默认为true
+						showModelTotal:true,
+						isClickImg:true,
+						showAddItemsModelLib:true
+					};
+					var modelLib = new ModelLib(json);
+					modelLib.placeAt("ModelLibContainer");
+				});
+		</script>
+	</body>
+</html>

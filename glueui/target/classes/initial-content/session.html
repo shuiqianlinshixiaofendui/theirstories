@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="no-cache">
+		<meta http-equiv="Expires" content="-1">
+		<meta http-equiv="Cache-Control" content="no-cache">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript" >
+			
+			var UNAMEKEY = "username";
+			var PWDKEY = "password"
+			var REDIRECT_KEY = "redirect";
+			
+			//test :  http://192.168.0.10/session.html?redirect=/modules/gutil/scenelib/index.html
+
+			/////// main //////
+			(function(){			
+				// 1. 判断用户是否已经登录，如果登录了则取得 urlVarsMap，否则返回false;
+				// var urlMap = Spolo.getUrlVars();
+				// var redirect = urlMap[REDIRECT_KEY];
+				var urlMap = Spolo.getUrlRedirectPar();
+				var redirect = urlMap[REDIRECT_KEY];
+				if(!redirect)
+				{
+					alert("url parameter redirect is undefined!");
+					return;
+				}
+				// 请求 gutil 取得 cookie 并自动登录
+				Spolo.gutil.login
+				(
+					// 成功取到 cookie 并自动登录成功
+					function()
+					{
+						window.location.href = redirect+"?isGutil=true&t="+Date.now();
+					},
+					// 没有取到 cookie 
+					function(){
+						var url = "/modules/user/index.html?t="+Date.now()+"&isGutil=true&redirect="+redirect+"?t="+Date.now()+"&isGutil=true";
+						window.location.href = url;
+					},
+					// cookie 过期或者时效
+					function(){
+						var url = "/modules/user/index.html?t="+Date.now()+"&isGutil=true&redirect="+redirect+"?t="+Date.now()+"&isGutil=true";
+						window.location.href = url;
+					}
+					
+				);
+				
+			})();
+			
+        </script>
+    </body>
+</html>

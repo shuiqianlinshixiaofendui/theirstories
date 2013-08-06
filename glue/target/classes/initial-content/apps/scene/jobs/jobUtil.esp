@@ -1,0 +1,751 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ /*本文件维护了response的辅助方法。
+ 
+ 如下全局变量被定义和使用:
+ GVAR_LoadLibrary : 必须被设置，否则视同直接从客户端访问。这将直接返回空。
+ 
+ 使用方法:
+ <code>
+	var GVAR_LoadLibrary = true;
+	load("/apps/scene/jobs/jobUtil.esp");
+	JobUtil.xxx();
+ </code>
+*/
+
+load("/apps/util/sysconfig.esp");
+
+var JobUtil;
+(function()
+{
+	if( !JobUtil && GVAR_LoadLibrary )
+	{
+		JobUtil = {};
+		/**获取job信息的jsonObject对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getJobAsJsonObject = function(jobsNode,jobName){		
+			//new 出文件
+			var jobJSON_base = JobUtil.getBaseInfoAsJsonObject(jobsNode,jobName);
+			var jobJSON_schedule = JobUtil.getScheduleInfoAsJsonObject(jobsNode,jobName);
+			var jobJSON_result = JobUtil.getResultInfoAsJsonObject(jobsNode,jobName);
+			var jobJSON_tasks = JobUtil.getTasksInfoAsJsonObject(jobsNode,jobName);
+			// 判断文件是否存在
+			if(jobJSON_base && jobJSON_schedule){
+				var jobObject=new Packages.org.apache.sling.commons.json.JSONObject();
+				jobObject.put("base",jobJSON_base);
+				jobObject.put("schedule",jobJSON_schedule);
+				jobObject.put("tasks",jobJSON_tasks);
+				jobObject.put("result",jobJSON_result);
+				return jobObject;
+			}else{
+				return null;
+			}	
+		};
+		/**获取job信息的base jsonObject对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getBaseInfoAsJsonObject = function(jobsNode,jobName){		
+			//new 出文件
+			var jobJSONFile_base = JobUtil.getJobInfoBaseFile(jobsNode,jobName);
+			// 判断文件是否存在
+			if(jobJSONFile_base.exists()){
+				//读取两个文件中的json字符串
+				var jobJSONString_base = Packages.org.apache.commons.io.FileUtils.readFileToString(jobJSONFile_base,"UTF-8");
+				var jobObject_base = new Packages.org.apache.sling.commons.json.JSONObject(jobJSONString_base);
+				return jobObject_base;
+			}else{
+				return null;
+			}	
+		};
+		/**获取job信息的schedule jsonObject对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getScheduleInfoAsJsonObject = function(jobsNode,jobName){		
+			//new 出文件
+			var jobJSONFile_schedule = JobUtil.getJobInfoScheduleFile(jobsNode,jobName);
+			// 判断文件是否存在
+			if(jobJSONFile_schedule.exists()){
+				//读取两个文件中的json字符串
+				var jobJSONString_schedule = Packages.org.apache.commons.io.FileUtils.readFileToString(jobJSONFile_schedule,"UTF-8");
+				var jobObject_schedule = new Packages.org.apache.sling.commons.json.JSONObject(jobJSONString_schedule);
+				return jobObject_schedule;
+			}else{
+				return null;
+			}	
+		};
+		/**获取job信息的result jsonObject对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getResultInfoAsJsonObject = function(jobsNode,jobName){		
+			var jobJSONFile_result = JobUtil.getJobInfoResultFile(jobsNode,jobName);
+			var jobObject_result;
+			if(jobJSONFile_result && jobJSONFile_result.exists()){
+				var jobJSONString_result = Packages.org.apache.commons.io.FileUtils.readFileToString(jobJSONFile_result,"UTF-8");
+				jobObject_result = new Packages.org.apache.sling.commons.json.JSONObject(jobJSONString_result);	
+			}else{
+				jobObject_result = new Packages.org.apache.sling.commons.json.JSONObject();
+			}	
+			//如果结果图文件存在
+			var jobJSONFile_resultImage = JobUtil.getJobResultImageFile(jobsNode,jobName);
+			if(jobJSONFile_resultImage && jobJSONFile_resultImage.exists()){
+				jobObject_result.put("URL",jobsNode.getPath()+".renderjob.result.png?jobName="+jobName);
+				jobObject_result.put("url",jobsNode.getPath()+".renderjob.result.png?jobName="+jobName+"&view=preview");
+			}
+			return jobObject_result;
+		};
+		/**获取job信息的所有子task jsonObject对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getTasksInfoAsJsonObject = function(jobsNode,jobName){		
+			var tasks = new Packages.org.apache.sling.commons.json.JSONArray();
+			var taskInfoResultFiles = JobUtil.getTaskInfoResultFiles(jobsNode,jobName);
+			for(var index=0;index<taskInfoResultFiles.length;index++){
+				if(taskInfoResultFiles[index].dir.exists()){
+					var taskJsonObject;
+					if(taskInfoResultFiles[index].jsonfile){
+						var taskjson = Packages.org.apache.commons.io.FileUtils.readFileToString(taskInfoResultFiles[index].jsonfile,"UTF-8");
+						taskJsonObject = new Packages.org.apache.sling.commons.json.JSONObject(taskjson);
+					}else{
+						taskJsonObject = new Packages.org.apache.sling.commons.json.JSONObject();
+					}
+					var taskName = taskInfoResultFiles[index].name;
+					taskJsonObject.put("name",taskName);
+					var resultImageFile = JobUtil.getTaskResultImageFile(jobsNode,jobName,taskName);
+					if(resultImageFile){
+						taskJsonObject.put("URL",jobsNode.getPath()+".renderjob.result.png?jobName="+jobName+"&taskName="+taskName);
+						taskJsonObject.put("url",jobsNode.getPath()+".renderjob.result.png?jobName="+jobName+"&taskName="+taskName+"&view=preview");
+					}
+					tasks.put(taskJsonObject);
+				}
+			}
+			return tasks;
+		};
+//=======================================================================================================================================
+		/**保存base job信息
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*@param jsonObject 存有job base信息的jsonObject对象
+		*/
+		JobUtil.saveBaseJobInfo = function(jobsNode,jobName,jsonObject){
+			var importFile = JobUtil.getJobInfoBaseFile(jobsNode,jobName);
+			if(!importFile.exists()){
+				importFile.getParentFile().mkdirs();
+				importFile.createNewFile();			
+			}
+			Packages.org.apache.commons.io.FileUtils.writeStringToFile(importFile,jsonObject.toString(),"UTF-8");
+		};
+		/**保存Proceed job信息
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*@param jsonObject 存有job base信息的jsonObject对象
+		*/
+		JobUtil.saveProceedJobInfo = function(jobsNode,jobName,jsonObject){
+			var importFile = JobUtil.getJobInfoProceedFile(jobsNode,jobName);
+			if(!importFile.exists()){
+				importFile.getParentFile().mkdirs();
+				importFile.createNewFile();			
+			}
+			Packages.org.apache.commons.io.FileUtils.writeStringToFile(importFile,jsonObject.toString(),"UTF-8");
+		};
+		/**保存schedule job信息
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*@param jsonObject 存有job schedule信息的jsonObject对象
+		*/
+		JobUtil.saveScheduleJobInfo = function(jobsNode,jobName,jsonObject){
+			var importFile = JobUtil.getJobInfoScheduleFile(jobsNode,jobName);
+			if(!importFile.exists()){
+				importFile.getParentFile().mkdirs();
+				importFile.createNewFile();			
+			}
+			Packages.org.apache.commons.io.FileUtils.writeStringToFile(importFile,jsonObject.toString(),"UTF-8");
+		};
+//=======================================================================================================================================
+		/**删除renderjob
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.deleteRenderJob = function(jobsNode,jobName){	
+			var result ={};
+			result.jobName = jobName;
+			if(jobName){
+				var job_jsonObject=JobUtil.getJobAsJsonObject(jobsNode,jobName);
+				if(job_jsonObject){
+					var jobStatus = job_jsonObject.getJSONObject("schedule").getString("status");
+					//if(!jobStatus.equalsIgnoreCase("creating")){
+						try{
+							var jsonFile = JobUtil.getJobInfoBaseFile(jobsNode,jobName);
+							//删除base.json文件
+							Packages.org.apache.commons.io.FileUtils.forceDelete(jsonFile);
+							
+							//调用schedule的删除job方法
+							var xpof = sling.getService(Packages.org.spolo.service.internal.NodeXPOF);
+							var scheduler = new Packages.org.spolo.xmpp.proxy.Scheduler(xpof);
+							var jobDirWithoutShare = GVAR_system.getPathWithoutSharePath(jobsNode)+
+														GVAR_system.path_separator +
+														jobName;
+							scheduler.removeJobByPath(jobDirWithoutShare);
+							result.success = true;
+						}catch(e){
+							Packages.java.lang.System.out.println(e);
+							result.success = false;
+							result.reason = e.toString();
+						}
+					// }else{
+						// result.success = false;
+						// result.reason = "job未创建完成";
+					// }
+				}else{
+					result.success = false;
+					result.reason = "指定的job不存在";
+				}
+			}else{
+				result.success = false;
+				result.reason = "没有指定jobName";
+			}
+			return result;
+		};
+//=======================================================================================================================================
+
+		/**得到一个job对应的文件目录的file对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getJobDir = function(jobsNode,jobName){	
+			var jobsNodePath = GVAR_system.getNodePath(jobsNode);
+			var jobDirPath = jobsNodePath + GVAR_system.path_separator + jobName;
+			var jobDir= new Packages.java.io.File(jobDirPath);
+			return jobDir;
+		};
+		/**得到jobs节点对象对应的文件目录的file对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param mdir 如果路径不存在是否创建
+		*/
+		JobUtil.getJobsDir = function(jobsNode,mdir){	
+			var jobsPath = GVAR_system.getNodePath(jobsNode);
+			var jobsDir= new Packages.java.io.File(jobsPath);
+			if(mdir && (!jobsDir.exists())){
+				jobsDir.mkdirs();
+			}
+			return jobsDir;
+		};
+		/**创建一个jobDir
+		*@param jobsNode jobs jcr节点
+		*/
+		JobUtil.createNewJobDir=function(jobsNode){
+			var jobsDir = JobUtil.getJobsDir(jobsNode,true);
+			var jobsPath = jobsDir.getPath();
+			//生成不重复的随机job名和job文件夹
+			var jobDir;
+			var jobPath;
+			var jobName;
+			do{
+				jobName="job" + Math.round(Math.random() * 10000);
+				jobPath = jobsPath + GVAR_system.path_separator + jobName;
+				jobDir = new Packages.java.io.File(jobPath);
+			}while(jobDir.exists());
+			jobDir.mkdirs();
+			return jobDir;
+		};
+//=======================================================================================================================================
+
+		/**得到base job信息的json文件对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getJobInfoBaseFile = function(jobsNode,jobName){		
+			var jobsNodePath = GVAR_system.getNodePath(jobsNode);
+			var jobDirPath = jobsNodePath + GVAR_system.path_separator + jobName;
+			var jobJSONFilePath_base= jobDirPath + GVAR_system.path_separator + "base.json";
+			var baseFile = new Packages.java.io.File(jobJSONFilePath_base);
+			return baseFile;
+		};
+		/**得到proceed job信息的json文件对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getJobInfoProceedFile = function(jobsNode,jobName){		
+			var jobsNodePath = GVAR_system.getNodePath(jobsNode);
+			var jobDirPath = jobsNodePath + GVAR_system.path_separator + jobName;
+			var jobJSONFilePath_base= jobDirPath + GVAR_system.path_separator + "proceed.json";
+			var proceedFile = new Packages.java.io.File(jobJSONFilePath_base);
+			return proceedFile;
+		};
+		/**得到schedule job信息的json文件对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getJobInfoScheduleFile = function(jobsNode,jobName){		
+			var jobsNodePath = GVAR_system.getNodePath(jobsNode);
+			var jobDirPath = jobsNodePath + GVAR_system.path_separator + jobName;
+			var jobJSONFilePath_schedule= jobDirPath + GVAR_system.path_separator + "schedule.json";
+			var scheduleFile = new Packages.java.io.File(jobJSONFilePath_schedule);
+			return scheduleFile;
+		};
+		/**得到result job信息的json文件对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getJobInfoResultFile = function(jobsNode,jobName){	
+			var baseJson = JobUtil.getBaseInfoAsJsonObject(jobsNode,jobName);
+			if(baseJson){
+				var resultPath = GVAR_system.getGlueSharePath() + baseJson.getString("resultPath");
+				var jobJSONFilePath_result = resultPath + GVAR_system.path_separator + baseJson.getString("resultFileName") + ".json";
+				var resultFile = new Packages.java.io.File(jobJSONFilePath_result);
+				return resultFile;
+			}
+		};
+		/**得到result job信息的结果图文件对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getJobResultImageFile = function(jobsNode,jobName){	
+			var baseJson = JobUtil.getBaseInfoAsJsonObject(jobsNode,jobName);
+			if(baseJson){
+				var resultPath = GVAR_system.getGlueSharePath() + baseJson.getString("resultPath");
+				var jobJSONFilePath_resultImage = resultPath + GVAR_system.path_separator + baseJson.getString("resultFileName") + ".png";
+				var imageFile = new Packages.java.io.File(jobJSONFilePath_resultImage);
+				return imageFile;
+			}
+		};
+		/**得到所有指定job的子task中的 json文件对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getTaskInfoResultFiles = function(jobsNode,jobName){	
+			var jobsNodePath = GVAR_system.getNodePath(jobsNode);
+			var jobDirPath = jobsNodePath + GVAR_system.path_separator + jobName;
+			var jobDir = new Packages.java.io.File(jobDirPath);	
+			var targetDirs = [];
+			if(jobDir.exists()){	
+				var subFiles = jobDir.listFiles();
+				for(var index=0;index<subFiles.length;index++){
+					if(subFiles[index].isDirectory() && subFiles[index].getName().startsWith("task_")){
+						var task = {};
+						task.name = subFiles[index].getName();
+						task.dir = subFiles[index].getAbsoluteFile();
+						var jsonFilePath = subFiles[index].getPath() + GVAR_system.path_separator + "task.json";
+						task.jsonfile = new Packages.java.io.File(jsonFilePath);
+						if(!task.jsonfile.exists()){
+							delete task.jsonfile;
+						}
+						targetDirs.push(task);
+					}
+				}
+			}
+			return targetDirs;
+		};
+		/**得到所有指定job的子task中的 结果图文件对象
+		*@param jobsNode jobs的jcr节点对象
+		*@param jobName job的名字
+		*/
+		JobUtil.getTaskResultImageFile = function(jobsNode,jobName,taskName){	
+			var jobsNodePath = GVAR_system.getNodePath(jobsNode);
+			var jobDirPath = jobsNodePath + GVAR_system.path_separator + jobName;
+			var taskDirPath = jobDirPath + GVAR_system.path_separator + taskName;
+			var taskDir = new Packages.java.io.File(taskDirPath);
+			var image_files = Packages.org.apache.commons.io.FileUtils.listFiles(taskDir,["png"],false);
+			var imageFile;
+			if(!image_files.isEmpty()){
+				var iterator = image_files.iterator();
+				imageFile = iterator.next();
+			}	
+			return imageFile;
+		};
+//=======================================================================================================================================
+
+		/**对job信息验证和修正
+		*@param job render job的base信息
+		*@param jobDir job的dir
+		*@param jobsNode jobs节点
+		*     返回一个生成好的jobbase信息的jsonobject对象
+		*/
+		JobUtil.parseRenderJobParams = function(job,jobDir,jobsNode){
+			var result = {};
+			job['name']=jobDir.getName();
+			job['userID'] = currentNode.getSession().getUserID();
+			job['jobType']='render';
+			if(job['target'] != "sample" && job['target'] != "product"){
+				job['target'] = "sample";
+			}
+			//设置指定的渲染类型参数和资源文件包名称
+			if(job['render']=="blender"){
+				if(!job['assetsFile']){
+					job['assetsFile'] = "blender.zip";
+				}
+			}else if(job['render']=="slg"){
+				if(!job['assetsFile']){
+					job['assetsFile'] = "slg.zip";
+				}
+			}else if(job['render']=="octane"){
+				if(!job['assetsFile']){
+					job['assetsFile']="octane.zip";
+				}	
+			}else{
+				job['render'] = "glue";
+				if(!job['assetsFile']){
+					job['assetsFile']="glue.zip";
+				}	
+			}
+			if(!job['pass']){
+				job['pass']="16000";
+			}
+			job['createTime']=new Date().getTime().toString();
+			if(!job['resultFileName']){
+				job['resultFileName']="result";
+			}
+			job['jobsPath'] = jobsNode.getPath();
+			job['jobPath'] = GVAR_system.getPathWithoutSharePath(jobsNode)+
+							GVAR_system.path_separator +
+							job['name'];
+			if(!job['resultPath']){
+				job['resultPath'] = job['jobPath']+ 
+									GVAR_system.path_separator +
+									job['render'] + 
+									GVAR_system.path_separator +
+									'result'; 
+			}
+			job['assetsPath'] = job['jobPath']+ 
+								GVAR_system.path_separator +
+								job['render'] + 
+								GVAR_system.path_separator +
+								'assets'; 	
+			//修正后续操作信息
+			if(job["proceed"]){
+				result.proceed = job["proceed"];
+				load("/apps/scene/jobs/proceedUtil.esp");
+				result.proceed = ProceedUtil.parse_proceed(job,result.proceed);
+				job["proceed"] = "proceed.json";
+			}
+			result.baseInfo = new Packages.org.apache.sling.commons.json.JSONObject();
+			for(var key in job){
+				result.baseInfo.put(key,job[key]);
+			}
+			return result;
+		};
+		/**创建一个renderjod在指定的jobs节点下
+		*@param job={
+		*				jobType:jobType,//("render/preview"	默认render);
+		*				target:target,//("product/sample"	默认sample);
+		*				render:render,//("octane/slg/glue/blender"	默认octane slg暂不支持);
+		*				email:email,//(job完成后通知的email 	可选);
+		*				resultFileName:resultFileName,//(job完成后生成的结果的文件名 不包含后缀 默认为"result" 生成的图片文件名为result.png 	可选);;
+		*				cameraName:cameraName,//(场景中的cameraName 	可选);
+		*				resultPath:resultPath,//(job结束时的结果存放路径，应该是一个sharepath下不包含sharepath的相对路径 	可选);
+		*				notifyOID:notifyOID//(job需要事实通信时的OID		可选);
+		*			}
+		*@param jobsNode=scene下的一个jobs节点，该节点应该有属性{'sling:resourceType':'scene/jobs'}
+		*@param sceneNode 场景节点，如果传入null，默认使用jobsNode的父节点作为场景节点
+		*@return 返回一个js对象 returnObj.result=true/false
+		*										 if returnObj.result==true:
+		*											包含returnObj.jobInfo={base:{...},schedule:{...}}
+		*										 else:
+		*											包含returnObj.reason="错误原因"
+		*/
+		JobUtil.createRenderJob = function(job,jobsNode,sceneNode,callback){
+			if(!(typeof callback == "function")){
+				callback=function(msg){};
+			}
+			var r1={};
+			/*
+			*	步骤1 -------------------------------------构建jobs和job的磁盘路径
+			*/
+			//生成不重复的随机job名和job文件夹
+			callback("------开始创建job------");
+			var jobDir = JobUtil.createNewJobDir(jobsNode);
+			callback("生成随机Job Name---"+jobDir.getName());
+			/*
+			*	步骤2 -------------------------------------对job信息进行合法性判断，并写入到文件中
+			*/
+			var baseInfo;
+			var proceedInfo;
+			var scheduleInfo;			
+				try{
+			//步骤2.1 -----------生成job baseInfo
+					callback("保存job信息...");
+					var jobData = JobUtil.parseRenderJobParams(job,jobDir,jobsNode)
+					baseInfo = jobData.baseInfo;
+					proceedInfo = jobData.proceed;
+			//步骤2.2 -----------保存job信息
+					JobUtil.saveBaseJobInfo(jobsNode,baseInfo.getString("name"),baseInfo);
+					if(proceedInfo){
+						JobUtil.saveProceedJobInfo(jobsNode,baseInfo.getString("name"),proceedInfo);
+					}
+					//schedule.json（包含创建该文件）中写入job状态
+					scheduleInfo = new Packages.org.apache.sling.commons.json.JSONObject();
+					scheduleInfo.put('status','creating');
+					JobUtil.saveScheduleJobInfo(jobsNode,baseInfo.getString("name"),scheduleInfo);
+				}catch(e){
+					baseInfo = null;	
+					r1.result=false;
+					r1.reason=e.message;
+					callback("------保存job信息时出错："+r1.reason+"------");
+				}
+				//生成和copyjob所需要的资源文件
+				if(baseInfo){
+					try{
+						/*
+						*	步骤3 -------------------------------------生成job所需的资源文件
+						*/
+						load("/apps/scene/jobs/assetsgenerater.esp");
+						callback("获取场景节点...");
+						if(!sceneNode){
+							sceneNode=jobsNode.getParent();
+						}
+						//步骤3.1----------------设置摄像头
+						callback("设置渲染摄像机为选中状态...");
+						if(baseInfo.has("cameraName")){
+							GVAR_AssetsGenerater.setCamera(baseInfo.getString("cameraName"),sceneNode);
+						}
+						//步骤3.2----------------生成资源文件并解压
+						callback("正在生成渲染所需资源文件...");
+						var fileList=GVAR_AssetsGenerater.generateRenderJobAssets(baseInfo,sceneNode);
+						//步骤3.3----------------获取渲染文件名和路径
+						//判断解压后文件列表
+						if(!fileList){
+							baseInfo = null;
+							r1.result=false;
+							r1.reason="copy并解压资源文件时失败！";
+							callback("------copy并解压资源文件时失败！------");							
+						}else{
+							//得到相应后缀的文件名
+							callback("判断资源文件是否合格...");
+							var renderPath = fileList[0];
+							if(renderPath){
+								callback("向job基础信息中写入渲染文件路径...");
+								//步骤3.4----------------把渲染文件路径写入job信息
+								baseInfo.put('renderPath',renderPath);
+								//将job信息以json形式写入文件 base.json（包含创建该文件）
+								JobUtil.saveBaseJobInfo(jobsNode,baseInfo.getString("name"),baseInfo);
+								//步骤3.5----------------生成结果文件路径				
+								GVAR_AssetsGenerater.generateDir(GVAR_system.getGlueSharePath()+baseInfo.getString("resultPath"));
+								/*
+								*	步骤4 -------------------------------------通知schedule 调度job
+								*/
+								callback("发送job调度请求...");
+								//使用java端的schedulerproxy
+								var xpof = sling.getService(Packages.org.spolo.service.internal.NodeXPOF);
+								var scheduler = new Packages.org.spolo.xmpp.proxy.Scheduler(xpof);
+								scheduler.doJob(baseInfo.getString("jobPath"));
+								/*
+								*	步骤5 -------------------------------------生成执行结果
+								*/
+								//合并job信息输出给客户端
+								var jobObject=new Packages.org.apache.sling.commons.json.JSONObject();
+								jobObject.put("base",baseInfo);
+								jobObject.put("schedule",scheduleInfo);
+								r1.result=true;
+								r1.jobInfo=jobObject;
+								callback("------创建完毕"+baseInfo.getString("name")+"------");
+							}else{
+								baseInfo = null;
+								r1.result=false;
+								r1.reason="资源zip包缺少文件！";
+								callback("------验证文件时出错："+r1.reason+"------");
+							}
+						}			
+					}catch(e){	
+						r1.result=false;
+						r1.reason=e.message;
+						callback("------创建job失败："+r1.reason+"------");
+					}
+				}
+			if(r1.result==false){
+				Packages.java.lang.System.out.println(r1.reason);
+				if(jobDir.exists()){
+					Packages.org.apache.commons.io.FileUtils.deleteDirectory(jobDir);
+				}
+			}
+			return r1;
+		};
+		/**创建一个renderjod在指定的jobs节点下，创建时加入指定的资源
+		*@param job={
+		*				jobType:jobType,//("render/preview"	默认render);
+		*				target:target,//("product/sample"	默认sample);
+		*				render:render,//("octane/slg"	默认octane slg暂不支持);
+		*				email:email,//(job完成后通知的email 	可选);
+		*				resultFileName:resultFileName,//(job完成后生成的结果的文件名 不包含后缀 默认为"result" 生成的图片文件名为result.png 	可选);;
+		*				cameraName:cameraName,//(场景中的cameraName 	可选);
+		*				resultPath:resultPath,//(job结束时的结果存放路径，应该是一个sharepath下不包含sharepath的相对路径 	可选);
+		*				notifyOID:notifyOID//(job需要事实通信时的OID		可选);
+		*			}
+		*@param assetsFile = 资源zip文件
+		*@return 返回一个js对象 returnObj.result=true/false
+		*										 if returnObj.result==true:
+		*											包含returnObj.jobInfo={base:{...},schedule:{...}}
+		*										 else:
+		*											包含returnObj.reason="错误原因"
+		*/
+		JobUtil.createRenderJobWithAssets = function(job,jobsNode,assetsFile,callback){
+			if(!(typeof callback == "function")){
+				callback=function(msg){};
+			}
+			var r1={};
+			/*
+			*	步骤1 -------------------------------------构建jobs和job的磁盘路径
+			*/
+			//生成不重复的随机job名和job文件夹
+			callback("------开始创建job------");
+			var jobDir = JobUtil.createNewJobDir(jobsNode);
+			callback("生成随机Job Name---"+jobDir.getName());
+			/*
+			*	步骤2 -------------------------------------对job信息进行合法性判断，并写入到文件中
+			*/
+			var baseInfo;
+			var proceedInfo;
+			var scheduleInfo;			
+				try{
+			//步骤2.1 -----------生成job baseInfo
+					callback("保存job信息...");
+					var jobData = JobUtil.parseRenderJobParams(job,jobDir,jobsNode)
+					baseInfo = jobData.baseInfo;
+					proceedInfo = jobData.proceed;
+			//步骤2.2 -----------保存job信息
+					JobUtil.saveBaseJobInfo(jobsNode,baseInfo.getString("name"),baseInfo);
+					if(proceedInfo){
+						JobUtil.saveProceedJobInfo(jobsNode,baseInfo.getString("name"),proceedInfo);
+					}
+					//schedule.json（包含创建该文件）中写入job状态
+					scheduleInfo = new Packages.org.apache.sling.commons.json.JSONObject();
+					scheduleInfo.put('status','creating');
+					JobUtil.saveScheduleJobInfo(jobsNode,baseInfo.getString("name"),scheduleInfo);
+				}catch(e){
+					baseInfo = null;	
+					r1.result=false;
+					r1.reason=e.message;
+					callback("------保存job信息时出错："+r1.reason+"------");
+				}
+				//生成和copyjob所需要的资源文件
+				if(baseInfo){
+					try{
+						/*
+						*	步骤3 -------------------------------------生成job所需的资源文件
+						*/
+						load("/apps/scene/jobs/assetsgenerater.esp");
+						callback("获取资源文件...");
+						var fileList = GVAR_AssetsGenerater.copyRenderJobAssets(assetsFile,baseInfo);
+						//步骤3.3----------------获取渲染文件名和路径
+						//判断解压后文件列表
+						if(!fileList){
+							baseInfo = null;
+							r1.result=false;
+							r1.reason="copy并解压资源文件时失败！";
+							callback("------copy并解压资源文件时失败！------");							
+						}else{
+							//得到相应后缀的文件名
+							callback("判断资源文件是否合格...");
+							var renderPath = fileList[0];
+							if(renderPath){
+								callback("向job基础信息中写入渲染文件路径...");
+								//步骤3.4----------------把渲染文件路径写入job信息
+								baseInfo.put('renderPath',renderPath);
+								//将job信息以json形式写入文件 base.json（包含创建该文件）
+								JobUtil.saveBaseJobInfo(jobsNode,baseInfo.getString("name"),baseInfo);
+								//步骤3.5----------------生成结果文件路径				
+								GVAR_AssetsGenerater.generateDir(GVAR_system.getGlueSharePath()+baseInfo.getString("resultPath"));
+								/*
+								*	步骤4 -------------------------------------通知schedule 调度job
+								*/
+								callback("发送job调度请求...");
+								//使用java端的schedulerproxy
+								var xpof = sling.getService(Packages.org.spolo.service.internal.NodeXPOF);
+								var scheduler = new Packages.org.spolo.xmpp.proxy.Scheduler(xpof);
+								scheduler.doJob(baseInfo.getString("jobPath"));
+								/*
+								*	步骤5 -------------------------------------生成执行结果
+								*/
+								//合并job信息输出给客户端
+								var jobObject=new Packages.org.apache.sling.commons.json.JSONObject();
+								jobObject.put("base",baseInfo);
+								jobObject.put("schedule",scheduleInfo);
+								r1.result=true;
+								r1.jobInfo=jobObject;
+								callback("------创建完毕"+baseInfo.getString("name")+"------");
+							}else{
+								baseInfo = null;
+								r1.result=false;
+								r1.reason="资源zip包缺少文件！";
+								callback("------验证文件时出错："+r1.reason+"------");
+							}
+						}			
+					}catch(e){	
+						r1.result=false;
+						r1.reason=e.message;
+						callback("------创建job失败："+r1.reason+"------");
+					}
+				}
+			if(r1.result==false){
+				Packages.java.lang.System.out.println(r1.reason);
+				if(jobDir.exists()){
+					Packages.org.apache.commons.io.FileUtils.deleteDirectory(jobDir);
+				}
+			}
+			return r1;
+		};
+		/**创建一个previewjod在指定的jobs节点下（jobs节点应该是在一个scene下的节点）
+		*@param job={
+		*				render:render,//("octane/slg"	默认octane slg暂不支持);
+		*				resultFileName:resultFileName,//(job完成后生成的结果的文件名 不包含后缀 默认为"result" 生成的图片文件名为result.png 	可选);;
+		*				resultPath:resultPath,//(job结束时的结果存放路径，应该是一个sharepath下不包含sharepath的相对路径 	可选);
+		*			}
+		*@param sceneNode
+		*@return 返回一个js对象 returnObj.result=true/false
+		*										 if returnObj.result==true:
+		*											包含returnObj.jobInfo={base:{...},schedule:{...}}
+		*										 else:
+		*											包含returnObj.reason="错误原因"
+		*/
+		JobUtil.createPreviewJob = function(sceneNode,job){
+			var result ={};
+			result.result=false;
+
+			var jobInfo = {};
+			jobInfo.target = "sample";
+			jobInfo.render = job.render;			
+			jobInfo.resultFileName = job.resultFileName;
+			jobInfo.resultPath = job.resultPath;
+			//后处理方式
+			jobInfo.proceed = {action:"delete"};
+
+			try{
+				var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+				var admin_Session = slingRepos.loginAdministrative(null);
+				var rootNode = admin_Session.getRootNode();
+				var has_previewJobsNode = rootNode.hasNode("var/xmpp/previewJobs");
+				if(has_previewJobsNode){	
+					var jobsNode = rootNode.getNode("var/xmpp/previewJobs");
+					result =  JobUtil.createRenderJob(jobInfo,jobsNode,sceneNode);
+				}else{
+					var jobsNode = rootNode.addNode("var/xmpp/previewJobs");
+					admin_Session.save();
+					result =  JobUtil.createRenderJob(jobInfo,jobsNode,sceneNode);
+				}
+			}catch(e){
+				Packages.java.lang.System.out.println(e);
+				result.reason=e.message;
+			}
+			return result;
+		};
+	}
+	
+}());
+
+%>

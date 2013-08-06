@@ -1,0 +1,155 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8");
+
+var GVAR_LoadLibrary = true;
+// load("/apps/model/_checkmaterials.esp");
+load("/apps/model/_preview.esp");
+
+function getPreview_case(model)
+{
+	var language = "xpath";
+	var expression = "/jcr:root/content/previewlib//*[jcr:like(@modelpath,'" + model.getPath() + "')]";
+	var queryManager = model.getSession().getWorkspace().getQueryManager();
+	var qry = queryManager.createQuery(expression,language);
+	
+	try{
+		var result = qry.execute().getNodes();
+	}
+	catch(e){
+		out.println("{error}");
+	}
+	
+	var node, properties, nodeJson;
+	var total = totalNum(language,expression);
+	var json = "{";
+	json += "\"totalNum\":"+total+",";
+	json += "\"data\":{";
+	
+	// 遍历所有的model
+	if(result.hasNext())
+	{
+        node = result.nextNode();
+		properties = node.getProperties();
+		json += "\""+node.getPath()+"\":{";
+		json += "\"nodeName\":\"" + node.getName() + "\","
+		for(var i in properties){
+            json += "\""+ i +"\":";
+            json += "\""+ properties[i].toString() +"\",";
+		}
+		json = json.substring(0,json.length-1);
+		json += "}"
+	}
+	json += "}";
+	json += "}";
+	return json;
+	
+}
+function totalNum(language,expression)
+{
+	if(!language || !expression)
+	{
+		out.print("{\"error\":\"language or expression is undefined!\"}");
+		return "";
+	}
+	var qry,result;
+	var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+	qry = queryManager.createQuery(expression,language);
+	
+	try{
+		result = qry.execute().getNodes();
+	}
+	catch(e){
+		out.println("{error:'query.execute() error!'}");
+	}
+	
+	var node;
+	var count = 0;
+	
+	while(result.hasNext()){
+		node = result.nextNode();
+		count ++;
+	}
+	return count;
+}
+
+function modellist(modellib,offset,limit,expression,language){
+	
+	var qry,result;
+	var queryManager = modellib.getSession().getWorkspace().getQueryManager();
+	// var expression = "/jcr:root/content/modellib//*[jcr:like(fn:lower-case(@sling:resourceType),'%model%')]";
+	// var language = "xpath";
+	qry = queryManager.createQuery(expression,language);
+	if(limit!="-1")
+		qry.setLimit(String(limit));
+	if(offset !="-1")	
+		qry.setOffset(String(offset));
+	
+	try{
+		result = qry.execute().getNodes();
+	}
+	catch(e){
+		out.println("{error:'query.execute() error!'}");
+	}
+	
+	var node, properties, nodeJson;
+	var total = totalNum(language,expression);
+	var json = "{";
+	json += "\"totalNum\":"+total+",";
+	json += "\"data\":{";
+	if(result.hasNext()){
+		while(result.hasNext()){
+			node = result.nextNode();
+			if(node.getName()=="rep:policy"){
+				continue;
+			}
+			
+			// checkmaterials(node);
+			json += "\""+node.getPath()+"\":{";
+			json += "\"nodeName\":\"" + node.getName() + "\","
+			
+            var props = ["publishAuthor","sling:resourceType","publishdate","jcr:created","jcr:primaryType","resourceName"];
+			var prop;
+            for(var i=0;i<props.length;i++){
+                prop = node.getProperty(props[i]).toString();
+                json += "\""+ props[i] +"\":";
+                json += "\""+ prop +"\",";
+            }
+			
+			var preview_case = getPreview_case(node);
+			json += "\""+ "preview_case" +"\":";
+			json += preview_case +",";
+			
+			var preview = getmodelpreview(node);
+			
+			json += "\""+ "preview" +"\":";
+			json += "\""+ preview +"\",";
+			
+			json = json.substring(0,json.length-1);
+			json += "},"
+		}
+		if(json.length>1){
+			if(total == 0){
+				json = json.substring(0,json.length);
+			}
+			else{
+				json = json.substring(0,json.length-1);
+			}
+		}
+	}
+	json += "}";
+	json += "}";
+	return json;
+}
+
+%>

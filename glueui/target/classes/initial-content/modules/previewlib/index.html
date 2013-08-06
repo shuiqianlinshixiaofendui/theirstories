@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>云端效果图</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link href="/libs/dijit/themes/claro/claro.css" rel="stylesheet">
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelEdit/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/LibView/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+        <style type="text/css">
+            #Feedback{
+                -webkit-border-radius: 5px;
+                border-radius: 5px;
+                -webkit-box-shadow:  1px 1px 6px 2px rgba(0, 0, 0, 0.3);
+                box-shadow:  1px 1px 6px 2px rgba(0, 0, 0, 0.3);
+                display: block;
+                width: 55px;
+                line-height: 1.2;
+                padding: 20px;
+                color: rgb(14, 14, 14);
+                background-color:#AAA;
+                font-size: 12px;
+                text-align: center;
+                position: fixed;
+                right: 10px;
+                bottom: 50px;
+                cursor: pointer;
+                opacity: .6;
+                filter: Alpha(opacity=40);
+                z-index:2;
+            }
+            #dialog_placeAt{
+                width: 300px;
+                height:300px;
+                line-height: 1.2;
+                padding: 8px;
+                color: rgb(255, 255, 255);
+                font-size: 12px;
+                position: fixed;
+                left: 500px;
+                bottom: 200px;
+                cursor: pointer;
+                opacity: .8;
+                filter: Alpha(opacity=80);
+                z-index:2;
+            }
+		</style>
+		<script type="text/javascript">
+			var dojoConfig = {
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+	</head>
+	<body class="claro">
+		<div id="ModelLibContainer"></div>
+        
+        <!--  意见反馈 -->
+        <div id="Feedback">
+            <p>建议</p>
+        </div>
+        
+        <div id="dialog_placeAt">
+        </div>
+        
+		<script>
+			require([
+				"widgets/LibView/PreviewLib",
+				"spolo/data/user",
+                "widgets/Dialog/main",
+                "dojo/on",
+                "dojo/dom-construct",
+				"dojo/domReady!"
+				],
+				function(PreviewLib, user_cls,widget_dialog,on,domConstruct){
+                
+                    var w_dialog; //添加Widget Dialog组建
+                    // 添加Dialog
+                    w_dialog = new widget_dialog();
+                    w_dialog.placeAt(dojo.byId("dialog_placeAt"));
+                    w_dialog.startup();
+                    w_dialog.isMode(false);
+                    w_dialog.modifyPrompt("建议");
+                    
+                    on(dojo.byId("Feedback"),"click",function(){
+                        w_dialog.dialog_open(0,4);
+                    });
+                    
+                    //添加 Email 对象
+                    var Email_root = domConstruct.create("a", {href:"mailto:caobin@3dly.net?subject=Glue产品使用反馈",style:"float:left;width:200px;"});
+                    var Email_p = domConstruct.create("p", { innerHTML:"邮件联系 : ",style:"float:left;width:70px;"},Email_root);
+                    var Email = domConstruct.create("img", { title:"点击发送邮件 ",style:"float:left;width:50px;height:50px;",src:"/modules/materiallib/images/Email_icon.png"},Email_root);
+                    var Email_json = {
+                        left : 70,
+                        top : 30,
+                        width : 50,
+                        height : 40 
+                    }
+                    w_dialog.injectDomNode(Email_root,Email_json);
+                    
+                    
+                    var Email_addr = domConstruct.create("p", {innerHTML:"或者发邮件到：caobin@3dly.net",style:"float:left;width:200px;color: rgb(5, 5, 5);font-size: 12px;"});
+                    var Email_addr_json = {
+                        left : 70,
+                        top : 10,
+                        width : 200,
+                        height : 50 
+                    }
+                    w_dialog.injectDomNode(Email_addr,Email_addr_json);
+                    
+                    var QQ_root = domConstruct.create("a", {href:"http://wpa.qq.com/msgrd?V=1&Uin=2274343382",style:"float:left;width:200px;"});
+                    var QQ_p = domConstruct.create("p", { innerHTML:"QQ联系 : ",style:"float:left;width:70px;"},QQ_root);
+                    var QQ = domConstruct.create("img", {title:"点击发送QQ消息",style:"width:50px;height:50px;",src:"/modules/materiallib/images/qq_icon.gif"},QQ_root);
+                    var QQ_json = {
+                        left : 70,
+                        top : 50,
+                        width : 80,
+                        height : 80 
+                    }
+                    w_dialog.injectDomNode(QQ_root,QQ_json);
+                
+				
+					var userName = Spolo.getUserId();
+					var nodePath = "/content/previewlib";
+					user_cls.isGranted(
+						userName,
+						nodePath,
+						function(result){
+							var hasButton = true;
+							if(result == "False")
+							{
+								hasButton = false;
+							}
+							else if(result == "True")
+							{
+								hasButton = true;
+							}
+							var json = {
+								path : nodePath,
+								isPublish : false, //是否支持发布功能，默认不支持。
+								canAddModel : false, // 是否可以加入场景，默认可以
+								hasButton : hasButton //是否显示功能按钮，默认不显示按钮
+							}
+							var previewLib = new PreviewLib(json).placeAt("ModelLibContainer");
+						},
+						function(error){
+							throw error;
+						}
+					);
+				
+					
+				});
+		</script>
+	</body>
+</html>

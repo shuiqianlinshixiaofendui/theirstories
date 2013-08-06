@@ -1,0 +1,177 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+response.setCharacterEncoding("UTF-8");
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/file.esp");
+load("/apps/util/blendercgi.esp");
+
+try {
+
+	//获取客户端类型，如果是分为max和blender两种
+	var clientType = "max";
+	var fileFormat = request.getParameter("fileformat");
+
+	if(fileFormat) {
+		fileFormat = fileFormat.toLowerCase().split(',');
+	} else {
+		fileFormat = ["max"];
+	}
+	
+	if(fileFormat[0] == "max"){
+		clientType = "max";
+	}else if(fileFormat[0] == "blend"){
+		clientType = "blender";
+	}else if(fileFormat[0] == "obj"){
+		clientType = "max";
+	}
+	
+	//currentNode是previewlib下的scene
+	var previewNodes = currentNode.getNodes();
+	var previewNode = previewNodes[0];
+
+	//Packages.java.lang.System.out.println("currentNode");
+	//Packages.java.lang.System.out.println(previewNode);
+
+	//获取preview model节点下所有的节点
+	var modelNode = previewNode.getNode("model");
+	//var nodePath = GVAR_system.getNodePath(previewNode,false);
+	var models = modelNode.getNodes();
+	if(GVAR_system.getNodePath(previewNode,false)){
+
+		//确定压缩包名字
+		var zipName = previewNode.getParent().resourceName;
+		zipName = new Packages.java.net.URLEncoder.encode(zipName, "UTF-8")
+		
+		//确定拷贝到 preview下的cache下的model目录
+		var previewPath = GVAR_system.getNodePath(previewNode, false);
+
+		var previewCachePath = previewPath + GVAR_system.path_separator + "cache";
+		var previewCacheModelPath = previewCachePath + GVAR_system.path_separator + "model";
+		var previewCacheDir = new Packages.java.io.File(previewCachePath);
+		var previewCacheModelDir = new Packages.java.io.File(previewCacheModelPath);
+
+		//压缩包的位置
+		var zipPath = previewCachePath + GVAR_system.path_separator + zipName + "__" + clientType + ".zip";
+		var zipFile = new Packages.java.io.File(zipPath);
+		//out.println(zipPath);
+		response.setContentType("application/zip");
+
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + zipName + "__" + clientType + ".zip\"");
+		
+		if (!zipFile.exists()){
+
+			//检查cache是否存在，不存在就创建一个
+			if (!previewCacheDir.exists()){
+
+				previewCacheDir.mkdirs();
+
+			}else{
+				//检查cache下的model是否存在，不存在就创建一个
+				if (!previewCacheModelDir.exists()){
+
+					previewCacheModelDir.mkdirs();
+				}
+			}
+	
+			//得到节点对应的模型目录
+			for (var i = 0; i < models.length; i++) {
+
+				var path = models[i].modelpath;
+				var modelName = models[i].resourceName;
+				var rootNode = currentNode.getAncestor(0);
+
+				if (path[0] == '/') {
+					path = path.substring(1);
+				}
+
+				var dstNode = rootNode.getNode(path);
+				var dstDataDir = new Packages.java.io.File(GVAR_system.getNodePath(dstNode, false) + GVAR_system.path_separator + "data");
+				//判断客户端格式
+				if(clientType == "max"){
+					//在data的同级目录创建cache
+					GVAR_system.getNodePath(dstNode, false);
+					var dstCahceDir = new Packages.java.io.File(GVAR_system.getNodePath(dstNode, false) + GVAR_system.path_separator + "cache");
+					if (!dstCahceDir.exists()){
+						dstCahceDir.mkdirs();
+					}
+					//对复制过来的文件进行转换blend2obj
+					var opt = {useEmptyBlend : false};
+					opt.cgi = "model/obj_export.py";
+					opt.node = dstNode;
+					opt.env = {"modelname":modelName};
+					GVAR_bcgi.forward(opt);
+					//把cache里的复制到data下
+					Packages.org.apache.commons.io.FileUtils.copyDirectory(dstCahceDir, dstDataDir);
+					Packages.java.lang.System.out.println("maxmaxmaxmaxmaxmaxmax");
+				}else if(clientType == "blender"){
+					//因为原格式是blend，所以不需要任何操作
+					Packages.java.lang.System.out.println("blenderblenderblenderblender");
+				}else{
+					//其他的情况应该提示错误
+					throw Packages.java.io.FileNotFoundException("Don't have this client type " + clientType);
+				}
+				//拷贝这些目录，以及目录下的文件，并且以resourceName命名。
+				var everyModelDir = new Packages.java.io.File(previewCacheModelPath + GVAR_system.path_separator + modelName)
+				Packages.org.apache.commons.io.FileUtils.copyDirectory(dstDataDir, everyModelDir);
+
+				if(clientType == "max"){
+					//这次删除blend文件
+					var needDelFiles = everyModelDir.listFiles();
+					for (var ii = 0; ii < needDelFiles.length; ii ++){
+						var extension = needDelFiles[ii].toString().substring(needDelFiles[ii].toString().lastIndexOf(".") + 1);
+						Packages.java.lang.System.out.println(extension);
+						if(extension == "blend"){
+							//删除多余的blend文件
+							Packages.org.apache.commons.io.FileUtils.forceDelete(needDelFiles[ii]);
+						}
+					}
+				}else if(clientType == "blender"){
+					//这次删除mtl obj文件
+					var needDelFiles = everyModelDir.listFiles();
+					for (var ii = 0; ii < needDelFiles.length; ii ++){
+						var extension = needDelFiles[ii].toString().substring(needDelFiles[ii].toString().lastIndexOf(".") + 1);
+						Packages.java.lang.System.out.println(extension);
+						if((extension == "obj") || (extension == "mtl")){
+							//删除多余的blend文件
+							Packages.org.apache.commons.io.FileUtils.forceDelete(needDelFiles[ii]);
+						}
+					}					
+
+				}
+			}
+			
+			//打包
+			if (!GVAR_system.hasTool("7za")) {
+				var files = GVAR_File.listFiles(previewCacheModelDir, "*", true);
+				var zos = new Packages.java.io.FileOutputStream(zipFile);
+				GVAR_File.zipFiles(zos, files);
+			} else {
+				GVAR_system.runTool("7za", ["-mcu=on", "a " + zipPath + " " + previewCacheModelPath + GVAR_system.path_separator + "*"]);
+			}
+			//删除cache下的model文件夹
+			Packages.org.apache.commons.io.FileUtils.forceDelete(previewCacheModelDir);
+		}
+
+		var inputstream = new Packages.java.io.FileInputStream(zipFile);
+		Packages.org.apache.commons.io.IOUtils.copyLarge(inputstream, response.getOutputStream());
+
+	}else{
+		throw Packages.java.io.FileNotFoundException("Can not find " + dstDataDir);
+	}
+} catch (FileNotFoundException) {
+	response.sendError(404, FileNotFoundException.message);
+}
+%>

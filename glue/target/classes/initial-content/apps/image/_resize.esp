@@ -1,0 +1,47 @@
+<%
+var GVAR_LoadLibrary = true;
+
+load("/apps/util/sysconfig.esp");
+    
+function resizeSave(srcImage,commandPara,destImage,cnodePath)
+{
+    destImage = "cache/" + destImage;
+    // Packages.java.lang.System.out.println("srcImage:---"+srcImage);
+    // Packages.java.lang.System.out.println("commandPara:---"+commandPara);
+    // Packages.java.lang.System.out.println("destImage:---"+destImage);
+    //获取图像的宽和高
+    var par1 = new Array();
+    var image = Packages.javax.imageio.ImageIO.read(new Packages.java.io.File(srcImage));
+    var width = image.getWidth();
+    var height = image.getHeight();
+
+    //计算宽高比例
+    var w1 = String(commandPara).split("x")[0];
+    var h1 = String(commandPara).split("x")[1];
+    var needRatio = w1/h1;
+    var w2 = width,h2 = height;
+    if(needRatio > w2/h2){
+        h2 = width/needRatio;
+    }else{
+        w2 = height*needRatio;
+    }
+    
+    
+    //计算偏移量
+    offw = (width-w2)/2;
+    offh = (height-h2)/2;
+    // Packages.java.lang.System.out.println("width:"+width);
+    // Packages.java.lang.System.out.println("height:"+height);
+    // Packages.java.lang.System.out.println("w1:"+w1);
+    // Packages.java.lang.System.out.println("h1:"+h1);
+    // Packages.java.lang.System.out.println("needRatio:"+needRatio);
+    // Packages.java.lang.System.out.println("w2:"+w2);
+    // Packages.java.lang.System.out.println("h2:"+h2);
+    // Packages.java.lang.System.out.println("offw:"+offw);
+    // Packages.java.lang.System.out.println("offh:"+offh);
+    //对图片进行剪裁
+    par1[0] =  "-crop " + parseInt(w2) + "x" + parseInt(h2) +"+"+offw+"+"+offh + " " + srcImage + " " + destImage;
+    GVAR_system.runToolWithEnv("ImageMagickConvert",par1,null,cnodePath,true,true);
+}
+
+%>

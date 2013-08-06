@@ -1,0 +1,53 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+response.setCharacterEncoding("UTF-8");
+ 
+var GVAR_LoadLibrary = true;
+	
+load("/apps/util/sysconfig.esp");
+load("/apps/util/file.esp");
+load("/apps/util/request.esp");
+load("/apps/util/importModelData.esp")
+
+var result = "{\"suc\" : \"false\", \"reason\" : \"Unknow Error\"}";
+var tempDirectory = GVAR_File.createTempFolder();
+try{
+   GVAR_uploader.foreach(
+      function(name, param)
+      {
+         if(!param.isFormField()){
+            var zipFile = GVAR_uploader.copyFile(param, tempDirectory.path);
+            if(GVAR_File.unZipFile(zipFile, tempDirectory)){
+               GVAR_File.deleteFile(zipFile);
+            }
+         }
+      }
+   )
+   var jsonFile = GVAR_File.listFiles(tempDirectory, "modeldata_backup.json", true)[0];
+   if(jsonFile){
+      importModelData(currentNode, tempDirectory, jsonFile.path);
+   }
+   result = "{\"suc\" : \"true\"}"
+}catch(e){
+   result = "{\"suc\" : \"false\", \"reason\" : \"" + e + "\"}";
+}finally{
+   currentNode.save();
+   GVAR_File.deleteFile(tempDirectory);
+   response.setContentType("text/html");
+   out.println("<html><body><textarea>")
+   out.println(result)
+   out.println("</textarea></body></html>")
+
+}
+%>

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html lang="en" style="overflow:hidden;">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            添加模型
+        </title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="/modules/scenedetail/css/addmodel.css" media="screen" />
+		<style>
+			html, body{
+				width : 100%;
+				height : 100%;
+				margin : 0;
+			}
+		</style>
+    </head>
+    <body>
+		<iframe style="width:100%;height:100%;" id="iframeModelLib" frameborder="0" src="/modules/scenedetail/addmodelfrompublicmodellib.html?isGutil=true"></iframe>
+		<script type="text/javascript">
+			require(
+				[
+					"dojo/request/iframe", "dojo/ready"
+				],function(
+					iframe, ready					
+				){
+					ready(function(){
+						var scene = {};
+						window.scene = scene;
+						var content = {};
+						var models = [];
+						//得到scene对象，重写addItemsByCount方法，获得model路径
+						scene.addItemsByCount = function(pathArray, callback){
+							console.log("---------");
+							console.log(pathArray);
+							console.log("---------");
+							for(var key = 0; key < pathArray.length;){
+								var json = {};
+								json["amount"] = pathArray[key+1];
+								json["path"] = pathArray[key];
+								models.push(json);
+								key += 2;
+							}
+							content.models=JSON.stringify(models);
+							content.resource = "/content/modellib.download";
+							var url = "http://127.0.0.1:10828/download?method=POST";
+							
+							// ~~ test ~~
+							// content["fileformat"]="max,obj";
+							// var url = "http://devvm.spolo.org/content/modellib.download";
+							// ^^ test ^^
+							
+							iframe(url, {
+								method: "GET",
+								handleAs: "text",
+								data:content
+							}).then(
+								function(data){  
+									// 成功
+									callback();
+									console.log(data);
+								}, 
+								function(err){	
+									// 失败
+									console.log(err);
+								}, 
+								function(evt){	
+									// 处理中 
+									// console.log();
+								}
+							);
+						}
+					});
+				});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,121 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/blendercgi.esp");
+load("/apps/util/request.esp"); 
+ 
+ 
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_RootNode;
+
+
+GVAR_CurrentNode = currentNode;
+
+GVAR_Session = GVAR_CurrentNode.getSession();
+
+GVAR_RootNode = GVAR_Session.getRootNode();
+ 
+ 
+// out.println("test merge model");
+
+
+
+function mergeIdenticalModels(modelpatharr)
+{
+	if(modelpatharr.length > 1)
+	{
+		var modelcount = 1;
+		var tm_modelpath = modelpatharr.pop();
+		
+		if(tm_modelpath["ref_conut"] != undefined)
+		{
+			modelcount += Number(tm_modelpath["ref_conut"]);
+		}
+		
+		for(var i in modelpatharr)
+		{
+			// out.println(modelpatharr[i]);
+			
+			var modelpath = modelpatharr[i];
+			
+			var changes = GVAR_bcgi.forward({cgi : "scene/changeref.py",node : currentNode, useEmptyBlend : false, env : {"srcref" : modelpath,"tarref" : tm_modelpath}});
+			
+			// out.println(changes);
+			
+			if(modelpath[0] = "/")
+			{
+				modelpath = modelpath.substr(1);
+			}
+			
+			// out.println(modelpath);
+			
+			var modelnode = GVAR_RootNode.getNode(modelpath);
+			
+			
+			if(modelnode["ref_count"] != undefined)
+			{
+				modelcount += Number(modelnode["ref_count"]);
+			}
+			else
+			{
+				modelcount += 1;
+			}
+			//delete preview node
+			
+			var ancestorNode = currentNode.getAncestor(3);
+			var ancestorPath = ancestorNode.getPath();
+
+			var previewPath = "previewlib/" + currentNode.name + "/previewpreview/model/" + modelnode.name  ;
+
+			var previewNode = ancestorNode.getNode(previewPath);
+			previewNode.remove();
+			
+			modelnode.remove();
+			ancestorNode.save();
+			GVAR_RootNode.save();
+		}
+		
+		
+		if(tm_modelpath[0] = "/")
+		{
+			tm_modelpath = tm_modelpath.substr(1);
+		}
+	
+		var tm_modelnode = GVAR_RootNode.getNode(tm_modelpath);
+		
+		tm_modelnode.setProperty("ref_count",modelcount);
+		
+		GVAR_RootNode.save();
+		
+		return "{\"suc\" : \"true\"}";
+	}
+	
+	return "{\"suc\" : \"error\"}";
+
+}
+
+var models = request.getRequestParameter("models");
+
+models = String(models);
+
+var modelpatharr = models.split(",");
+
+out.print(mergeIdenticalModels(modelpatharr));
+
+
+%>

@@ -1,0 +1,47 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	font-size:12px;
+}
+
+#myfavouritepreviewContent{
+	width:100%;
+	height:100%;
+}
+.myfavouritepreviewlist_category{
+	height:auto;
+}
+.myfavouritepreviewlist_previewlist{
+	height:auto;
+	margin-top:40px;
+}
+.myfavouritepreviewlist_pager{
+	height:auto;
+	min-height:30px;
+}
+.previewLibTemplate_fold{
+	float:left;
+	background:url("/widgets/ModelLib/images/imageGroup.png") no-repeat;
+	background-position: -357px -19px;
+	width:23px;
+	height:21px;
+	margin:50px 0 0 0;
+	cursor:pointer;
+}
+.previewLibTemplate_unfold{
+	float:left;
+	background:url("/widgets/ModelLib/images/imageGroup.png") no-repeat;
+	background-position: -374px -19px;
+	width:23px;
+	height:21px;
+	margin:50px 0 0 0;
+	cursor:pointer;
+}
+.previewLibTemplate_divfold{
+	float:left;
+	cursor:pointer;
+	font-size:14px;
+	color:#c0c0c0;
+	margin:50px 0 0 0;
+}

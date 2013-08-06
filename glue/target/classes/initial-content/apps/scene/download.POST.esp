@@ -1,0 +1,78 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+
+ 
+response.setCharacterEncoding("UTF-8");
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/response.esp");
+load("/apps/util/checkRefProp.esp");
+load("/apps/util/clearcache.esp");
+
+if(!checkRefProp(currentNode))
+{
+	clearcache(currentNode)
+}
+
+
+var formatList = {max:   {py: "scene/max_zip.py", 
+                          cache: "max.zip"},
+                  obj:   {py: "scene/obj_zip.py",
+                          cache: "obj.zip"},
+                  blend: {py: "scene/blend.py",
+                          cache: "blend.scene.zip"}
+                 }
+
+//获取目标类型参数
+var attach = request.getParameter("attach");
+if(attach && attach.equals("0")) {
+   attach = false;
+} else { 
+   attach = true;
+}
+
+try{
+
+   var formats = request.getParameter("fileformat");
+   if(formats) {
+      formats = formats.toLowerCase().split(',');
+   } else {
+      formats = ["max"];
+   }
+   
+   for(var i = 0; i < formats.length; ++i) {
+      var format = formats[i];
+      var cgi = formatList[format].py;
+      var cache = formatList[format].cache;
+      
+      if(!GVAR_response.download({
+         bcgi : cgi,
+         cache : cache,
+         attach : attach})) {
+            Packages.java.lang.System.out.println("download in " + format +" failed.");
+            if(i != formats.length -1) {
+               continue;
+            }
+            throw Error("No Resource Found");
+      }
+      break;
+   }
+	
+}catch(e){
+	Packages.java.lang.System.out.println(e);
+   response.setContentType("text/html");
+   response.sendError(404, e);
+}
+%>

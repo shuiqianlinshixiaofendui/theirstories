@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelEdit/css/main.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+			}
+			#testContainer{
+				width:100%;
+				border:1px solid #d1d1d1;
+				float:left;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div id="testContainer"></div>
+		<script>
+			require(
+				[
+					"widgets/ModelLib/ModelLib",
+					"dojo/on"
+				],
+				function(ModelLib, on){	
+					var json = {
+						path: "/content/modellib",
+						limit: 18,
+						hasCategory: true ,    //是否需要分类控件，默认为true
+						queryString: "[@sling:resourceType='model']"
+					};
+					var modelLib = new ModelLib(json);
+					modelLib.placeAt("testContainer");
+					
+					//响应选中List项接收事件
+					on(modelLib.listWidget,"onListItemSelect",function(nodeData){
+						//当前的节点数据
+						console.log(nodeData);
+					});
+				});
+		</script>
+	</body>
+</html>

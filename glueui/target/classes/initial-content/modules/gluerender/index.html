@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Glue Renderer</title>
+
+		<link href="/libs/dojo/resources/dojo.css" rel="stylesheet">
+		<link href="/libs/dijit/themes/claro/claro.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="css/gluerender.css" />	
+		<link rel="stylesheet" href="/libs/dojox/widget/ColorPicker/ColorPicker.css" />		
+		<link rel="stylesheet" href="/widgets/PropertiesPanel/css/main.css" />	
+		<script type="text/javascript" >
+			dojoConfig = {packages:
+							[
+								{
+									name: "spolo",
+									location: "/script/spolo"
+								},
+								{
+									name:"widgets",
+									location:"/widgets"
+								}
+							]
+						 };
+		</script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/jsjac-1.3.4/jsjac.js"></script>
+		<script type="text/javascript" >
+			require(["dojo/parser", "dojo/ready"], function(parser, ready){
+				ready(function(){
+					parser.parse();
+				});
+			});
+		</script>
+	</head>	
+<body class="claro">
+<div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%;" id="allbody" >
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" class="toppane" id="toolbar">		
+	</div>
+    <div data-dojo-type="dijit/layout/AccordionContainer" data-dojo-props="region:'leading',splitter:true" class="leftpane">
+	   <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="gutters:true" id="tabContainer" >
+			<div data-dojo-type="dijit/layout/ContentPane" title="slg show" class="leftpane" id="libView">
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane"  title="glue render" class="leftpane" id="slgView">显示文件夹</div>
+	   </div>
+    </div>
+   <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:true,region:'center'" style="background-color:#7f7f7f;color:white;" id="centerpane">    
+		<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:true" id="render_center_pane">
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:true,region:'top'" style="height:95%;background-color:#7f7f7f;color:white;">
+				<embed ID='glue' type='application/glue-content' PluginsPage='http://www.render001.com/plugin/firefox/npgluerender.dll' width='100%' height='99%'></embed>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:true,region:'center'" style="height:40px;background-color:#525252;color:white;">
+				下部 
+			</div>
+		</div>
+    </div>
+   <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:true,region:'right'" style="background-color:#333333;color:white;" id="rightpane" >
+		<div>控制台信息：</div>
+		<div id="test" style="width:100px;height:200px;"></div>
+		<div>编辑代码：</div>		
+		<div id="widgetContainer"></div>
+   </div>   
+</div>
+<!--创建树-->
+<script type="text/javascript" src="js/gluetree.js" ></script>
+<!--创建toolbar部分-->
+<script type="text/javascript" src="js/toolbar.js" ></script>
+<!--入口文件-->
+<script type="text/javascript" src="gluerender.js" ></script>
+</body>
+</html>

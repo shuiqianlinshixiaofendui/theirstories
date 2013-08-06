@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Pull-downMenu</title>
+        <!-- 禁止使用 dojo css 样式 -->
+        <script type="text/javascript" >
+			dojoConfig = {packages: [
+                    {
+						name: "modules",
+						location: "/modules"
+					},
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+                    {
+						name: "widgets",
+						location: "/widgets"
+					}]};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/jquery/jquery.js"></script>
+		<script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+	<div style="float:left">
+			<div id="widget_placeAt0"  style="float:left" width="180px" height="500px"> </div> 
+			 <div id="widget_placeAt1"  style="float:left" width="100px" height="500px"> </div>
+			 <div id="widget_placeAt2"  style="float:left" width="100px" height="500px"> </div>
+	</div>
+
+        <script type="text/javascript" >
+            //  注意：需要引入正确的Widgert
+            require(["dojo/ready","dojo/on","widgets/PulldownMenu/main"], function(ready,on,PulldownMenu){
+             
+                ready(function(){
+					var array =new Array();
+					array[6]="我的效果图";
+					array[1]="我的模型库";
+					array[4]="我的个人效果图";
+					array[0]="我的云端模型库";					
+					array[2]="我的云端模型库";					
+					array[5]="我的云端模型库";					
+					array[3]="我的云端模型库";					
+					array[7]="我的云端模型库";					
+					
+				    var pdm = new PulldownMenu(array,true); 
+					pdm.placeAt("widget_placeAt0");				       
+					pdm.init();		
+					pdm.setDefaultValue("选择分类"); //设置默认显示
+										
+					
+					on(pdm,"aOnClick",function(node){
+						console.log("点击的分类是:  "+node.innerHTML);					
+					});	
+
+				});
+                
+			});
+            
+        </script>
+    </body>
+</html>

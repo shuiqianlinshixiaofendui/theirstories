@@ -1,0 +1,128 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ /** @brief 本文件提供了导入ocs资源的能力．这是一个内部文件，请使用blender.esp来间接使用．
+
+*/
+
+var GVAR_blender = {};
+
+GVAR_blender.importfunc = [];
+
+(function()
+{
+	if(!GVAR_blender.importfunc["ocs"] && GVAR_LoadLibrary)
+	{
+		//从filepath处导入文件．可以使用this,this代表了blender对象．参考/apps/util/blender.esp.
+		GVAR_blender.importfunc["ocs"] = function(filepath)
+		{
+		}
+	}
+}());
+
+(function()
+{
+	if(!GVAR_blender.proc_path && GVAR_LoadLibrary)
+	{
+		GVAR_blender.proc_path = function(filepath)
+		{
+			load("/apps/util/sysconfig.esp");
+			file = new Packages.java.io.File(filepath);
+			var parpath = file.getParent();
+			var destpath = parpath + GVAR_system.path_separator + "tmp"
+			if(1)//(GVAR_system.uncompress(file,destpath))
+			{//如果是一个压缩文件，删除原始文件．
+				//Packages.org.apache.commons.io.FileUtils.forceDelete(file);
+				
+				var tmpfile = new Packages.java.io.File(destpath);
+				//遍历解压出来的所有文件
+				
+				
+				
+				function find_ocs(dir,ocsfiles)
+				{
+					var files = dir.listFiles();
+
+					
+					for(var i = 0; i < files.length; i++)
+					{
+						var file = files[i];
+						
+						if(file.isDirectory())
+						{
+							find_ocs(file,ocsfiles)
+						}
+						else
+						{
+							var ext = Packages.org.apache.commons.io.FilenameUtils.getExtension(file.getName());
+						
+							if(ext == String("ocs"))
+							{
+								ocsfiles.push(file);
+							}
+							
+							// out.println(file.getName());
+							// out.println(ext);
+						}
+						
+					}
+				}
+				
+				var ocsfiles = [];
+				
+				find_ocs(tmpfile,ocsfiles)
+				
+				
+				var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+				var builder = factory.newDocumentBuilder();
+				
+				for(var i in ocsfiles)
+				{
+					out.println(ocsfiles[i].getName());
+					
+					var ocsxml = builder.parse(ocsfiles[i]);
+					var links = ocsxml.getElementsByTagName("linkedfilename");
+					
+					for(var i_link = 0; i_link < links.length; i_link++)
+					{
+						var linkedfilename = links.item(i_link);
+						var path = String(linkedfilename.getChildNodes().item(0).getNodeValue());
+						var pathext = path.split(":")[0];
+						out.println(path);
+						out.println(pathext);
+						
+						if(pathext != "ocs")
+						{
+							var patharr = path.split("\\");
+							
+							var destpath = ".\\" + patharr[patharr.length - 1];
+							
+							out.println(destpath);
+							
+							/*var XMLOut = new Packages.org.jdom.output.DOMOutputter();   
+							try{   
+								XMLOut.output(ocsxml, new Packages.java.io.FileOutputStream(ocsfiles[i]));   
+							}catch(e){   
+								
+							}*/
+							// linkedfilename.getChildNodes().item(0).setNodeValue(destpath);
+						}
+					}
+				}
+				
+			}
+		}
+	}
+}());
+
+%>

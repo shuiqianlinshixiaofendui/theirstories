@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D version="3.0" profile="Immersive" xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance" xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
+	
+	<Scene>
+		
+		<Transform DEF="dimian_TRANSFORM"
+		           translation="0.000000 0.000000 0.000000"
+		           scale="1.000000 1.000000 1.000000"
+		           rotation="0.000000 0 0 "
+		           >
+			<Transform DEF="dimian_ifs_TRANSFORM"
+			           translation="0.000000 0.000000 0.000000"
+			           scale="1.000000 1.000000 1.000000"
+			           rotation="1.000000 0.000000 0.000000 0.000000"
+			           >
+				<Group DEF="group_ME_ShapeIndexedFaceSet_001">
+					<Shape>
+						<Appearance>
+							<Material DEF="MA_XXX"
+							          diffuseColor="0.663 0.663 0.663"
+							          specularColor="0.001 0.001 0.001"
+							          emissiveColor="0.000 0.000 0.000"
+							          ambientIntensity="0.111"
+							          shininess="0.012"
+							          transparency="0.0"
+							          />
+						</Appearance>
+						<IndexedFaceSet solid="true"
+						                texCoordIndex="0 1 2 3 -1 4 5 6 7 -1 "
+						                coordIndex="1 2 3 4 -1 5 6 7 8 -1 "
+						                >
+							<Coordinate DEF="coords_ME_ShapeIndexedFaceSet_001"
+							            point="0.000000 0.000000 0.000000 -2024.111328 -39.755615 2466.034180 -2024.111328 -39.755493 -2466.034180 2024.111328 -39.755493 -2466.034180 2024.111328 -39.755615 2466.034180 -2024.111328 39.755615 2466.034180 2024.111572 39.755615 2466.034180 2024.111572 39.755737 -2466.034180 -2024.111328 39.755737 -2466.034180 "
+							            />
+							<TextureCoordinate point="3.8735 -4.0096 3.8735 5.0096 -2.8735 5.0096 -2.8735 -4.0096 -2.8735 -4.0096 3.8735 -4.0096 3.8735 5.0096 -2.8735 5.0096 " />
+						</IndexedFaceSet>
+					</Shape>
+				</Group>
+			</Transform>
+		</Transform>
+        
+        
+		
+	</Scene>
+</X3D>

@@ -1,0 +1,67 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+// 该方法用来将一个节点移动到指定节点下
+// oldNodePath: 要移动的节点路径,必须是绝对路径: /content/modellib/huxing/fushihuxing/model201210131613282073371282
+// targetPath: 目录路径，移动到哪个节点下，必须是绝对路径: /content/modellib/huxing/pingcenghuxing
+
+var moveNode = function (oldNodePath, targetPath){
+	
+	do{
+		if(!oldNodePath){
+			out.print("oldNodePath is not defined!");
+			break;
+		}
+		if(!targetPath){
+			out.print("targetPath is not defined!");
+			break;
+		}
+	
+		// 先判断参数是否合法
+		var session = currentNode.getSession();
+		
+		if(!session.nodeExists(oldNodePath)){
+			out.print(oldNodePath + " is not exists!");
+			break;
+		}
+		
+		if(!session.nodeExists(targetPath)){
+			out.print(targetPath + " is not exists!");
+			break;
+		}
+		
+		var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+		var adminSession = slingRepos.loginAdministrative(null);
+		
+		// 判断目标路径是否最后一位是否为斜线 / 
+		var nodeName = adminSession.getNode(oldNodePath).getName();
+		if(targetPath.substring(targetPath.length-1)=="/"){
+			targetPath = targetPath + nodeName;
+		}else{
+			targetPath = targetPath + "/" + nodeName;
+		}
+		
+		adminSession.move(oldNodePath, targetPath);
+
+		adminSession.save();
+		adminSession.logout();
+
+	}while(false);
+}
+
+
+// 测试
+//moveNode("/content/modellib/huxing/pingcenghuxing","/content/modellib/huxing/fushihuxing/pingcenghuxing/");
+//moveNode("/content/modellib/huxing/fushihuxing/pingcenghuxing","/content/modellib/huxing/pingcenghuxing/");
+
+%>

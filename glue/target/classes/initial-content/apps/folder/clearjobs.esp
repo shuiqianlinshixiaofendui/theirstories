@@ -1,0 +1,45 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8");
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+clearJobsByPath("/var/xmpp/jobs");
+function clearJobsByPath(jobPath){
+	var session = currentNode.getSession();
+	var node = null;
+	if(session.nodeExists(jobPath)){
+		node = session.getNode(jobPath);		
+		var nodes = node.getNodes();
+		var sharepath = GVAR_system.getGlueSharePath();
+		var index = 0;
+		for(var i in nodes){
+			index++;
+			var jobnode = nodes[i]		
+			var target = jobnode.getProperty("target");
+			var jobrespath = sharepath+target;
+			out.println("[DEBUG] Clear Job Resources: "+jobrespath+" count: "+index);
+			var deleteFile = new Packages.java.io.File(jobrespath);
+			try{
+			Packages.org.apache.commons.io.FileUtils.forceDelete(deleteFile);		
+			}catch(e){
+				Packages.java.lang.System.out.println(e);
+			}
+			jobnode.remove();			
+			session.save();
+		}
+	}else{
+		out.println("[DEBUG] The directory not exists: "+jobPath);
+	}
+	
+}
+%>

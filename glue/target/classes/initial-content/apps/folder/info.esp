@@ -1,0 +1,64 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8");
+
+// var res = Packages.java.lang.System.getProperty("file.encoding");
+
+// // var exec = sling.getService(Packages.org.spolo.service.internal.ExternalToolSetImpl);
+
+// // out.println(exec);
+// out.println(res);
+GVAR_LoadLibrary =true;
+load("/apps/util/sysconfig.esp");
+
+var content = "#/bin/bash\nlocale";
+var re = GVAR_system.runBash(content);
+out.println(re);
+
+
+
+
+var propArray = ["file.encoding","java.vendor","java.vendor.url","java.home","java.class.version",
+"java.class.path","os.name","os.arch","os.version","user.name",
+"user.dir","java.vm.specification.version","java.vm.specification.vendor","java.vm.specification.name","java.vm.version",
+"java.vm.name","java.ext.dirs","file.separator","line.separator"];
+
+printProperty(propArray);
+
+function printProperty(propArray){
+	for(var i = 0; i<propArray.length; i++){
+		res = Packages.java.lang.System.getProperty(propArray[i]);
+		out.println(propArray[i]+":"+res);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%>

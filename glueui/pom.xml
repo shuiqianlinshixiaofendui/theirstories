@@ -1,0 +1,187 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>sling</artifactId>
+        <version>10</version>
+    </parent>
+
+	<groupId>org.spolo.glueui</groupId>
+	<artifactId>org.spolo.glueui</artifactId>
+	<version>1.0.0</version>
+	<packaging>bundle</packaging>
+
+	<name>Superpolo GlueUI Bundle</name>
+
+	<description>this is spolo glue ui package</description>
+
+	<build>
+		<plugins>
+            <!-- Generation of SCR descriptors -->
+            <plugin>
+				<groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+
+            <!-- Bundling the sample project -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!-- initial content to be loaded on bundle installation -->
+                        <Sling-Initial-Content>
+							initial-content;overwrite:=false;uninstall:=false,
+                            initial-content/modules;overwrite:=true;uninstall:=true;path:=/modules,
+							initial-content/script;overwrite:=true;uninstall:=true;path:=/script,
+                            initial-content/widgets;overwrite:=true;uninstall:=true;path:=/widgets
+                        </Sling-Initial-Content>
+                        <Bundle-Vendor>
+                            SanPolo Co.LTD
+                        </Bundle-Vendor>
+                        <Bundle-License>
+                            http://www.spolo.org/licenses/LICENSE.txt
+                        </Bundle-License>
+                        <Bundle-DocURL>
+                            http://glue.spolo.org/documents
+                        </Bundle-DocURL>
+						<!--<Bundle-ClassPath>
+							${sling.home}/libs/
+						</Bundle-ClassPath>-->
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <!--
+                Use this profile to install the OSGi bundle
+                automatically, during development
+            -->
+            <id>autoInstallBundle</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bundle</id>
+                                <goals>
+									<goal>validate</goal>
+                                    <goal>install</goal>
+                                </goals>
+                                <configuration>
+                                    <mountByFS>false</mountByFS>
+                                </configuration>								
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.annotations</artifactId>
+            <version>1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.jcr.jackrabbit.server</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+		
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.jcr.api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.commons.json</artifactId>
+            <version>2.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.servlets.post</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+		<dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.2</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+		   <groupId>org.apache.commons</groupId>
+		   <artifactId>commons-exec</artifactId>
+		   <version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.event</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.commons.scheduler</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.commons.threads</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+            
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+		</dependency>		
+
+    </dependencies>
+	
+</project>

@@ -1,0 +1,762 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title></title>
+
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name: "scenedetail",
+						location: "/modules/scenedetail"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		
+		
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen"/>
+		<link rel="stylesheet" href="css/editlist.css" media="screen"/>
+		<link rel="stylesheet" href="/widgets/ModelListItem/css/main.css" media="screen"/>
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelLib/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+     
+    </head>
+    
+    <body class="claro">
+		
+		<div id="listContent" dojoType="dijit.layout.BorderContainer" >
+			<div id="toolbar" dojoType="dijit.layout.ContentPane" region="top">
+				<div dojoType="dijit.layout.BorderContainer" gutters=false>
+					<div dojoType="dijit.layout.ContentPane" region="top" style="height:30px;">
+						<input id="selectAllOrNone" type="Checkbox"/>
+						&nbsp;&nbsp;|&nbsp;&nbsp;
+						<!-- <button id="btnAddModelFromPreview" data-dojo-type="dijit.form.Button">从效果图添加模型</button>
+						<button id="btnAddModel" data-dojo-type="dijit.form.Button">从模型库添加模型</button>
+						<button id="btnUploadModel" data-dojo-type="dijit.form.Button">上传模型</button> -->
+						<button id="addModel" data-dojo-type="dijit.form.Button">添加模型</button>
+						<button id="btnCopyModel" data-dojo-type="dijit.form.Button">复制模型</button>
+						<button id="btnAddCamera" data-dojo-type="dijit.form.Button">添加摄像机</button>
+						&nbsp;|&nbsp;
+						<button id="checkEffect" data-dojo-type="dijit.form.Button">查看效果</button>
+						&nbsp;|&nbsp;
+						<button id="btnSetScene" data-dojo-type="dijit.form.Button">场景设置</button>
+						&nbsp;|&nbsp;
+						<button id="btnAddScene" data-dojo-type="dijit.form.Button">创建子场景</button>
+						&nbsp;|&nbsp;
+						<button id="btnCopyModelTo" data-dojo-type="dijit.form.Button">复制模型到...</button>
+						&nbsp;|&nbsp;
+						<button id="btnUploadModelsOCS" data-dojo-type="dijit.form.Button">下载选中模型的ocs</button>
+						<button data-dojo-type="dijit.form.Button" id="btnDeleteSelectedModel" style="margin-right:10px;float:right;">删除</button>
+					</div>
+					<div dojoType="dijit.layout.ContentPane" region="center" style="height:30px;">
+						<div class="validmodelTotal"><label>有效：</label><span id="modelTotal"></span></div>
+						<div class="invalidmodelTotal" id="invalid"><label>无效：</label><span id="invalidmodelTotal"></span></div>
+						<div class="cameraTotal"><label>摄像机：</label><span id="cameraTotal"></span></div>
+					</div>
+					
+				</div>
+			</div>
+			<div id="itemList" dojoType="dijit.layout.ContentPane" region="center">
+				加载中，请稍等...
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			
+			require(
+				[
+					"dojo/parser","dojo/ready","dojo/dom","dojo/json", 
+					"dojo/_base/array", "dojo/on","widgets/ModelListItem/ModelListItem",
+					"dojo/query","spolo/data/scene","dijit/form/Button","dijit/layout/BorderContainer", 
+					"dijit/layout/ContentPane","dijit/Dialog","spolo/data/model","dojo/_base/lang",
+					"dijit/registry","widgets/Mask/Mask","scenedetail/js/camera","dojo/topic","dijit/Tooltip",
+					"spolo/data/folder/scenelib"
+					
+				],function(
+					parser, ready, dom,jsonUtil, arrayUtil, on,
+					ModelListItem,query,scene_cls,Button,BorderContainer,
+					ContentPane,Dialog, model,lang,registry,Mask,camera,topic,Tooltip,
+					scenelib_cls
+				){
+					ready(function(){
+						// 获取父级页面的 scene 对象
+						this.scene = this.parent.scene;
+						var scene =this.scene;
+						var iframe = this.parent;
+						var Dthis = this;
+						var mliArray = [];
+						var temp = "";
+						var cameraNameDialog;
+						var validCount = 0;
+						var invalidCount = 0;
+						var cameraTotal = 0;
+						temp = "<center><label>确定删除吗？</label><br />"+
+								"<button id='btnSure'></button>"+
+								"<button id='Cancel'></button></center>";
+						var dialog = new Dialog({
+							title: "删除",
+							content: temp,
+							style: "width: 200px;position:relavite;top:20px;"
+						});
+						new Button({
+							label:"确定"
+						},"btnSure");
+						new Button({
+							label:"取消"
+						},"Cancel");
+						initItem(scene);
+						
+						//添加item到mliArray
+						function addItemToMliArray(w,item){
+							var json = {
+								"id": w.id,
+								"item": item,
+								"widget": w
+							};
+							mliArray.push( json );
+						}
+						
+						// TODO: 动态创建 model item 控件
+						function initItem(scene)
+						{
+							scene.ensureItemsByCount(
+								function(itemArray){
+									var w;
+									var temp = "";
+									dom.byId("itemList").innerHTML = "";
+									arrayUtil.forEach(itemArray, function(item){
+										var number = item["count"];
+										if(item["type"] == "MESH"){
+											item["number"] = number;
+											if(number == 1)
+											{
+												item["canInstead"] = true;
+											}
+											else
+											{
+												item["canInstead"] = false;
+											}
+											item["modelInfo"] = true;
+											var path = item["referModel"];
+											item["path"] = path;
+										}
+										else if(item["type"] == "CAMERA")
+										{
+											cameraTotal++;
+											item["canEdit"] = true;
+										}
+									
+										w = new ModelListItem(item).placeAt("itemList");
+										if(item["invalid"] == 1)
+										{
+											invalidCount += item["count"];
+											w._setInvalidAttr("无效");
+										}
+										else if(item["invalid"] == 0)
+										{
+											validCount += item["count"];
+											w._setInvalidAttr("有效");
+										}
+										if(item["type"] == "MESH"){
+											if(item["err"] != ""){
+												w._setMaterialAttr("模型材质不全");
+											}
+										}
+										
+										var dthis = this;
+										on(w,"onInstead",function(node)
+										{
+											var nodeJson = {
+												ID : node["ID"],
+												name : node["name"],
+												type: node["MESH"],
+												referModel: node["referModel"],
+												path: node["path"]
+											}
+											//通过url传递node过去
+											var nodeStr = jsonUtil.stringify(nodeJson);
+											var src = "replaceItem.html?insteadNode="+encodeURIComponent(nodeStr);
+											//弹出替换模型的窗口
+											var content = "<iframe src='"+src+"'"+
+													 "scrolling='no' framespacing='0'"+
+													"border='0' frameborder='0' style='width:100%;height:100%;'></iframe>";
+											iframe.showDialog(content,"替换模型","dialogReplaceItem");
+										});
+										
+										on(w,"onModelInfo",function(node)
+										{
+											model.isReferPreview
+											(
+												node.path,
+												function(data)
+												{
+													if(data)
+													{
+														model.getPreviewURLsByURL(
+															node.path,
+															function(url){
+																var paramStr = "canAddModel="+false+"&path="+url+"&itemId="+node.path;
+																paramStr = encodeURIComponent(paramStr);
+																var linkurl = "/widgets/PreviewDetail/PreviewDetailInMyPreviewLib.html?"+paramStr;
+																var dialogData = {
+																	widthradio: 0.9,
+																	heightradio:0.9,
+																	title:"效果图预览",
+																	url:linkurl
+																};
+																Spolo.dialog(dialogData);
+															},
+															function(error){
+																throw error;
+															}
+														);
+													}
+													else
+													{
+														Spolo.notify({
+															text : "该模型没有关联的效果图!!",
+															type : "error",
+															timeout : 1000
+														});
+													}
+													
+												}
+											);
+										});
+										
+										on(w,"onInsteadFromPreview",function(node)
+										{
+											var nodeJson = {
+												ID : node["ID"],
+												name : node["name"],
+												type: node["MESH"],
+												referModel: node["referModel"],
+												path: node["path"]
+											}
+											//通过url传递node过去
+											var nodeStr = jsonUtil.stringify(nodeJson);
+											//弹出替换模型的窗口
+											var url = "modules/scenedetail/replaceItemfrompreview.html?insteadNode="+encodeURIComponent(nodeStr);
+											var dialogData = {
+												widthradio: 0.9,
+												heightradio:0.9,
+												title:"从效果图替换模型",
+												url:url,
+												data:
+												{
+													"nodeJson":nodeJson,
+													"scene":scene,
+													"iframe":iframe
+												}
+											};
+											Spolo.dialog(dialogData);
+										});
+										on(w,"onWeb3d",function(node)
+										{
+											if(node["type"] == "MESH"){
+												// 此处应该弹出属性编辑的窗口
+												var url = "/modules/modeledit/index.html?modelPath=" + node.path + "&isGrant=false";
+												var dialogData = {
+													widthpx: 980,
+													heightpx : 700,
+													id:node.path,
+													title:"模型详细信息",
+													url:url,
+													data:
+													{
+														"modelpath":node.path,
+														"modellistitem":node
+													},
+													callback: function(spdialog){
+													}
+												};
+												Spolo.dialog(dialogData);
+											}
+										});
+										
+										addItemToMliArray(w,item);
+									});
+									//设置摄像机总数
+									setCameraTotal(cameraTotal);
+									//设置模型总数
+									setModelTotal(validCount,invalidCount);
+									arrayUtil.forEach(mliArray,function(item){
+										var path = item["item"]["data"]["path"];
+										var w = item["widget"];
+										model.getPreviewByPath(
+											path,
+											function(url){
+												w.set("image",url);
+											},
+											function(err){
+												
+											}
+										);
+									});
+									if(itemArray.length==0){
+										dom.byId("itemList").innerHTML = "当前场景中没有模型...";
+									}
+								},
+								function(err)
+								{
+									//throw(err);
+									console.log(err);
+								}
+							);
+						}
+						//设置摄像机数量
+						function setCameraTotal(num){
+							dom.byId("cameraTotal").innerHTML = num;
+						}
+						//设置模型数量
+						function setModelTotal(validCount,invalidCount){
+							dom.byId("modelTotal").innerHTML = validCount;
+							dom.byId("invalidmodelTotal").innerHTML = invalidCount;
+						}
+						
+						//点击查看效果按钮
+						on(dom.byId("checkEffect"),"click",function(){
+							var temp = "<iframe src='checkeffect.html'"+
+									"scrolling='no' framespacing='0'"+
+									"border='0' frameborder='0' style='width:100%;height:100%;'></iframe>";
+							scene.getCameras(function(itemarray){
+								if(itemarray.length){
+									iframe.showDialog(temp,"效果图预览","camerarender");
+								}
+								else{
+									Spolo.notify({
+										text : "当前场景没有摄像机，请先添加!!",
+										type : "error",
+										timeout : 1000
+									});
+								}
+							},
+							function(error){
+								throw error;
+							},true);
+						});	
+						//添加模型
+						on(dom.byId("addModel"),"click",function(){
+							var url = "modules/scenedetail/addmodel.html";
+							var dialogData = 
+							{
+								widthradio: 0.9,
+								heightradio:0.9,
+								title:"添加模型",
+								url:url,
+								data:{
+									"scene":scene,
+									"iframe":iframe
+								}
+							};
+							Spolo.dialog(dialogData);
+						});
+						// 点击添加摄像机
+						on(dom.byId("btnAddCamera"),"click",function(){
+							//显示添加摄像机的对话框
+							camera.showAddCameraDialog();
+						});
+						// 监听摄像机添加成功
+						topic.subscribe("addCameraSuccess",function(w,item){
+							addItemToMliArray(w,item);
+							//摄像机总数加一
+							cameraTotal++;
+							//设置摄像机总数
+							setCameraTotal(cameraTotal);
+						});
+						
+						
+						//设置模型列表是否为选中状态
+						function setModelState(state,divID)
+						{
+							arrayUtil.forEach(query("#"+divID+" input"), function(input){
+								input.checked = state;
+							});
+						}
+						
+						on(dom.byId("selectAllOrNone"),"click",function(){
+							if(dom.byId("selectAllOrNone").checked == true)
+							{
+								setModelState(true,"itemList");
+							}
+							else
+							{
+								setModelState(false,"itemList");
+							}
+						});
+						
+						//删除选中的模型
+						on(dom.byId("btnDeleteSelectedModel"),"click",function(){
+							var array = query("#itemList input:checked");
+							if(array.length == 0)
+							{
+								Spolo.notify({
+									text : "请选择要删除的模型或者摄像机!!",
+									type : "error",
+									timeout : 1000
+								});
+							}
+							else
+							{
+								dialog.show();
+								var btns = query("#btnSure");
+								registry.byId("btnSure").onClick = lang.hitch(registry.byId("btnSure"),function(){
+									dialog.hide();
+									Mask.show();
+									scene.ensureItemsByCount(
+										function(itemArray){
+											var cutvalidModelNum = 0;
+											var cutinvalidModelNum = 0;
+											var cutCameraNum = 0;
+											arrayUtil.forEach(array,function(item)
+											{
+												var sitem = getModelItemById(item.id.substring(3));
+												var type = sitem["type"];
+												var name = sitem["name"];
+												var referModel = sitem["referModel"];
+												var invalid = sitem["invalid"];
+												if(type == "CAMERA")
+												{
+													scene.removeItemsGroup(type,name);
+													cutCameraNum += 1;
+												}
+												if(type == "MESH")
+												{
+													if(invalid == 0)
+													{
+														cutvalidModelNum += sitem["count"];
+													}
+													else
+													{
+														cutinvalidModelNum += sitem["count"];
+													}
+													scene.removeItemsGroup(type,name,referModel);
+												}
+											});
+											scene.saveItems(
+												function(res){
+													//保存删除以后的数据
+													for(var i = 0;i < array.length;i++)
+													{
+														array[i].parentNode.parentNode.remove();
+													}
+													cameraTotal = cameraTotal - cutCameraNum;
+													//设置摄像机总数
+													setCameraTotal(cameraTotal);
+													//设置模型总数
+													validCount = validCount - cutvalidModelNum;
+													invalidCount = invalidCount - cutinvalidModelNum;
+													setModelTotal(validCount,invalidCount);
+													//scene.clearCache();
+													Mask.hide();
+												}, 
+												function(res)
+												{
+													Mask.hide();
+													throw(res);
+												}
+											);
+										},
+										function(err){
+											Mask.hide();
+											throw(err);
+										}
+									);
+									
+								});
+								on(dom.byId("Cancel"),"click",function(){
+									dialog.hide();
+								});
+								
+							}
+						});
+						
+						// 根据 modelListItem 的Id 取到 scene 中对应的 item 对象
+						function getModelItemById(id){
+							for(var i in mliArray){
+								if(mliArray[i].id==id){
+									return mliArray[i]["item"];
+								}
+							}
+							return ;
+						}
+						//场景设置按钮
+						on(dom.byId("btnSetScene"),"click",function(){
+							var temp = "<iframe name=\"setscene\""+
+									"frameborder=\"no\" border=\"0\" marginwidth=\"0\" "+
+									"marginheight=\"0\" scrolling=\"no\" allowtransparency=\"yes\""+
+									" style=\"width:100%;height:500px\" "+
+									"src=\"/modules/scenedetail/setscene.html\"></iframe>";
+							iframe.showDialog(temp,"场景设置","setSceneDialog");
+						
+						});
+						new Tooltip({
+							connectId: ["invalid"],
+							label: "已从云端模型库删除",
+							position:["below"]
+						});
+						//复制模型时，调用的得到模型对象的方法
+						function getSelectedModelObj(input){
+							var id = input[0].id.substring(3);
+							var itemObj = getModelItemById.call(this,id);
+							return itemObj;
+						}
+						//复制模型的对话框
+						var copyModel = "<center>请输入复制的份数<input type=\"text\" value=\"1\" id=\"copyText\" size=\"2\">份"+
+										"<button id='btnCopySure'></button></center>";
+						var copyDialog = new Dialog({
+							title:"复制模型",
+							content:copyModel,
+							style:"width:160px;height:90px;background-color:#fff"
+						});
+						new Button({
+							label:"确定"
+						},"btnCopySure");
+						//复制模型
+						on(dom.byId("btnCopyModel"),"click",function(){
+							//判断当前选择的模型数量
+							var input = query("#itemList input:checked");
+							if(input.length != 1)
+							{
+								Spolo.notify({
+									text : "请您选择一个模型进行复制!!",
+									type : "error",
+									timeout : 1000
+								});
+							}
+							else
+							{
+								var itemObj = getSelectedModelObj.call(this,input);
+								var type = itemObj.type;
+								if(type == "MESH"){
+									copyDialog.show();
+								}
+								else{
+									Spolo.notify({
+										text : "请您选择一个模型进行复制!!",
+										type : "error",
+										timeout : 1000
+									});
+								}
+							}
+						});
+						on(dom.byId("btnCopySure"),"click",function(){
+							var value = dom.byId("copyText").value;
+							var input = query("#itemList input:checked");
+							var itemObj = getSelectedModelObj.call(this,input);
+							var name = itemObj.name;
+							var referModel = itemObj.referModel;
+							var type = itemObj.type;
+							var ID = itemObj.ID;
+							var json = {
+								name:name,
+								referModel:referModel,
+								type:type,
+								ID:ID
+							};
+							if(isNaN(value))
+							{
+								Spolo.notify({
+									text : "您的输入有误!!",
+									type : "error",
+									timeout : 1000
+								});
+							}
+							else
+							{
+								scene.addItemsByCount(json,value);
+								Mask.show();
+								scene.saveItems(success, error);
+							}
+						});
+						//保存成功以后的方法
+						function success(res)
+						{
+							Mask.hide();
+							Spolo.notify({
+								text : "复制模型成功!!",
+								type : "success",
+								timeout : 1000
+							});
+							initItem.call(this,scene);
+							validCount = 0;
+							invalidCount = 0;
+							cameraTotal = 0;
+							copyDialog.hide();
+						}
+						//保存失败的方法
+						function error(res)
+						{
+							throw(res);
+						}
+						
+						//创建场景部分
+						on(dom.byId("btnAddScene"),"click",function(){
+							var input = query("#itemList input:checked");
+							var array = [];
+							var flag = false;
+							if(!input.length)
+							{
+								Spolo.notify({
+									text : "至少选择一个模型!!",
+									type : "error",
+									timeout : 1000
+								});
+							}
+							else
+							{
+								for(var key = 0;key < input.length;key++){
+									var itemObj = getModelItemById.call(this,input[key].id.substring(3));
+									var type = itemObj.type;
+									if(type == "CAMERA")
+									{
+										Spolo.notify({
+											text : "对不起，您只能勾选模型!!",
+											type : "error",
+											timeout : 1000
+										});
+										flag = true;
+										break;
+									}
+									else{
+										array.push(itemObj);
+									}
+								}
+								if(!flag){
+									var url = "/modules/scenedetail/createsubscene.html";
+									var scenepath = scene.getURI();
+									var dialogData = {
+										widthradio: 0.4,
+										heightradio:0.5,
+										title:"创建子场景",
+										url:url,
+										data:{
+											"modellist":array,
+											"scene":scene,
+											"modelNum":input.length,
+											"scenepath":scenepath
+										}
+									};
+									Spolo.dialog(dialogData);
+								}
+							}	
+						});
+						
+						//下载选中模型的ocs
+						on(dom.byId("btnUploadModelsOCS"),"click",function(){
+							var input = query("#itemList input:checked");
+							if(!input.length)
+							{
+								Spolo.notify({
+									text : "请您选择模型!!",
+									type : "error",
+									timeout : 1000
+								});
+							}
+							else
+							{
+								var modelpathArray = [];
+								var flag = false;
+								for(var i = 0;i < input.length;i++){
+									var itemObj = getModelItemById.call(this,input[i].id.substring(3));
+									var type = itemObj.type;
+									if(type != "MESH"){
+										Spolo.notify({
+											text : "对不起，您的选择有误，只能选择模型!!",
+											type : "error",
+											timeout : 1000
+										});
+										flag = true;
+										break;
+									}
+									else
+									{
+										var referModel = itemObj.referModel;
+										modelpathArray.push(referModel);
+									}
+								}
+								console.log(itemObj.referModel);
+								if(!flag)
+								{
+									scene.downloadModels(modelpathArray);
+								}
+							}
+						});
+						
+						// 复制模型到指定场景中
+						on(dom.byId("btnCopyModelTo"),"click",function(){
+							var selected = query("#itemList input:checked");
+							// 定义模型数组
+							var modelArray = [];
+							var modelNameArray = [];
+							var referModelArray = [];
+							var ModelTypeArray = [];
+							var ModelIDArray = [];
+							var camerasArray = [];
+							if(selected.length == 0){
+								Spolo.notify({
+									text : "请选择要进行复制的模型!!",
+									type : "error",
+									timeout : 1000
+								});
+							}else{
+								for(var index = 0; index < selected.length; index++){
+									var itemObj = getModelItemById.call(this,selected[index].id.substring(3));
+									var modelName = itemObj.name;
+									var referModel = itemObj.referModel;
+									var type = itemObj.type;
+									var ID = itemObj.ID;
+									if(type == "CAMERA"){
+										camerasArray.push(modelName);
+									}
+									modelArray.push(itemObj);
+									modelNameArray.push(modelName);
+									referModelArray.push(referModel);
+									ModelTypeArray.push(type);
+									ModelIDArray.push(ID);
+								}
+								var url = "/modules/scenedetail/copyModeltoScene.html";
+								var dialogData = {
+									widthradio: 0.4,
+									heightradio:0.6,
+									title:"复制模型到指定场景",
+									url:url,
+									data:{
+										"scene" : scene,
+										"modelArray" : modelArray,
+										"modelNameArray" : modelNameArray,
+										"referModelArray" : referModelArray,
+										"ModelTypeArray" : ModelTypeArray,
+										"ModelIDArray" : ModelIDArray,
+										"camerasArray" : camerasArray
+									}
+								};
+								Spolo.dialog(dialogData);
+							}
+						});
+					});
+				}
+			);
+		</script>
+    </body>
+</html>

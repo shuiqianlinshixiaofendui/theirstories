@@ -1,0 +1,257 @@
+<!DOCTYPE html > 
+<html > 
+	<head> 
+        <meta http-equiv="X-UA-Compatible" content="chrome=1" /> 
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
+		<title>3D场景编辑</title> 
+		
+		<script type="text/javascript" >
+			dojoConfig = {
+				packages: [
+					{
+						name: "web3d",
+						location: "/modules/web3d"
+					},
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+                    {
+						name: "widgets",
+						location: "/widgets"
+					}
+				],
+			};
+            X3DOM_SECURITY_OFF = true;
+		</script>
+		<script>
+			var ua = navigator.userAgent.toLowerCase();
+			var s = ua.match(/firefox\/([\d.]+)/);
+			if(s)
+			{
+				//首先，定义一个全局的event
+				if( typeof(window.event)=="undefined" ){
+					eval("var event = new Object;");
+				}
+				// Firefox Event << IE Event 
+				// bind ie's methods on firefox
+				function jskitFFEvent(e){
+					if( typeof(document.all)=="undefined" ){
+						event = e;
+						event.srcElement = e.target;
+					}
+					return true;
+				};
+
+				//然后在绑定事件的地方:
+				if ( typeof(document.all)=="undefined" ) {//for Firefox
+					var _eventName = rName.replace(/on(.*)/i,'$1');
+					eval("_bk = rObj.addEventListener(\""+_eventName+"\", function(){jskitFFEvent(event);"+rHandler+"();}, true);");
+				} else{//for IE
+					eval("_bk = rObj.attachEvent(\""+rName+"\","+ rHandler+");");
+				}
+				//这里rHandler是传递过来的方法名
+				//调用的方式形如：
+				jskitEvents.add(myElement,"onclick","myClass.onclick");
+				jskitEvents.add(myElement,"onkeypress","myClass.onkeypress");
+				//该方式还可以给绑定事件传递参数，只不过暂时我还没有用到，所以没写那么多。
+			}
+		</script>
+		
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" type="text/css" href="/libs/dojo/resources/dojo.css" /> 
+		<link rel="stylesheet" type="text/css" href="/libs/dijit/themes/claro/claro.css" /> 
+		
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="/libs/tipTip/jquery.tipTip.minified.js"></script>
+		<link rel="stylesheet" type="text/css" href="/libs/tipTip/tipTip.css" />
+		
+		<script type="text/javascript" src="/libs/x3dom/x3dom.js"></script> 
+		<link rel="stylesheet" type="text/css" href="/libs/x3dom/x3dom.css" /> 
+		
+		<link rel="stylesheet" type="text/css" href="css/scene.css" media="screen">
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="utils/cmdmap.js"></script>
+		<!--<script type="text/javascript" src="utils/sync.js"></script> -->
+		<script type="text/javascript" src="spolo3d.js"></script>
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelLib/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+	</head> 
+	<style type="text/css">
+			html, body {
+				height: 100%;
+				width:100%;
+				margin: 0px;
+				padding: 0px;
+				overflow: hidden;
+			}
+	</style>
+<body class="claro">
+	
+	<div id="layout_main" style="height:100%; width:100%;" data-dojo-type="dijit.layout.BorderContainer" design="headline">
+		<!--   头部 -->
+		<div id="tophead"  data-dojo-type="dijit.layout.ContentPane" style="padding:0px;overflow:hidden;" region="top">
+		</div>
+		<div id="layout_head" style="height:26px;" data-dojo-type="dijit.layout.ContentPane" region="top">
+		</div>
+		
+		<!--   左侧栏 -->
+		<div id="layout_left" style="width:280px; padding:0px;" data-dojo-type="dijit.layout.ContentPane" region="left">
+			<div id="tabMain" data-dojo-type="dijit/layout/TabContainer" style=" width: 100%; height: 100%;background:#c5c5c5;border:1px solid black">
+				<div id="tcpMyScene" data-dojo-type="dijit/layout/ContentPane" title="我的场景" >
+				</div>
+				<div id="tcpMyView" data-dojo-type="dijit/layout/ContentPane" title="我的视角" data-dojo-props="selected:true">
+				</div>
+			</div>
+		</div>
+        <!--显示x3d场景-->
+        <div id="layout_3d" data-dojo-type="dijit.layout.ContentPane" region="center" style="overflow:hidden;padding:0px;border:1px solid black">
+		
+		<div dojoType="dijit.Dialog" id="dialog" style=" width: 600px; height: 400px;background:#222222; text-align:center; menubar:no;" >
+		</div>
+		
+		</div>
+		
+	</div>
+	
+	<!--     二维UI入口文件       -->
+	<script type="text/javascript" src="ui/main.js"></script>
+
+	<!--     三维程序入口文件       -->
+    <script type="text/javascript" src="load.js"></script>
+	<script type="text/javascript" src="main_new.js"></script>
+    
+    <div id="testContainer" style="width:100%; border:1px solid #d1d1d1;float:left;"></div>
+	
+	<!--    下面是测试部分 -->
+	<script>
+		
+		/*	
+		//@fixme: 下面的内容需要放入script目录，包含时在服务器端根据用户配置决定使用哪个映射方案。
+
+		//我们需要确保场景加载完毕之后再开始加载功能列表。
+		
+		*/
+		//下面是测试代码，使用按键来映射事件。
+		//@TODO: 我们需要一个按键、鼠标到语义型事件的映射表以支持可编辑的命令映射。
+		//命令映射被分为几类:
+		//1. 命令 ： 不接收参数(或者接受一个x3d参数用于标识canvas)。可以使用按键来发送事件的。
+		//2. 鼠标命令 : 接收x,y坐标参数。(可选增加一个x3d参数用于标识canvas).
+		//3. 询问式命令: 接收任意参数，但是可以通过按键/鼠标驱动。命令执行单元自己询问参数(弹出dialog或其它方式).这个方式的支持需要根据数据类型自动构建dialog的一个库来支持。
+		
+		
+		//1 : 打开顶灯。
+		//2 : 关闭顶灯。
+		
+
+		/*
+		require(["dojo/topic"], function(topic){
+			document.addEventListener( 'keypress', onDocumentKeyPressed, false );
+			document.addEventListener( 'keyup', onDocumentKeyUp, false );
+			
+			topic.subscribe("headlight/changed", function(v,target){
+				alert("x3d changed to " + v);
+			});
+			 
+			function onDocumentKeyPressed(event) { 
+				switch(event.keyCode) {
+				//key 1
+				case 49:
+					// 测试选中1
+					topic.publish("view/selected","viewpoint_a");
+					break;
+				//key 2
+				case 50:
+					// 测试删除
+					topic.publish("view/delete","viewpoint_a");
+					break;
+				//key 3
+				case 51:
+					// 测试修改
+					topic.publish("view/edit","viewpoint_a","hello WORLD","description hello");
+					
+					break;
+			    // key 4
+				case 52:
+					// 测试选中4
+				    topic.publish("view/selected","viewpoint_b");
+					if(Spolo.selectedObj!=null){
+						topic.publish("tree/remove",Spolo.selectedObj);
+					
+					break;
+				// key 5 
+				case 53: 
+					// 测试查看描述
+					topic.publish("view/detail","viewpoint_a");
+					break; 
+				
+				case 54 : // key 6 pressed 
+					
+					var viewarea = Spolo.viewarea;
+					
+					if(!viewarea)
+						return;
+					
+					topic.publish("camera/locateTo", 2);
+					break;
+				}	 
+			}
+			
+			function onDocumentKeyUp(event) { 
+				switch(event.keyCode) {
+					case 53: // key 5 pressed 
+						topic.publish("mesh/unlock"); 
+					break;
+				}
+			}
+		});
+		*/
+		
+		/*
+		// 测试
+		// subscribe 父级页面的 publish 消息
+		require(["dojo/topic"], function(topic){
+			topic.subscribe("abc",function(par1){
+				alert(par1);
+			});
+			topic.subscribe("toolbar/backout",function(par1){
+				alert("toolbar/backout");
+			});
+			topic.subscribe("toolbar/recover",function(par1){
+				alert("toolbar/recover");
+			});
+			topic.subscribe("toolbar/delete",function(par1){
+				alert("toolbar/delete");
+			});
+		});
+		
+		require(["dojo/topic"], function(topic){
+			setTimeout(function(){
+				topic.publish("ddd","123ddd");
+			},5000);	
+
+			topic.subscribe("aaa",function(par1){
+				alert(par1);
+			});
+		});	*/				
+		window.onbeforeunload = onbeforeunload_handler;    
+		function onbeforeunload_handler(){
+            if(Spolo.isSyncFinish){
+                var isFinish =  Spolo.isSyncFinish();
+                var warning = "数据未同步完成，现在关闭会造成丢失，确认要关闭吗？";     
+                if(!isFinish){
+                    return warning;
+                }
+            }
+		}
+	</script>
+     
+
+</body> 
+</html> 

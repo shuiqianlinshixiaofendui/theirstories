@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>保存场景</title>
+		<link rel="stylesheet" type="text/css" href="/libs/dijit/themes/claro/claro.css"  media="screen">
+		<link rel="stylesheet" type="text/css"href="css/Main.css"/>
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen" />
+		<script type="text/javascript" src="/script/spolo/ui/noty/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/script/spolo/ui/noty/jquery.noty.js"></script>
+		<script type="text/javascript" src="/script/spolo/ui/noty/layouts/topCenter.js"></script>
+		<script type="text/javascript" src="/script/spolo/ui/noty/themes/default.js"></script>
+		<script>
+			dojoConfig = {
+				parseOnLoad: true,
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script> 
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/script/spolo/ui/spdialog.js"></script>
+	</head>
+	<body class="claro">
+		<div id="iframeDiv" style="display:block;height:730px;">
+			<iframe id="ifrContent" width="100%" height="99%" frameborder="0" src=""></iframe>
+		</div>
+		
+		<script>
+			// 标志此为根节点
+			Spolo.isRoot = true;
+			
+			require([
+				"dojo/ready",
+				"dojo/dom", 
+				"spolo/data/scene"
+			],function(ready, dom, sceneClass){
+				var _this = this;
+				ready(function(){
+					var urlVars = Spolo.getUrlVars();
+					var path = urlVars["path"];
+					_this.isGutil = urlVars["isGutil"];
+					_this.scene = new sceneClass(path);
+					var ifr = dom.byId("ifrContent");
+					ifr.src = "/modules/scenedetail/modellist.html";
+				});
+			});
+		</script>
+	</body>
+</html>

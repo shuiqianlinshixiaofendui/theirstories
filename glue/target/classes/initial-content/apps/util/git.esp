@@ -1,0 +1,75 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8");
+load("/apps/util/sysconfig.esp");
+var GVAR_Git;
+
+(function(){
+if( !GVAR_Git && GVAR_LoadLibrary ){
+	GVAR_Git = {};
+	/**
+	*预提交,为真正的提交动作做git初始化的准备
+	*/
+	GVAR_Git.preCommit = function(option) {
+		var node = currentNode;
+		var nodepath = GVAR_system.getNodePath(node);
+		/**Packages.java.lang.System.out.println("[DEBUG] node path: "+nodepath);*/
+		var separator =Packages.java.io.File.separator;
+		var gitPath =nodepath+separator+"data"+separator+".git";
+		/**Packages.java.lang.System.out.println("[调试] git Path: "+gitPath);*/
+		var nodeFile = new Packages.java.io.File(nodepath);
+		if(!nodeFile.exists()){
+			throw("[ERROR] Corresponding to the node disk path does not exist");
+		}
+		var gitFile = new Packages.java.io.File(gitPath);
+		if(!gitFile.exists()){
+			var parameter = new Array();
+			parameter[0] = " init";
+			parameter[1] = "";
+			var result =GVAR_system.runGit(parameter,nodepath+separator+"data")
+			/***/Packages.java.lang.System.out.println("[DEBUG] cmd result "+result);
+		}		
+	};
+	/**
+	*保存当前目录下的所有文件的更改
+	*/
+	GVAR_Git.postCommit = function(option){
+		var separator =Packages.java.io.File.separator;
+		var node = currentNode;
+		var name = (option && option.name) ? option.name : 'anonymous';
+		var msg = (option && option.msg) ? option.msg : 'save';
+		var nodepath = GVAR_system.getNodePath(node,true);
+		var parameter = new Array();		
+		//先执行一次add操作
+		parameter[0] = " add ";
+		parameter[1] = ".";
+		var result =GVAR_system.runGit(parameter,nodepath+separator+"data");
+		/***/Packages.java.lang.System.out.println("[DEBUG] cmd result "+result);	
+		try{
+			parameter[0] = " commit -a -m ";
+			var parJsonObj = new Packages.org.apache.sling.commons.json.JSONObject();
+			parJsonObj.put("user",name);
+			parJsonObj.put("msg", Packages.java.net.URLEncoder.encode(msg, "utf-8"));
+			var loginfo = parJsonObj.toString();
+			parameter[1] = loginfo;
+			var result =GVAR_system.runGit(parameter,nodepath+separator+"data");
+			/**Packages.java.lang.System.out.println("[调试] cmd result "+result);*/		
+		}catch(error){
+			/**Packages.java.lang.System.out.println("[调试] cmd result "+error);*/
+		}
+		
+	};
+}
+}());
+
+%>

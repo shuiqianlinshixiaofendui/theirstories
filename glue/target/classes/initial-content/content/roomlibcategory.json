@@ -1,0 +1,17 @@
+{
+	"resourceName" : "户型类型",
+	"sling:resourceType" : "folder",
+	"jcr:primaryType" : "sling:Folder",
+    "area" : {
+		"resourceName" : "面积",
+		"sling:resourceType" : "folder",
+		"jcr:primaryType" : "sling:Folder",
+		"isradio":"true"
+	},
+    "room" : {
+		"resourceName" : "居室",
+		"sling:resourceType" : "folder",
+		"jcr:primaryType" : "sling:Folder",
+		"isradio":"true"
+	}
+}

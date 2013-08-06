@@ -1,0 +1,65 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+var GVAR_LoadLibrary = true;
+	
+load("/apps/util/sysconfig.esp");
+
+function formatlist(Node)
+{
+	var nodePath = GVAR_system.getNodePath(currentNode,true);
+
+	// out.println("nodePath : " + nodePath);
+
+	var dataPath = nodePath + GVAR_system.path_separator + "data";
+	
+	var format = {};
+	
+	var dataDir = new Packages.java.io.File(dataPath);
+
+	var files = dataDir.listFiles();
+	//得到需要转换的源文件
+	for(var i = 0; i < files.length; i++)
+	{
+		if(!files[i].isDirectory())
+		{
+			// var previewFile = files[i];
+			var filePath = String(files[i]);
+			// out.println("filePath : " + filePath);
+			
+			var fileType = filePath.split(".")[filePath.split(".").length - 1];
+			// out.println("fileType : " + fileType);
+			// out.println("fileType : " + (fileType.toLowerCase() == String("blend")));
+			
+			if(fileType.toLowerCase() == String("blend"))
+			{
+				format["blend"] = "support";
+				
+				format["obj"] = "export";
+				format["x3d"] = "export";
+			}
+			else
+			{
+				format[fileType.toLowerCase()] = "support";
+			}
+			
+			
+			// break;
+		}
+	}
+	return format;
+}
+
+%>

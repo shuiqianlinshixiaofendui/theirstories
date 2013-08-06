@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		
+		<style type="text/css">
+			html,body{
+				height:100%;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div id="testContainer"></div>
+	
+		<script>
+			
+			require(["widgets/ModelEdit/ModelEdit","dojo/on", "dojo/domReady!"],function( ModelEdit,on ){
+				
+				// 测试的时候请替换成自己本地的model节点
+				var path = "/content/modellib/model20133201345353629890330";
+				var json = {
+					path : path
+				}
+				var widget = new ModelEdit(json).placeAt("testContainer");
+				
+				widget.on("onSelectStyle",function(data){
+					
+				});
+				
+				widget.on("onCancel",function(data){
+					widget.destory();
+				});
+				
+				widget.on("onSaveSuccess",function(data){
+					Spolo.notify({
+						"text" : "保存成功!",
+						"type" : "success",
+						"timeout" : 1000
+					});
+				});
+				
+				widget.on("onSaveFailed",function(){
+					Spolo.notify({
+						"text" : "保存失败！",
+						"type" : "error",
+						"timeout" : 1000
+					});
+				});
+				
+			});
+			
+		</script>
+	</body>
+	
+</html>

@@ -1,0 +1,112 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ /*
+   1. Check Cache：
+      1.1 Check if has cache data;
+      1.2 If has, then return cache directly; if not, go to step 2;
+   2. Get Objects;
+      2.1 Forward to bcgi to get Objects data and return 
+ */
+response.setCharacterEncoding("UTF-8");
+response.setContentType("application/json");
+ 
+var GVAR_LoadLibrary = true;
+	
+load("/apps/util/sysconfig.esp");
+load("/apps/util/blendercgi.esp");
+load("/apps/util/request.esp");
+
+function validCheck(rootNode, jsonString)
+{
+   var returnJSON;
+   var objectsJSON;
+   try{
+      returnJSON = new Packages.org.apache.sling.commons.json.JSONObject(jsonString);
+      objectsJSON = returnJSON.getJSONArray("data");
+   }catch(e){
+      objectsJSON = new Packages.org.apache.sling.commons.json.JSONArray(jsonString);
+   }
+   
+   var objectsJSONLength = objectsJSON.length();
+   for(var i = 0; i < objectsJSONLength; ++i)
+   {
+      var objectJSON = objectsJSON.getJSONObject(i);
+      if(objectJSON.has("referModel"))
+      {
+         var referModel = objectJSON.getString("referModel").substring(1);
+         if(!rootNode.hasNode(referModel))
+         {
+            objectJSON.put("invalid", 1);
+            objectsJSON.put(i, objectJSON);
+         }
+      }
+   }
+   
+   if(returnJSON){
+      returnJSON.put("data", objectsJSON);
+   }else{
+      returnJSON = new Packages.org.apache.sling.commons.json.JSONObject();
+      returnJSON.put("error", "");
+      returnJSON.put("data", objectsJSON);
+   }
+   
+   return returnJSON.toString();
+}
+
+
+try{
+   var nodePath = GVAR_system.getNodePath(currentNode,true);
+   if(nodePath)
+   {
+      var objectsJson;
+      
+      var cachePath = nodePath + GVAR_system.path_separator + "cache";
+      var cacheDir = new Packages.java.io.File(cachePath);
+      if(!cacheDir.exists())
+      {
+         cacheDir.mkdirs();
+      }
+      
+      var objCache = cachePath + GVAR_system.path_separator + "objects.json";
+      var objCacheFile = new Packages.java.io.File(objCache);
+      //1.1
+      if(objCacheFile.exists())
+      {
+         //1.2
+         objectsJson = Packages.org.apache.commons.io.FileUtils.readFileToString(objCacheFile);
+
+      }else{
+         //2.1
+         objectsJson = GVAR_bcgi.forward({useEmptyBlend : false});
+      }
+      var rootNode = currentNode.getAncestor(0);
+      objectsJson = validCheck(rootNode, objectsJson);
+      Packages.org.apache.commons.io.FileUtils.writeStringToFile(objCacheFile, objectsJson, "UTF-8");
+      var inputStream = Packages.org.apache.commons.io.IOUtils.toInputStream(objectsJson);
+      try{
+         var count = Packages.org.apache.commons.io.IOUtils.copyLarge(inputStream, response.getOutputStream());
+      }catch(e){
+         throw e
+      }finally{
+         Packages.org.apache.commons.io.IOUtils.closeQuietly(inputStream);
+      }
+   }
+}catch(e){
+   var error = new Packages.org.apache.sling.commons.json.JSONObject();
+   error.put("error", e);
+   out.write(error)
+}
+%>

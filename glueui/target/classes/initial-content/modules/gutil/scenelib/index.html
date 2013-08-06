@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="no-cache">
+		<meta http-equiv="Expires" content="-1">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta charset="utf-8">
+		<title>我的场景</title>
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true,
+				packages : [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script> 
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<style>
+			html, body{
+				height : 100%;
+			}
+		</style>
+		<script type="text/javascript">
+			// 标志此为根节点
+			Spolo.isRoot = true;
+		</script>
+	</head>	
+	<body class="claro" style="width:99%;height:99%;">
+		<div style="color:#fff;">
+			<script type="text/javascript">
+				document.write(Spolo.getUserId());
+			</script>
+		</div>
+		<div style="width:100%;height:99%;">
+			<iframe style="width:100%;height:97%;" id="iframeModelLib" frameborder="0" src="/modules/myscenelib/index.html?isGutil=true"></iframe>
+		</div>
+		<div id="exit" class="" style="position: absolute;top: 10px;right:20px;cursor: pointer;"><img title="退出" src="images/chu.png" >
+		</div>
+		<script type="text/javascript" src="/script/spolo/ui/spdialog.js"></script>
+		<script type="text/javascript">
+		require(
+			["dojo/ready","dojo/dom","dojo/on"],
+			function(ready,dom,on){
+				ready(function(){
+					var exit = dom.byId("exit");
+					on(exit, "click", function(){
+						Spolo.gutil.logout(function(){
+							var url = "/modules/user/index.html?isGutil=true&redirect=/modules/gutil/scenelib/index.html";
+							window.location.href = url;	
+						});
+						});
+				
+				});
+			}
+		);
+		
+		</script>
+	</body>
+</html>

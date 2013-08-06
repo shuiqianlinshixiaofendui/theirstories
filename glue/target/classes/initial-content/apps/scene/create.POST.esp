@@ -1,0 +1,362 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+/** @brief 本文件维护了场景上传。
+	我们允许用户上传任意的场景，我们将自动解析这些场景文件，并创建相应的模型以及材质。按照如下步骤执行:
+	
+	1. 上传准备:
+	  1.1 删除import子目录并创建一个新的import子目录。
+	  1.2 将上传的文件拷贝进入import子目录。(如果不是nginx).
+	  1.3 如果文件是压缩文件，解压相应的文件。 (以上在utils的upload.esp中得到支持).
+	2. 历史清理
+	  2.1 删除cache子目录.
+	  2.2 检查是否有merge变量。如果没有，删除data子目录.
+	  2.3 如果data\main.blend不存在，拷贝empty.blend到data\main.blend.
+	3. 数据导入
+	  3.1 forward到bcgi中处理模型和材质的导入．
+	4. 环境清理
+	  4.1 删除import子目录。
+*/
+
+//Packages.java.lang.Thread.dumpStack();
+response.setCharacterEncoding("UTF-8");
+response.setContentType("text/html");
+out.println("<html> <body> ");
+
+/*
+out.println("TEStING!!!");
+response.flushBuffer();
+Packages.java.lang.Thread.sleep(2 * 1000);
+out.println("TEStING2!!!");
+response.flushBuffer();
+Packages.java.lang.Thread.sleep(65 * 1000);
+out.println("TEStING Over!!!");
+response.flushBuffer();
+*/
+
+
+var notifyFunc = null;
+function	notifyClient(msg)
+{
+	if(notifyFunc)
+	{
+		//Packages.java.lang.System.out.println("Notify client msg = " + msg);
+		out.println("<script>" + notifyFunc + "(\"" + msg + "\");</script>");
+		response.flushBuffer();
+	}
+}
+	
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/blendercgi.esp");
+load("/apps/util/request.esp");
+
+//TODO: 支持事物处理，在当前节点下记录importing属性。并在结束之后清理之。所以检查importing属性，如果正在importing，则直接返回。本处理应该在客户端检查，如果importing，则暂停上传。
+//上面的TODO优先级很低，因为我们目前几乎不会共享操作文件——每人用户有自己的目录。
+//out.println(Packages.org.spolo.apps.util.Sysconfig);
+var NodePath = GVAR_system.getNodePath(currentNode,true);
+
+var importPath = NodePath + GVAR_system.path_separator + "import";
+//1.1 删除import子目录并创建一个新的import子目录。
+GVAR_system.deleteDirectory(importPath);
+var importPath_File = new Packages.java.io.File(importPath);
+if(!importPath_File.exists())
+{
+	importPath_File.mkdirs();
+}
+
+//根据传入的参数配置如下几个全局变量。
+//notifyFunc指示了我们使用何种方式来回应客户端。
+notifyFunc = request.getParameter("notifier");
+
+//useNginx指示了是否使用nginx作为proxy来处理文件上传。
+var useNginx = true;
+{
+	var useNginx_str = request.getParameter("useNginx");
+	if(useNginx_str == "false")
+		useNginx = false;
+	Packages.java.lang.System.out.println("useNginx_str = " + useNginx_str + " and useNginx = " + useNginx);
+}
+
+//isDebug指示了我们是否需要在textarea中输出blender的内容。
+var isDebug = false;
+var debugStr = request.getParameter("debug");
+if(debugStr && debugStr != "false")
+	isDebug = true;
+
+//保存了输出给客户端的内容.
+var result;
+
+var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+
+if(isDebug)
+{
+	result = "";
+}else{
+	result = "{ suc : 'failed' , reason : 'unknow'}";
+}
+
+
+
+//reuqest_merge指示了本次请求是否合并到当前内容上。如果是false,则
+var reuqest_merge = false;
+reuqest_merge_str = request.getParameter("merge");
+if(reuqest_merge_str != null && reuqest_merge_str == "true")
+	reuqest_merge = true;
+
+if(useNginx)
+{//使用nginx作为上传处理器。
+	var upfileinfo = Packages.org.spolo.apps.util.UploadFileInfo.getNginxUploadInfo(request);
+	var count = upfileinfo.length;
+	for(var i = 0; i < count; i++)
+	{
+		var ui = upfileinfo[i];
+		try{
+			//TODO: 给出客户端正在处理的提示。
+			var notifyInfo = "uncompress file '" + ui.originalname + "'...";
+			notifyClient(notifyInfo);
+
+			//1.3 检查刚上传的文件是否是一个压缩文件。如果是，保持目录结构并解压到import目录。
+			var start = Date.now();
+			var resultHandler = GVAR_system.nginxUncompress(ui.originalname,ui.localfilepath,importPath);
+			if(resultHandler != null)
+			{//是一个压缩文件，删除原始文件．
+				while(!resultHandler.hasResult())
+				{
+					resultHandler.waitFor(2 * 1000);
+					var end = Date.now();
+					var elapsed = (end - start) / 1000;
+					notifyClient("uncompress continued for about " + elapsed + " seconds,please waiting...");
+				}
+				//如果处于调试模式.将进程内容输出到result.
+				if(isDebug)
+				{
+					jsonobj.put("Uncompress",resultHandler.stdout.toString());
+				}
+				Packages.org.apache.commons.io.FileUtils.forceDelete(new Packages.java.io.File(ui.localfilepath));
+			}
+			notifyClient(notifyInfo + "done!");
+		}catch(e)
+		{
+			notifyClient("can not uncompress file : " + e);
+		}
+		// Packages.java.lang.System.out.println("ui.fieldname=" + ui.fieldname);
+		// Packages.java.lang.System.out.println("ui.originalname=" + ui.originalname);
+		// Packages.java.lang.System.out.println("ui.localfilepath=" + ui.localfilepath);
+		// Packages.java.lang.System.out.println("ui.mime=" + ui.mime);
+		// Packages.java.lang.System.out.println("ui.sequence=" + ui.sequence);
+	}
+}else{
+	GVAR_uploader.foreach(function(name,param){
+		Packages.java.lang.System.out.println("recieve " + name + "=" + param);
+		if(!param.isFormField())
+		{
+			try
+			{
+				//TODO: 给出客户端正在处理的提示。
+				var notifyInfo = "copy and uncompress file '" + param.getFileName() + "'...";
+				notifyClient(notifyInfo);
+				//1.2
+				var file = GVAR_uploader.copyFile(param,importPath);
+				//1.3 检查刚上传的文件是否是一个压缩文件。如果是，保持目录结构并解压到当前目录。
+				if(GVAR_system.uncompress(file))
+				{//如果是一个压缩文件，删除原始文件．
+					Packages.org.apache.commons.io.FileUtils.forceDelete(file);
+				}
+				notifyClient(notifyInfo + "done!");
+			}
+			catch(e)
+			{//uncompress error!
+				notifyClient("can not uncompress file : " + e);
+			}
+		}
+	});
+}
+
+
+
+//2.1 删除cache子目录．
+notifyClient("Prepare import environment...");
+var cachePath = NodePath + GVAR_system.path_separator + "cache";
+if((new Packages.java.io.File(cachePath)).exists())
+{
+	GVAR_system.deleteDirectory(cachePath);
+}
+	
+//2.2 检查是否有merge变量。如果没有，删除data子目录.
+var dataPath = NodePath + GVAR_system.path_separator + "data";
+if(!reuqest_merge)
+{
+	//out.println("<BR>delete data<BR>");
+	if((new Packages.java.io.File(dataPath)).exists())
+		GVAR_system.deleteDirectory(dataPath);
+}
+
+//2.3 如果data\main.blend不存在，拷贝empty.blend到data\main.blend.
+dataPathObj = new Packages.java.io.File(dataPath);
+if(!dataPathObj.exists())
+{
+	dataPathObj.mkdirs();
+}
+blendFile = dataPath + GVAR_system.path_separator + "main.blend";
+blendFileObj = new Packages.java.io.File(blendFile);
+if(!blendFileObj.exists())
+{
+	srcBlendFile = GVAR_system.getEmptyblendPath();
+	Packages.org.apache.commons.io.FileUtils.copyFile(new Packages.java.io.File(srcBlendFile),blendFileObj);
+}
+
+//3.1 forward到bcgi中处理模型和材质的导入．
+notifyClient("import data...");
+
+//获取是否删除错误模型参数
+
+var del_err_obj = request.getParameter("delete_error_Objects");
+
+del_err_obj = String(del_err_obj);
+
+if(del_err_obj != "true")
+{
+	del_err_obj = "false"
+}
+
+//添加发布者信息
+var publishAuthor = currentNode.getSession().getUserID();
+
+var checkDiffuse = "true";
+var checkDiffuseString = request.getParameter("checkDiffuse");
+if(checkDiffuseString && checkDiffuseString != "true")
+{
+   checkDiffuse = "false";
+}
+
+try{
+	var start = Date.now();
+	resultHandler = GVAR_bcgi.asyncforward({
+	//result = GVAR_bcgi.forward({
+		cgi : "scene/import.py",
+		useEmptyBlend : false,
+		
+		env : {
+		"del_err_obj" : del_err_obj,
+		"LANG" : "en_US.UTF-8",
+		"publishAuthor" : publishAuthor,
+        "checkDiffuse" : checkDiffuse
+		}
+		//,debug : isDebug
+	});
+	Packages.java.lang.System.out.println("try to wait for result .... ");
+	while(!resultHandler.hasResult())
+	{
+		resultHandler.waitFor(3 * 1000);
+		//Packages.java.lang.System.out.println("NOTIFY CLIENT: " + resultHandler.stdout.toString() );
+		var end = Date.now();
+		var elapsed = (end - start) / 1000;
+		notifyClient("importing continued for about " + elapsed + " seconds,please waiting...");
+	}
+	Packages.java.lang.System.out.println("PROCESS EXEC OVER with Result = " + resultHandler.getExitValue() + ".exception = " + resultHandler.getException());
+	if(isDebug)
+	{
+		jsonobj.put("result",resultHandler.stdout.toString() + resultHandler.stderr.toString());
+		
+	}else{
+		result = Packages.org.spolo.apps.util.BlenderCGI.trunkResultString(resultHandler.stdout.toString());
+		// var resultJSON = new Packages.org.apache.sling.commons.json.JSONObject(result);
+		jsonobj.put("result",result);
+
+		if(result == "")
+		{
+			var msg = resultHandler.stderr.toString().replaceAll("'","\\'").replaceAll("\n","\\n").replaceAll("\r","\\r");
+         // var resultJSON = new Packages.org.apache.sling.commons.json.JSONObject("result","{suc : false, reason : '" + msg + "'}");
+			jsonobj.put("result", "{suc : false, reason : '" + msg + "'}");
+		}
+	}
+	
+	//遍历节点，添加publishdate属性
+	
+	var language = "xpath";
+	var expression = "/jcr:root" + currentNode.path + "//*[@publishAuthor]";
+	var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+	var qry = queryManager.createQuery(expression,language);
+	try{
+			var result = qry.execute().getNodes();
+		}
+	catch(e){
+			out.println("{error}");
+		}
+	while(result.hasNext()){
+		var fixnode = result.nextNode();
+		var publishdate = fixnode.getProperty("jcr:created").getDate();
+		fixnode.setProperty("publishdate", publishdate);
+		fixnode.save();
+	}		
+	
+	
+	
+   load("/apps/util/importModelData.esp");
+   var backupJSONFile = GVAR_File.listFiles(importPath_File, "modeldata_backup.json", true)[0];
+   if(backupJSONFile){
+      importModelData(currentNode, importPath_File, backupJSONFile.path);
+      currentNode.save();
+      Packages.java.lang.System.out.println("Models Data Recovered");
+   }
+   
+   response.flushBuffer();
+   
+   var prep_x3d = false;
+   var prep_x3d_str = request.getParameter("isGenX3D");
+   if(!prep_x3d_str || (prep_x3d_str && prep_x3d_str == "true")){
+      prep_x3d = true;
+   }
+   
+   
+   if(prep_x3d){
+      load("/apps/util/convertX3D.esp");
+      result = convertX3D();
+      // var resultJSON = new Packages.org.apache.sling.commons.json.JSONObject(result);
+      jsonobj.put("convertX3D result", result);
+   }
+}catch(e)
+{
+	result = "{suc : false, reason : \"" + e + "\"}";
+   // var resultJSON = new Packages.org.apache.sling.commons.json.JSONObject(result);
+	jsonobj.put("result",result);
+}
+notifyClient("import data...done!");
+
+load("/apps/scene/proc_preview.esp");
+
+//4.1 删除import子目录。
+//GVAR_system.deleteDirectory(importPath);
+
+//out.println("over,nodepath=" + NodePath);
+//*/
+
+// var resultJSON = jsonobj.getJSONObject("result")
+// var success = resultJSON.getBoolean("suc")
+
+out.println("<textarea>");
+out.println(jsonobj.toString());
+out.println("</textarea>");
+//out.println("<script>window.parent.notifyInfo(2);</script>");
+out.println("</body></html>");
+// if(!success)
+// {
+   // var scenelibNode = currentNode.getParent();
+   // currentNode.remove();
+   // scenelibNode.save();
+   
+// }
+
+%>

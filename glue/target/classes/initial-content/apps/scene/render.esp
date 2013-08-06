@@ -1,0 +1,31 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+if(currentNode == null)
+{
+%>
+{suc : false}
+<%}else{
+//currentNode不为空。获取服务。
+var object = sling.getService(Packages.org.spolo.service.JobFarm);
+//现在可以通过object来启动job,查询job,删除job.
+if(object)
+{
+	request.setAttribute("jobType" , "rendertask"); 
+	request.setAttribute("jobName" , "octane") ; 
+	request.setAttribute("isMustProcess" , true ) 
+	out.write(object.createJob(currentNode,request,response));
+}
+out.write(object);
+}
+%>

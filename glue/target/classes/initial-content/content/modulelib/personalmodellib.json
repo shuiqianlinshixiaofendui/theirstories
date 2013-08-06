@@ -1,0 +1,8 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"resourceName":"个人模型库",
+		"description":"个人模型库预览",
+		"isActive":true,
+		"isTopMenu":true
+}

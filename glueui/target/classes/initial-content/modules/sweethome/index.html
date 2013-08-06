@@ -1,0 +1,616 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>入库</title>
+		<link rel="stylesheet" type="text/css" href="/libs/dijit/themes/claro/claro.css"  media="screen" />
+		<link rel="stylesheet" type="text/css" href="css/Main.css" />
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+        <link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="css/addexhibit.css"  media="screen" />
+		<script>
+			dojoConfig = {
+				parseOnLoad: true,
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+                    {
+						name: "widgets",
+						location: "/widgets"
+					}
+				],
+			};
+		</script> 
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script> 
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script> 
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<!--<script type="text/javascript" src="js/jquery/jquery.js"></script>-->
+        <script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="/script/spolo/ui/noty/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="js/selectlist.js"></script>
+        <script>
+            var session = Sling.getSessionInfo();
+			var userid, 
+				href = "/modules/user/index.html";
+			if(session){
+				userid = session["userID"];
+				if(userid=="anonymous"){
+					window.location.href = href;
+				}
+			}
+        
+            function upload(){
+                require(["dojo/request/iframe","dojo/dom","widgets/Mask/Mask"],function(iframe,dom,Mask){
+                    if($('#highPoly')[0].value == ""){
+                        uploadInfo = dom.byId("uploadInfo");
+                        uploadInfodiv = dom.byId("uploadInfodiv");
+                        uploadInfodiv.style.display="";
+                        uploadInfo.innerHTML = "请选择高模模型" + "<br />";
+                        setTimeout(function(){
+                            uploadInfodiv.style.display="none";
+                        },3000);
+                        return 0;
+                    }
+                    if($('#lowPoly')[0].value == ""){
+                        uploadInfo = dom.byId("uploadInfo");
+                        uploadInfodiv = dom.byId("uploadInfodiv");
+                        uploadInfodiv.style.display="";
+                        uploadInfo.innerHTML = "请选择简模模型" + "<br />";
+                        setTimeout(function(){
+                            uploadInfodiv.style.display="none";
+                        },3000);
+                        return 0;
+                    }
+                    if($('#preview')[0].value == ""){
+                        uploadInfo = dom.byId("uploadInfo");
+                        uploadInfodiv = dom.byId("uploadInfodiv");
+                        uploadInfodiv.style.display="";
+                        uploadInfo.innerHTML = "请选择预览图" + "<br />";
+                        setTimeout(function(){
+                            uploadInfodiv.style.display="none";
+                        },3000);
+                        return 0;
+                    }
+                    
+                    Mask.show();
+                        
+                    var useNginx = true;
+                    var mname = $('#mname')[0].value;
+                    var munit = $('#munit')[0].value;
+                    
+                    var mroom = $("input[name='mroom']:checked").val();
+
+                    var obj = document.getElementsByName('mstyle');
+                    var mstyle="";    
+                    for(var i=0; i<obj.length; i++){    
+                        if(obj[i].checked)
+                            mstyle += obj[i].value + ";";
+                    }
+                    
+                    var mcolorsystem = $("input[name='mcolorSystem']:checked").val();
+                    var mbrand = $("input[name='mbrand']:checked").val();
+                    var mmadeOf = $("input[name='mmadeOf']:checked").val();
+                    var mprice = $('#mprice')[0].value;
+                    var mkeyword = $('#mkeyword')[0].value;
+                    var mdescription = $('#mdescription')[0].value;
+                    
+                    var content = {};
+                    var json = {};
+                    if(mname!=""){
+                        json["resourceName"] = mname;
+                    }
+                    if(munit!=""){
+                        json["unit"] = munit;
+                    }
+                    if(mroom!=""){
+                        json["roomPath"] = mroom;
+                    }
+                    if(mstyle!=""){
+                        json["stylePath"] = mstyle;
+                    }
+                    if(mcolorsystem!=""){
+                        json["colorSystemPath"] = mcolorsystem;
+                    }
+                    if(mbrand!=""){
+                        json["brandPath"] = mbrand;
+                    }
+                    if(mmadeOf!=""){
+                        json["madeOfPath"] = mmadeOf;
+                    }
+                    if(mprice!=""){
+                        json["price"] = mprice;
+                    }
+                    if(mkeyword!=""){
+                        json["keyInfo"] = mkeyword;
+                    }
+                    if(mdescription!=""){
+                        json["introduction"] = mdescription;
+                    }
+                    var path = "/content/shmodellib.upload";
+                    
+                    content.modelInfo=JSON.stringify(json);
+
+                    var	url;
+                    if(useNginx==false){
+                        url= path;
+                    }else{
+                        url = "/upload";
+                        content["spi_target"] = path;
+                        content["useNginx"] = true;
+                    }
+                    content['_charset_']="UTF-8";
+                    iframe.post(url,{
+                        form: "form",
+                        data : content,
+                        handleAs: "json"
+                    }).then(
+                        function(msg){
+                            Mask.hide();
+                            console.log(msg);
+                            uploadInfo = dom.byId("uploadInfo");
+                            uploadInfodiv = dom.byId("uploadInfodiv");
+                            uploadInfodiv.style.display="";
+                            uploadInfo.innerHTML = "保存成功,3秒后返回首页" + "<br />";
+                            setTimeout(function(){
+                                uploadInfodiv.style.display="none";
+                                $("#boxStep5").css("display","none");
+                                $("#boxStep1").css("display","block");
+                            },3000);
+                        },
+                        function(error){
+                            Mask.hide();
+                            console.log(error);
+                            uploadInfo = dom.byId("uploadInfo");
+                            uploadInfodiv = dom.byId("uploadInfodiv");
+                            uploadInfodiv.style.display="";
+                            uploadInfo.innerHTML = "保存失败" + "<br />";
+                            setTimeout(function(){
+                                uploadInfodiv.style.display="none";
+                            },3000);
+                        }
+                    );
+                });
+            }
+            
+            function rupload(){
+                require(["dojo/request/iframe","dojo/dom","widgets/Mask/Mask"],function(iframe,dom,Mask){
+                    if($('#rhighPoly')[0].value == ""){
+                        uploadInfo = dom.byId("ruploadInfo");
+                        uploadInfodiv = dom.byId("ruploadInfodiv");
+                        uploadInfodiv.style.display="";
+                        uploadInfo.innerHTML = "请选择高模模型" + "<br />";
+                        setTimeout(function(){
+                            uploadInfodiv.style.display="none";
+                        },3000);
+                        return 0;
+                    }
+                    if($('#rlowPoly')[0].value == ""){
+                        uploadInfo = dom.byId("ruploadInfo");
+                        uploadInfodiv = dom.byId("ruploadInfodiv");
+                        uploadInfodiv.style.display="";
+                        uploadInfo.innerHTML = "请选择简模模型" + "<br />";
+                        setTimeout(function(){
+                            uploadInfodiv.style.display="none";
+                        },3000);
+                        return 0;
+                    }
+                    if($('#rpreview')[0].value == ""){
+                        uploadInfo = dom.byId("ruploadInfo");
+                        uploadInfodiv = dom.byId("ruploadInfodiv");
+                        uploadInfodiv.style.display="";
+                        uploadInfo.innerHTML = "请选择预览图" + "<br />";
+                        setTimeout(function(){
+                            uploadInfodiv.style.display="none";
+                        },3000);
+                        return 0;
+                    }
+                    Mask.show();
+                    
+                    var useNginx = true;
+                    var mname = $('#rname')[0].value;
+                    var munit = $('#runit')[0].value;
+                    var mroom = $("input[name='rroom']:checked").val();
+                    var marea = $('#rarea')[0].value;
+                    var mkeyword = $('#rkeyword')[0].value;
+                    var mdescription = $('#rdescription')[0].value;
+                    
+                    var content = {};
+                    var json = {};
+                    if(mname!=""){
+                        json["resourceName"] = mname;
+                    }
+                    if(munit!=""){
+                        json["unit"] = munit;
+                    }
+                    if(mroom!=""){
+                        json["roomPath"] = mroom;
+                    }
+                    if(marea!=""){
+                        json["area"] = marea;
+                    }
+                    if(mkeyword!=""){
+                        json["keyInfo"] = mkeyword;
+                    }
+                    if(mdescription!=""){
+                        json["introduction"] = mdescription;
+                    }
+                    var path = "/content/roomlib.upload";
+                    
+                    content.modelInfo=JSON.stringify(json);
+
+                    var	url;
+                    if(useNginx==false){
+                        url= path;
+                    }else{
+                        url = "/upload";
+                        content["spi_target"] = path;
+                        content["useNginx"] = true;
+                    }
+                    content['_charset_']="UTF-8";
+                    iframe.post(url,{
+                        form: "rform",
+                        data : content,
+                        handleAs: "json"
+                    }).then(
+                        function(msg){
+                            Mask.hide();
+                            console.log(msg);
+                            uploadInfo = dom.byId("ruploadInfo");
+                            uploadInfodiv = dom.byId("ruploadInfodiv");
+                            uploadInfodiv.style.display="";
+                            uploadInfo.innerHTML = "保存成功,3秒后返回首页" + "<br />";
+                            setTimeout(function(){
+                                uploadInfodiv.style.display="none";
+                                $("#boxStep_room3").css("display","none");
+                                $("#boxStep_room1").css("display","block");
+                            },3000);
+                        },
+                        function(error){
+                            Mask.hide();
+                            console.log(error);
+                            uploadInfo = dom.byId("ruploadInfo");
+                            uploadInfodiv = dom.byId("ruploadInfodiv");
+                            uploadInfodiv.style.display="";
+                            uploadInfo.innerHTML = "保存失败" + "<br />";
+                            setTimeout(function(){
+                                uploadInfodiv.style.display="none";
+                            },3000);
+                        }
+                    );
+                });
+            }
+            
+        </script>
+	</head>
+	<body  class="claro">	
+        <form id="form" method="POST" action="" enctype="multipart/form-data" style="display:none">
+            <input name="highPoly" id="highPoly" type="file"  />
+            <input name="lowPoly" id="lowPoly" type="file" />
+            <input name="preview" id="preview" type="file" />
+        </form>
+        <form id="rform" method="POST" action="" enctype="multipart/form-data" style="display:none">
+            <input name="highPoly" id="rhighPoly" type="file"  />
+            <input name="lowPoly" id="rlowPoly" type="file" />
+            <input name="preview" id="rpreview" type="file" />
+        </form>
+
+        <div id="boxStep0" class="boxStep">
+            <div class="content border_box step">
+                <h1>选择模式</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>选择您要上传的模型类别</h2>
+            </div>
+            
+            <div class="content border_box">
+                <button id="furniture" >家俱</button>
+                <button id="rooms" >户型</button>
+            </div>
+            
+		</div>
+			
+		<div id="boxStep1" class="boxStep" style="display:none">
+            <div class="content border_box step">
+                <h1>建模信息</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>模型名称</h2>
+                <div class="step_content">
+                    <input type="text" name="" id="mname" placeholder="模型名称">
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+				<h2>选择高模文件</h2>
+				<div class="step_content">
+					<input type="text" id="text1" placeholder="选择高模文件" readonly="true">
+					<button id="choose1">选择</button>
+				</div>
+				<div class="clear"></div>
+			</div>
+            
+            <div class="content border_box step">
+				<h2>选择简模文件</h2>
+				<div class="step_content">
+					<input type="text" id="text2" placeholder="选择简模文件" readonly="true">
+					<button id="choose2">选择</button>
+				</div>
+				<div class="clear"></div>
+			</div>
+            
+            <div class="content border_box step">
+				<h2>选择预览图文件</h2>
+				<div class="step_content">
+					<input type="text" id="text3" placeholder="选择预览图文件" readonly="true">
+					<button id="choose3">选择</button>
+				</div>
+				<div class="clear"></div>
+			</div>
+            
+            <div class="content border_box step">
+                <h2>选择模型单位</h2>
+                <div class="step_content">
+                    <select id="munit">
+                        <option value ="cm">厘米（cm）</option>
+                        <option value ="mm">毫米（mm）</option>
+                        <option value ="dm">分米（dm）</option>
+                        <option value ="m">米（m）</option>
+                    </select>
+                    <span>选择模型单位</span>
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box">
+                <button id="step1_next" >下一步</button>
+                <button id="clearForm" >重置</button>
+            </div>
+            
+		</div>
+        
+        <div id="boxStep2" class="boxStep" style="display:none" >
+            <div class="content border_box step">
+                <h1>分类信息</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>居室</h2>
+                <div class="step_content moreCategory" id="room">
+                    
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>风格</h2>
+                <div class="step_content moreCategory" id="style">
+                    
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box">
+                <button id="step2_prev" >上一步</button>
+                <button id="step2_next" >下一步</button>
+            </div>
+            
+        </div>
+        
+        <div id="boxStep3" class="boxStep" style="display:none" >
+            <div class="content border_box step">
+                <h1>分类信息</h1>
+            </div>
+            
+            <div class="content border_box step ">
+                <h2>色系</h2>
+                <div class="step_content moreCategory" id="colorSystem">
+                    
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>品牌</h2>
+                <div class="step_content moreCategory" id="brand" id="colorSystem">
+                    
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box">
+                <button id="step3_prev" >上一步</button>
+                <button id="step3_next" >下一步</button>
+            </div>
+            
+        </div>
+        
+        <div id="boxStep4" class="boxStep" style="display:none" >
+            <div class="content border_box step">
+                <h1>分类信息</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>主材</h2>
+                <div class="step_content moreCategory" id="madeOf">
+                    
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>价格</h2>
+                <div class="step_content">
+                    <input type="number" name="" id="mprice" min="0" value="0" step="1000" placeholder="模型价格">
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            
+            
+            <div class="content border_box">
+                <button id="step4_prev" >上一步</button>
+                <button id="step4_next" >下一步</button>
+            </div>
+            
+        </div>
+        
+        <div id="boxStep5" class="boxStep" style="display:none" >
+            <div class="content border_box step">
+                <h1>模型描述</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>关键字</h2>
+                <div class="step_content">
+                    <input type="text" name="" id="mkeyword" placeholder="关键字">
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+				<h2>模型描述</h2>
+				<textarea id="mdescription" cols ="100" rows = "5" class="area" placeholder="请输入模型描述..."></textarea>
+			</div>
+            
+            <div id="uploadInfodiv" class="content border_box step" style="display:none">
+                <h1 id="uploadInfo"></h1>
+            </div>
+            
+            <div class="content border_box">
+                <button id="step5_prev" >上一步</button>
+                <button id="upload" onclick="upload();" >上传</button>
+            </div>
+            
+            
+        </div>
+        
+        <div id="boxStep_room1" class="boxStep" style="display:none">
+            <div class="content border_box step">
+                <h1>建模信息</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>模型名称</h2>
+                <div class="step_content">
+                    <input type="text" name="" id="rname" placeholder="模型名称">
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+				<h2>选择高模文件</h2>
+				<div class="step_content">
+					<input type="text" id="rtext1" placeholder="选择高模文件" readonly="true">
+					<button id="rchoose1">选择</button>
+				</div>
+				<div class="clear"></div>
+			</div>
+            
+            <div class="content border_box step">
+				<h2>选择简模文件</h2>
+				<div class="step_content">
+					<input type="text" id="rtext2" placeholder="选择简模文件" readonly="true">
+					<button id="rchoose2">选择</button>
+				</div>
+				<div class="clear"></div>
+			</div>
+            
+            <div class="content border_box step">
+				<h2>选择预览图文件</h2>
+				<div class="step_content">
+					<input type="text" id="rtext3" placeholder="选择预览图文件" readonly="true">
+					<button id="rchoose3">选择</button>
+				</div>
+				<div class="clear"></div>
+			</div>
+            
+            <div class="content border_box step">
+                <h2>选择模型单位</h2>
+                <div class="step_content">
+                    <select id="runit">
+                        <option value ="cm">厘米（cm）</option>
+                        <option value ="mm">毫米（mm）</option>
+                        <option value ="dm">分米（dm）</option>
+                        <option value ="m">米（m）</option>
+                    </select>
+                    <span>选择模型单位</span>
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box">
+                <button id="rstep1_next" >下一步</button>
+                <button id="rclearForm" >重置</button>
+            </div>
+            
+		</div>
+        
+        <div id="boxStep_room2" class="boxStep" style="display:none" >
+            <div class="content border_box step">
+                <h1>分类信息</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>居室</h2>
+                <div class="step_content moreCategory" id="rroom">
+                    
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>面积</h2>
+                <div class="step_content">
+                    <input type="number" name="" id="rarea" min="0" value="0" step="10" placeholder="户型面积">
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box">
+                <button id="rstep2_prev" >上一步</button>
+                <button id="rstep2_next" >下一步</button>
+            </div>
+            
+        </div>
+        
+        <div id="boxStep_room3" class="boxStep" style="display:none" >
+            <div class="content border_box step">
+                <h1>户型描述</h1>
+            </div>
+            
+            <div class="content border_box step">
+                <h2>关键字</h2>
+                <div class="step_content">
+                    <input type="text" name="" id="rkeyword" placeholder="关键字">
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            <div class="content border_box step">
+				<h2>户型描述</h2>
+				<textarea id="rdescription" cols ="100" rows = "5" class="area" placeholder="请输入户型描述..."></textarea>
+			</div>
+            
+            <div id="ruploadInfodiv" class="content border_box step" style="display:none">
+                <h1 id="ruploadInfo"></h1>
+            </div>
+            
+            <div class="content border_box">
+                <button id="rstep3_prev" >上一步</button>
+                <button id="upload" onclick="rupload();" >上传</button>
+            </div>
+            
+            
+        </div>
+
+          
+        
+    
+	</body>
+</html>

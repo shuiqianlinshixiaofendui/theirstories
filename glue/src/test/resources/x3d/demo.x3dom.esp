@@ -1,0 +1,69 @@
+<html>
+<head>
+</head>
+<body>
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+ 
+//本文演示了如何使用x3dom.esp库。
+
+try{
+GVAR_LoadLibrary = true;
+
+load("/apps/util/x3dom.esp");
+
+var t = typeof(x3dom);
+//测试x3dom的名称空间。
+response.getWriter().print("typeof(x3dom)=" + t);
+response.getWriter().print("<br/>");
+
+//首先，我们需要创建一个Scene节点。防止Transform做为根节点引发计算错误
+var scene = new x3dom.nodeTypes.Scene(dummyContext);
+
+//创建一个trans1和trans2.
+var trans1 = new x3dom.nodeTypes.Transform(dummyContext);
+trans1.postMessage("translation",new x3dom.fields.SFVec3f(0, 10, 0));
+trans1.fieldChanged("translation");
+response.getWriter().print("trans1._vf.translation=" + trans1._vf.translation);
+response.getWriter().print("<br/>");
+
+response.getWriter().print("scene.addChild(trans1) =" + scene.addChild(trans1));
+response.getWriter().print("<br/>");
+
+//添加一个孩子
+var trans2 = new x3dom.nodeTypes.Transform(dummyContext);
+var suc = trans1.addChild(trans2,"children");
+response.getWriter().print("trans1.addChild(trans2,\"children\") =" + suc);
+response.getWriter().print("<br/>");
+response.getWriter().print("trans2._parentNodes.length=" + trans2._parentNodes.length);
+response.getWriter().print("<br/>");
+response.getWriter().print("trans2.transformMatrix=" + trans2.transformMatrix);
+response.getWriter().print("<br/>");
+response.getWriter().print("trans1._trafo=" + trans1._trafo);
+response.getWriter().print("<br/>");
+response.getWriter().print("trans2._trafo=" + trans2._trafo);
+response.getWriter().print("<br/>");
+var matrix4 = trans2.getCurrentTransform();
+response.getWriter().print("trans2.getCurrentTransform()=" + matrix4);
+response.getWriter().print("<br/>");
+
+}catch(e)
+{
+	response.getWriter().println(e);
+}
+
+
+%>
+</body>
+</html>

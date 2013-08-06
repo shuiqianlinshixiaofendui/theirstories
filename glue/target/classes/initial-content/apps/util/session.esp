@@ -1,0 +1,72 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ /*本库维护了js空间的session全局变量。
+ 
+ 如下全局变量被定义和使用:
+ GVAR_LoadLibrary : 必须被设置，否则视同直接从客户端访问。
+ 
+ 使用方法: <code>
+
+	var GVAR_LoadLibrary = true;
+	load("/apps/util/session.esp");
+	session.addSessionVar("tmpVar");
+	//然后就可以使用session变量了:
+	if(typeof session.tmpVar != undefined)
+	{
+		session.tmpVar++;
+	}else{
+		session.tmpVar = 1;
+	}
+	</code>
+	上例中session.tmpVar的生存期为session期。
+*/
+
+var session;
+(function()
+{
+	if(!session && GVAR_LoadLibrary)
+	{
+		session = {_session : request.getSession() };
+		
+		session.addSessionVar = function(prop)
+		{
+			getter = function () {
+				return this._session.getAttribute(prop);
+			},
+			setter = function (v) {
+				this._session.setAttribute(prop,v);
+				return v;
+			};
+			
+			//only need to support rihino!
+			if (delete this[prop]) {
+				Object.prototype.__defineGetter__.call(this, prop, getter);
+				Object.prototype.__defineSetter__.call(this, prop, setter);
+			}
+		}
+		
+		session.removeSessionVar = function(prop)
+		{
+			//assert(this._session);
+			delete this[prop];
+			this._session.removeAttribute(prop);
+		}
+	}
+}());
+
+
+
+
+%>

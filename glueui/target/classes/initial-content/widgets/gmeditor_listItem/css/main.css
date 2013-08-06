@@ -1,0 +1,125 @@
+._jobListItem {
+	border: 1px solid black;
+	width: 100%;		
+	padding: 10px;
+	margin-top: 10px;
+	font-size: 12px;
+	overflow:hidden;
+	float:left;
+	white-space: nowrap;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+	
+	border: 1px solid #ccc;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	
+	-webkit-box-shadow:  1px 1px 5px 2px rgba(0, 0, 0, 0.1);
+	box-shadow:  1px 1px 5px 2px rgba(0, 0, 0, 0.1);
+}
+._JobListInfo{
+	display:inline-block;
+	white-space: nowrap;
+	height: 100px;
+	line-height: 100px;
+	vertical-align:top;
+}
+._childTask{
+	position:absolute;
+	background:#ffffff;
+	margin-top:auto;
+	height:250px;
+	width:1000px;
+	z-index:100;
+	border:1px solid #cccccc;
+	display:none;
+}
+._titlePane{
+	width:auto;
+	position:relative;
+	height:28px;
+	border-bottom: 1px solid #cccccc;
+}
+._closeBtn{
+	width:25px;
+	height:17px;
+	position:absolute;
+	top:5px;
+	right:5px;
+	background:url("/widgets/gmeditor_listItem/image/close.gif") no-repeat;
+}
+._modelListItem_check{
+	width: 15px;	
+	text-align:center;
+	display:inline-block;
+	cursor: pointer;
+	margin:0px 0px 0px 20px;
+}
+._modelListItem_check input{
+	cursor: pointer;
+}
+
+._modelListItem_imgdiv {
+	width: 40px;
+	display:inline-block;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	overflow:hidden;
+	margin-left: 40px;
+}
+
+._modelListItem_img{
+	width:40px;	
+	cursor:pointer;
+	position: relative;
+	top: 16px;
+}
+
+._modelListItem_name{
+	line-height:20px;
+	margin: 0px 0px 0px 20px;
+	overflow: hidden;
+	display:inline-block;
+}
+._linebg{
+	width:1px;
+	height:100px;
+	border: 1px solid #ccc;
+	display:inline-block;
+	vertical-align: top;
+}
+._JobListRender{
+	height:100%;
+	margin: 0px 0px 0px 20px;
+	overflow: hidden;
+	display:inline-block;
+	
+}
+.showPictures{
+	display:inline-block;
+	float:left;
+}
+
+.showRenderMsg{
+	display:inline-block;
+	margin-left:40px;
+	white-space:nowrap;
+}
+
+.showMsg1{
+	display:inline-block;
+	float:left;
+}
+.showMsg2{
+	display:inline-block;
+	float:left;
+	margin-left:20px;
+}
+._viewSubTask{
+	color:blue;
+	cursor:pointer;
+	margin-left:140px;
+}

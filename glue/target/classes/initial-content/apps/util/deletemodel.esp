@@ -1,0 +1,64 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/blendercgi.esp");
+
+function del_model(model_node)
+{
+
+	var modelnode = model_node;
+	
+
+	var GVAR_CurrentNode;
+	var GVAR_Session;
+	var GVAR_WorkSpace;
+	var GVAR_RootNode;
+
+	
+	var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+	var adminSession = slingRepos.loginAdministrative(null);
+	GVAR_Session = adminSession;
+	GVAR_WorkSpace = GVAR_Session.getWorkspace();
+	GVAR_RootNode = GVAR_Session.getRootNode();
+
+	var listmat = GVAR_bcgi.forward({cgi : "model/listmat.py",node : modelnode, useEmptyBlend : false});
+
+	var matJson = new Packages.org.apache.sling.commons.json.JSONObject(listmat);
+	// var matarr = matJson.toJSONArray();
+	var matjsonkeys = matJson.keys()
+	for(;matjsonkeys.hasNext();)
+	{
+		var key = matjsonkeys.next();
+		var value = matJson.get(key);
+		var matpath = String(value);
+		try{
+			var matnode = GVAR_RootNode.getNode(matpath.substring(1,matpath.length));
+			matnode.remove();
+		}
+		catch(e)
+		{
+			
+		}
+	}
+	modelnode = GVAR_RootNode.getNode(modelnode.getPath().substring(1,modelnode.getPath().length));
+	modelnode.remove();
+	GVAR_Session.save();
+	// out.print(matJson.keys());
+}
+
+
+%>

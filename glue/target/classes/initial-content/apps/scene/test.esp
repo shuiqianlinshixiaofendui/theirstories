@@ -1,0 +1,20 @@
+<%
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+
+
+out.println(GVAR_system.getWebTmpPath());
+var path = GVAR_system.getNodePath(currentNode,true);
+out.println("<BR> getNodePath = " + path);
+out.println("<BR> getuuidFromPath = " + GVAR_system.getuuidFromPath(path));
+
+load("/apps/util/blendercgi.esp");
+out.println(GVAR_bcgi.forward({
+	useEmptyBlend : true,
+	env : {
+		"param1" : "this is a test"
+	}
+}));
+
+%>

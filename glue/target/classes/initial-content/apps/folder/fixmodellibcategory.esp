@@ -1,0 +1,112 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+*/
+response.setCharacterEncoding("UTF-8");
+	
+	// 个人模型库查询
+	var usrModellibpath = "/jcr:root/content/users//modellib";
+	// 公共模型库查询
+	var pulicModellibpath = "/jcr:root/content/modellib";
+	
+	var fixcount = 0;
+	var fixmodelInfo = [];
+	// 修复个人模型库
+	fixModellib(usrModellibpath);
+	// 修复公共模型库
+	fixModellib(pulicModellibpath);
+	// 打印修复日志
+	showlog(fixmodelInfo);
+	// 打印总数
+	out.println("count" + fixcount);
+	// 修复路径
+	function fixModellib(querypath){
+		var language = "xpath";
+		var expression = querypath;
+		var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+		var qry = queryManager.createQuery(expression,language);
+		
+		try{
+			var result = qry.execute().getNodes();
+		}
+		catch(e){
+			out.println("{error}");
+		}
+		
+		// 遍历所有的model
+		while(result.hasNext()){
+			var usrmodellib = result.nextNode();
+			out.println(usrmodellib);
+			var modellist = usrmodellib.getNodes();
+			for(var model in modellist){
+				if(modellist[model].getName()!="defaultCategory"){
+						repalceModel(modellist[model]);
+						//model.save();
+						fixcount ++;
+				}
+			
+			}
+			
+		}
+	
+	}
+	
+	// 进行属性的修改
+	function repalceModel(model){
+		
+		var modelStatus = new Packages.org.apache.sling.commons.json.JSONObject();
+		modelStatus.put("模型路径", model.getPath());
+		modelStatus.put("模型名称", model.getName());
+		var madeOfPath = model["madeOfPath"];
+		var categoryPath = model["categoryPath"];
+		var stylePath = model["stylePath"];
+		var brandPath = model["brandPath"];
+		
+		if(madeOfPath != undefined){
+			modelStatus.put("madeOfPath",madeOfPath.toString());
+			var madeOfPath =madeOfPath.replace("/content/","/content/modellibcategory/");
+			model.setProperty("madeOfPath",madeOfPath.toString());
+			modelStatus.put("_madeOfPath",madeOfPath.toString());
+		}
+		if(categoryPath != undefined){
+			modelStatus.put("categoryPath",categoryPath.toString());
+			var categoryPath =categoryPath.replace("/content/","/content/modellibcategory/");
+			model.setProperty("categoryPath",categoryPath.toString());
+			modelStatus.put("_categoryPath",categoryPath.toString());
+		}
+		if(stylePath != undefined){
+			modelStatus.put("stylePath",stylePath.toString());
+			var stylePath =stylePath.replace("/content/","/content/modellibcategory/");
+			model.setProperty("stylePath",stylePath.toString());
+			modelStatus.put("_stylePath",stylePath.toString());
+		}
+		if(brandPath != undefined){
+			modelStatus.put("brandPath",brandPath.toString());
+			var brandPath =brandPath.replace("/content/","/content/modellibcategory/");
+			model.setProperty("brandPath",brandPath.toString());
+			modelStatus.put("_brandPath",brandPath.toString());
+		}
+		// 进行保存
+		try{
+			model.save();
+			fixmodelInfo.push(modelStatus.toString());
+		}catch(e){
+			out.println(e);
+		}	
+	}
+	// 日志展示
+	function showlog(fixArray){
+		//out.println(fixArray);
+		for(var i = 0; i<fixArray.length; i++){
+			out.println(fixArray[i]);
+		}
+	}
+%>

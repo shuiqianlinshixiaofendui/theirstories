@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title>添加角色</title>
+	<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap-responsive.min.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
+</head>
+
+<body>
+	<div class="container">
+		<ul class="breadcrumb">
+		  <li><a href="addUser.html">首页</a> <span class="divider">/</span></li>
+		  <li class="active">添加角色</li>
+		</ul>
+		<form class="form-horizontal">
+		  <div class="control-group">
+			<label class="control-label" for="inputRolename">角色名称</label>
+			<div class="controls">
+			  <input class="input-xlarge" type="text" placeholder="角色名称">
+			</div>
+		  </div>
+		  <div class="control-group">
+			<label class="control-label" for="inputRoledes">角色描述</label>
+			<div class="controls">
+			  <input class="input-xlarge" type="text" placeholder="角色描述">
+			</div>
+		  </div>
+		  <div class="control-group">
+			<label class="control-label" for="inputUsername">用户名称</label>
+			<div class="controls">
+			  	<select style="width: 285px;">
+				  <option>张三</option>
+				  <option>李四</option>
+				  <option>王五</option>
+				  <option>赵六</option>
+				</select>
+			</div>
+		  </div>
+		  <div class="control-group">
+			<label class="control-label">角色权限</label>
+			<div class="span4">
+			  <table class="table table-bordered">
+				 <thead>
+					<tr>
+						<th>权限名称</th>
+						<th>是否赋予权限</th>
+					</tr>
+				 </thead>
+				 <tbody>
+					<tr>
+						<td>发布模型</td>
+						<td><input type="checkbox" id="checkbox1" value="option1"></td>
+					</tr>
+					<tr>
+						<td>修改模型</td>
+						<td><input type="checkbox" id="checkbox2" value="option2"></td>
+					</tr>
+					<tr>
+						<td>发布材质</td>
+						<td><input type="checkbox" id="checkbox3" value="option3"></td>
+					</tr>
+					<tr>
+						<td>修改材质</td>
+						<td><input type="checkbox" id="checkbox4" value="option4"></td>
+					</tr>
+				 </tbody>
+			  </table><!-- end of table-->
+		  	</div><!-- end of span4 -->
+		  </div>
+		  
+		  <div class="control-group">
+			<label class="control-label"></label>
+			<button type="submit" class="btn btn-large btn-primary">添加</button>
+			<button type="reset" class="btn btn-large btn-primary btn_left">取消</button>
+		  </div>
+		  
+		</form><!-- end of form -->
+	</div><!-- end of container -->
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><!--lang="zh-cn" 属性说明这个html内容是以中文为显示和阅读基础 -->
+<head>
+	<meta charset="utf-8"><!--为网页提供一种编码方式，否则页面很可能出现乱码。
+                         utf-8:任何语言都可以使用 -->
+	<title>Glue</title>
+	<script type="text/javascript">
+		var dojoConfig = {
+			parseOnLoad:true,
+			packages:[
+				{
+					name:"widgets",
+					location:"/widgets"
+				}
+			]
+		};
+	</script>
+	<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+	<script type="text/javasript" src="/libs/dijit/dijit.js"></script>
+	<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen"/>
+	<!--<link rel="stylesheet" href="css/main_materiaList.css" media="screen"/>-->
+	<style type="text/css">
+		html,body{
+			height:100%;
+		}
+	</style>
+</head>
+
+<body class="claro">
+	<div id="testContainer"></div>
+	<script>
+		require(["dojo/on","widgets/Pagination/main_materiaList"],function(on,Pagination_materiaList){
+			var pages = 16;
+			var showPagination = new Pagination_materiaList(pages).placeAt("testContainer");
+			/**
+			* 接收消息
+			*/
+			on(showPagination,"changePage",function(data){
+				console.log(data,"data");
+			})
+		})
+	</script>
+
+</body>
+
+</html>

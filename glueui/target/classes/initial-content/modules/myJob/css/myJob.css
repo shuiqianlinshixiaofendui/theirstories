@@ -1,0 +1,22 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	font-size:12px;
+}
+
+#modeleditBorderContainer{
+	width:100%;
+	height:100%;
+}
+#modelhistroyBorderContainer{
+	width:100%;
+	height:100%;
+}
+
+#modeleditContainer{
+	height:400px;
+}
+#modelhistroyContainer{
+	height:100px;
+}

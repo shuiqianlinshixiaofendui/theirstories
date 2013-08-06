@@ -1,0 +1,18 @@
+<div data-dojo-attach-point="PulldownMenu">
+    <!-- 
+        template 中禁止使用id，如果调整css样式可以通过class
+        获取dom对象： data-dojo-attach-point="rightUI"
+        给dom添加事件：data-dojo-attach-event='onmouseover: onMouseOverEvent , onmouseout: onMouseOutEvent'
+        <div data-dojo-attach-point="rightUI" data-dojo-attach-event='onmouseover: onMouseOverEvent , onmouseout: onMouseOutEvent' class="water_rightUI"/>
+    -->
+	<div data-dojo-attach-point="myBtnGroup" class="btn-group">
+		<button data-dojo-attach-point="default" class="btn">Action</button>
+		<button class="btn dropdown-toggle" data-toggle="dropdown">
+			<span class="caret"></span>
+		</button>
+		<ul  data-dojo-attach-point="myul" class="dropdown-menu"></ul>
+	</div>
+	<link href = ${hrefURL} rel="stylesheet" type="text/css"/> 
+	
+</div>
+

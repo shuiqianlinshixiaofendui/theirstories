@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>我的效果图</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name: "myscenelib",
+						location: "/modules/myscenelib"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<!-- <link rel="stylesheet" href="css/main.css" media="screen"> -->
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelEdit/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/LibView/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+				background-color:white;
+				overflow-y:auto;
+			}
+			#previewContainer{
+				width: 1000px; 
+				height:100%;
+				margin:0 auto;
+			}
+			.btnGroup{
+				float:left;
+				margin-top:5px;
+				margin-bottom:5px;
+			}
+			.selectBtn,.listType,.editBtn,.orderItem{
+				float:left;
+				margin-left:20px;
+				display:inline;
+				color:#fff;
+				padding:10px;
+				font-weight:bold;
+				background:#5080d8;
+				cursor:pointer;
+				z-index:1;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div id="previewContainer"></div>
+		<script>
+			Spolo.isRoot = true;
+			require(
+				[
+					"widgets/LibView/MyPreviewLib"
+				],
+				function
+				(
+					MyPreviewLib
+				)
+				{
+					var json = {
+						path : "/content/users/"+Spolo.getUserId()+"/previewlib",
+						isPublish : true, //是否支持发布功能，默认不支持。
+						canAddModel : false, // 是否可以加入场景，默认可以
+						hasButton : true //是否显示功能按钮，默认不显示按钮
+					}
+					var myPreviewLib = new MyPreviewLib(json).placeAt("previewContainer");
+				});
+		</script>
+		<script type="text/javascript" src="/script/spolo/ui/spdialog.js"></script>
+		<script>
+			//这儿临时将遮罩方法写到这里，以后移动到/spolo/ui/spdialog中
+			var spshowmask = function()
+			{
+				require(["widgets/Mask/Mask"], function(Mask)
+				{
+					Mask.show();
+				});
+			}
+			var sphidemask = function()
+			{
+				require(["widgets/Mask/Mask"], function(Mask)
+				{
+					Mask.hide();
+				});
+			}
+		</script>
+	</body>
+</html>

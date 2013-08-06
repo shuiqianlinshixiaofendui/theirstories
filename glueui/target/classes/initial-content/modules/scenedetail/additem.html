@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            添加模型
+        </title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/additem.css" media="screen" />
+		<link rel="stylesheet" href="/widgets/ModelListItem/css/main.css" media="screen"/>
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelEdit/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelLib/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+    </head>
+    <body class="claro">
+		<div id="modelLibContent" dojoType="dijit.layout.BorderContainer" gutters=false>
+			<div id="toolbar" dojoType="dijit.layout.ContentPane" region="top">
+				<button id="btnAddEnsure" data-dojo-type="dijit.form.Button" style="margin:0 300px 0 550px"> 添加选中模型 </button>
+				<!-- <button id="btnLookSelected" data-dojo-type="dijit.form.Button" style="margin-bottom:0px;"> 查看已选 </button> -->
+			</div>
+			<div id="modelLibs" dojoType="dijit.layout.ContentPane" region="center">
+				<div data-dojo-type="dijit.layout.TabContainer">
+					<div id="publicModelLib" data-dojo-type="dijit.layout.ContentPane" title="公共模型库" data-dojo-props="selected:true">
+							<div id="publicModelLibs" dojoType="dijit.layout.ContentPane" region="center">
+							</div>
+					</div>
+					<div id="privateModelLib" data-dojo-type="dijit.layout.ContentPane" title="个人模型库">
+							<div id="privateModelLibs" dojoType="dijit.layout.ContentPane" region="center">
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<script type="text/javascript">
+		
+		require(
+			[
+				"dojo/parser","dojo/ready","dojo/dom","dojo/dom-style","dojo/on",
+				"dojo/_base/array",	"dojo/query", "dojo/_base/unload",
+				"spolo/data/spsession","widgets/ModelListItem/ModelListItem","dojo/request/xhr",
+				"dojox/NodeList/delegate","widgets/Category/Category",
+				"dijit/form/Button","dijit/registry","widgets/Pagination/Pagination",
+				"widgets/Mask/Mask",
+				"dijit/layout/BorderContainer", "dijit/layout/ContentPane",
+				"dijit/layout/TabContainer","spolo/data/model", "widgets/ModelLib/ModelLib",
+				"dojo/cookie"
+				
+			],function(
+				parser, ready, dom, domStyle, on, 
+				arrayUtil, query, baseUnload, 
+				spsession, ModelListItem,xhr,delegate,Category,Buttton,registry,Pagination,Mask,
+				BorderContainer,ContentPane,TabContainer, model, ModelLib, cookie
+			){
+				ready(function(){
+					//获取父级页面的 scene 对象
+					this.scene = this.parent.scene;
+					var scene = this.scene;
+					var iframe = this.parent;
+					var uid = Spolo.getUserId();
+					var privateLibPath = "/content/users/"+uid+"/modellib";
+					var publicLibPath = "/content/modellib";
+					initLib();
+					//初始化模型库
+					function initLib(){
+						//公共模型库
+						var publicCurrentPage = cookie("publicCurrentPage");
+						if(!publicCurrentPage){
+							publicCurrentPage = 1;
+						}
+						var privateCurrentPage = cookie("privateCurrentPage");
+						if(!privateCurrentPage){
+							privateCurrentPage = 1;
+						}
+						var publicJSON = 
+						{
+							path: publicLibPath,
+							limit: 10,
+							queryString: "[@sling:resourceType='model']",
+							hasCategory:true,
+							selectedModules:true,
+							currentPage:publicCurrentPage,
+							isClickImg:true,
+							showEditOrPreview:true,
+							numberSpinner:true,
+							showAddItemsModelLib:true
+						};
+						var publicModelLib = new ModelLib(publicJSON);
+						publicModelLib.placeAt("publicModelLibs");
+						publicModelLib.hideButton();
+						//个人模型库
+						var privateJSON = 
+						{
+							path: privateLibPath,
+							limit: 10,
+							queryString: "[@sling:resourceType='model']",
+							hasCategory: true,
+							selectedModules:true,
+							currentPage:privateCurrentPage,
+							showEditOrPreview:true,
+							numberSpinner:true,
+							showAddItemsModelLib:true
+						};
+						var privateModelLib = new ModelLib(privateJSON);
+						
+						privateModelLib.placeAt("privateModelLibs");
+						privateModelLib.hideButton();
+						//添加所有选中模型(公共模型库和个人模型库)
+						on(dom.byId("btnAddEnsure"),"click", function(){
+							var publicSelected = publicModelLib.getAllPageSelected();
+							var privateSelected = privateModelLib.getAllPageSelected();
+							cookie("publicCurrentPage",publicModelLib.getCurrentPage());
+							cookie("privateCurrentPage",privateModelLib.getCurrentPage());
+							if(publicSelected.length || privateSelected.length){
+								addModelsToCurrentScene(publicLibPath,publicSelected);
+								addModelsToCurrentScene(privateLibPath,privateSelected);
+								Mask.show();
+								scene.saveItems(success, error);
+							}
+							else
+							{
+								Spolo.notify({
+									"text" : "请选择模型！!",
+									"type" : "error",
+									"timeout" : 1000
+								});
+							}
+							
+						});
+					}
+					
+					//遍历当前所有选中的模型，并且添加到场景中
+					function addModelsToCurrentScene(path,data){
+						if(data){
+							for(var key = 0; key < data.length ;key++){
+								var name = data[key]["resourceName"];
+								var referModel = path + "/" + data[key]["nodeName"];
+								var ID = data[key]["ID"];
+								var addNumber = data[key]["addNumber"];
+								var json = {
+									name:name,
+									referModel:referModel,
+									type:"MESH",
+									ID:ID
+								};
+								scene.addItemsByCount(json,addNumber);
+								
+							}
+						}							
+					}
+					
+					function success(res)
+					{
+						Mask.hide();
+						Spolo.notify({
+							"text" : "添加模型成功！",
+							"type" : "success",
+							"timeout" : 1000
+						});
+						iframe.refreshEditItems();
+						iframe.hideDialog("dialogAddModel");
+					}
+					function error(res)
+					{
+						Spolo.notify({
+							"text" : "添加模型失败！",
+							"type" : "error",
+							"timeout" : 1000
+						});
+						throw(res);
+					}
+					
+					//当离开此页面时
+					baseUnload.addOnUnload(function(){
+						//scene.clearCache();
+					});
+					//registry.byId("publicModelLib").resize();
+				});
+			});
+	</script>	
+    </body>
+</html>

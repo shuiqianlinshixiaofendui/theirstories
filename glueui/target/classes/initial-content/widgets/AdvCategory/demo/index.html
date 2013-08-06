@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<style type="text/css">
+			html,body
+			{
+				height:100%;
+			}
+			#testContainer{
+				height:100%;
+				width: 900px; 
+			}
+			#testContainer1{
+				height:100%;
+				width: 900px; 
+			}
+		</style>
+	</head>
+	
+	<body>
+	
+		<div id="testContainer"></div>
+		<div id="testContainer1"></div>
+		<script>
+			require(
+				[
+					"widgets/AdvCategory/main",
+					"dojo/on",
+					"spolo/data/folder"
+				],
+				function
+				(
+					main_cls, on, folder
+				)
+				{
+					var path = "/content/modellibcategory";
+					var main = new main_cls().placeAt("testContainer");
+					folder.getCategory
+					({
+						path:path,
+						success:function(cateData)
+						{
+							main.initialize(cateData);
+						},
+						failed:function(error)
+						{
+							console.log(error);
+						}
+					});
+					//获取子分类的事件
+					on(main,"subcatItem",function(json)//接收多级分类点击时发出的事件，得到子分类数据
+					{
+						var path = json["path"];
+						folder.getSubCategory({
+							path : path,
+							success : function(subCatArr)
+							{
+								main.getSubCategory(subCatArr);
+							},
+							failed : function(error){
+								console.error(error);
+							}
+						});
+					});
+					//获取兄弟分类的事件
+					on(main,"siblingcatItem",function(json){
+						var path = json["path"];
+						folder.getSiblingCategory({
+							path : path,
+							success : function(siblingCatArr)
+							{
+								main.getSibCategory(siblingCatArr);
+							},
+							failed : function(error)
+							{
+								console.error(error);
+							}
+						});
+					});
+					//分类改变时的事件
+					on(main,"categoryItemChange",function(json)
+					{
+						console.log(json);
+					});
+					//切换同级分类的事件
+					on(main,"switchSiblingCategory",function(json)
+					{
+						var path = json["path"];
+						folder.getSubCategory({
+							path : path,
+							success : function(subCatArr)
+							{
+								main.switchCategory(subCatArr);
+							},
+							failed : function(error){
+								console.error(error);
+							}
+						});
+					});
+					//鼠标滑过，获取子分类
+					on(main,"moreCategoryItem",function(json)
+					{
+						var path = json["path"];
+						folder.getSubCategory({
+							path : path,
+							success : function(subCatArr)
+							{
+								main.getMoreSubCategory(subCatArr);
+							},
+							failed : function(error){
+								console.error(error);
+							}
+						});
+					});
+					//在上面添加一个分类
+					on(main,"addCategory",function(json)
+					{
+						var path = json["path"];
+						folder.getSubCategory({
+							path : path,
+							success : function(subCatArr)
+							{
+								main.addCategory(subCatArr);
+							},
+							failed : function(error){
+								console.error(error);
+							}
+						});
+					});
+					//鼠标滑过获取分类的子类
+					on(main,"moreCategory",function(json)
+					{
+						var path = json["path"];
+						folder.getSubCategory({
+							path : path,
+							success : function(subCatArr)
+							{
+								main.getMoreCategory(subCatArr);
+							},
+							failed : function(error){
+								console.error(error);
+							}
+						});
+					});
+				});
+		</script>
+	</body>
+</html>

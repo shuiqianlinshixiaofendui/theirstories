@@ -1,0 +1,30 @@
+<div data-dojo-attach-point="ImgItem">
+    <!-- 
+        template 中禁止使用id，如果调整css样式可以通过class
+        获取dom对象： data-dojo-attach-point="rightUI"
+        给dom添加事件：data-dojo-attach-event='onmouseover: onMouseOverEvent , onmouseout: onMouseOutEvent'
+        <div data-dojo-attach-point="rightUI" data-dojo-attach-event='onmouseover: onMouseOverEvent , onmouseout: onMouseOutEvent' class="water_rightUI"/>
+   -->
+
+<div class="waterfall_picList" style="margin-left: 10px; top: 0px; left: 0px; display: block;">
+	<div class="waterfall_shareIcon">
+		<div class="personal_container">
+			<a href="javascript:void(0);"   class="btn addfav" 
+				data-dojo-attach-event='onclick:_onmouseClickOfPreview'>
+				<span class="addfav-content">预览</span>
+			</a>		
+			<a href="javascript:void(0);"  class="btn download" data-dojo-attach-event='onclick:_onmouseClickOfDown'>
+				<span class="download-content">下载</span>
+			</a>
+		</div>
+	</div>
+	<div class="waterfall_picThumbnail">
+		<a class="waterfall_picture"><img  src="${url}"></a>
+	</div>
+	<div data-dojo-attach-point="description" class="waterfall_picDescription"></div>
+</div>
+<link href = ${hrefURL} rel="stylesheet" type="text/css"/> 
+</div>
+
+
+

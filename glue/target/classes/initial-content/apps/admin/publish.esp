@@ -1,0 +1,45 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+// 该方法用来把用户模型库下的模型共享到公共模型库，
+// 实现方式是在公共模型库下建立一个索引。
+
+
+// 得到共享模型添加到公共模型库中地址
+var publishPath = request.getParameter("publishPath");
+var nodeName = request.getParameter("nodeName");
+
+if(publishPath && nodeName){
+	var session = currentNode.getSession();
+	// 这里添加用户身份判断，以避免把别人模型库中的模型共享了。
+	var cPath = currentNode.getPath();
+	var uid = session.getUserID();
+	if(cPath.indexOf(uid)>-1){
+
+		var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+		var adminSession = slingRepos.loginAdministrative(null);
+		
+		var node = adminSession.getNode(publishPath);
+		var newNode = node.addNode(nodeName);
+		newNode.setProperty("sling:resourceType","model");
+		newNode.setProperty("ref",currentNode.getPath());
+		adminSession.save();
+		adminSession.logout();
+		out.print("success");
+	}else{
+		out.print("AccessDenied");
+	}
+}
+
+
+%>

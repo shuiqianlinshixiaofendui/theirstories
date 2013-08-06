@@ -1,0 +1,8 @@
+{
+	"sling:resourceType":"module",
+	"jcr:primaryType":"sling:Folder",
+	"resourceName":"用户反馈",
+	"description":"记录用户反馈回来的信息",
+	"isActive":true,
+	"isTopMenu":true
+}

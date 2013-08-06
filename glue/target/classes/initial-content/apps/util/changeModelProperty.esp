@@ -1,0 +1,42 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+response.setCharacterEncoding("UTF-8");
+var session = currentNode.getSession();
+var GVAR_LoadLibrary = true;
+	
+load("/apps/util/sysconfig.esp");
+load("/apps/util/blendercgi.esp");
+//修改模型名称
+function changeModelName(modelnode,path,ID)
+{
+	var result = GVAR_bcgi.forward({
+		cgi : "model/changeModelName.py",
+		node : modelnode,
+		useEmptyBlend : false,
+		env : {
+        "ID" : ID,
+		"path" : path
+		}});
+	return result;
+}
+//修改JCR属性
+function setJCRProperty(modelnode,name,property)
+{
+	modelnode.setProperty(name, property);
+	modelnode.save();
+}
+
+%>

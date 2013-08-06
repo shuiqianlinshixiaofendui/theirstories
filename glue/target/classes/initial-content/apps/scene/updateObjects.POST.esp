@@ -1,0 +1,83 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ /*
+   1. 合法性判定(权限，参数)。
+   2. 删除cache目录下的objects.json文件(如果有的话)。
+   3. 将数据参数保存为一个环境变量，考虑到可能会很大，将内容保存为一个临时文件，并将文件路径设置到环境变量中.
+   4. forward给python处理。在python中读取json,并根据json的内容添加、删除、更新object.
+   5. 删除临时文件。
+ */
+
+response.setCharacterEncoding("UTF-8");
+ 
+var GVAR_LoadLibrary = true;
+	
+load("/apps/util/sysconfig.esp");
+load("/apps/util/blendercgi.esp");
+load("/apps/util/request.esp");
+
+var result;
+var isFile = false;
+
+try{
+   var NodePath = GVAR_system.getNodePath(currentNode,true);
+
+   if(NodePath){
+      var cachePath = NodePath + GVAR_system.path_separator + "cache";
+      GVAR_system.deleteDirectory(cachePath);
+
+      GVAR_uploader.foreach(
+         function(name, param)
+         {
+            var tempFile;
+            
+            if(!param.isFormField()){
+               isFile = true;
+               tempFile = GVAR_uploader.copyFile(param, GVAR_system.getTmpRootPath());
+            }else{
+               param = Packages.org.apache.commons.io.IOUtils.toString(param.getString().getBytes("ISO-8859-1"), "UTF-8");
+               tempFile = new Packages.java.io.File.createTempFile("spp", "glue");
+               Packages.org.apache.commons.io.FileUtils.writeStringToFile(tempFile, param);
+            }
+            result = GVAR_bcgi.forward({
+               cgi : "scene/update_objects.py", 
+               useEmptyBlend : false,
+               env : {
+                  "path" : tempFile.path
+               }
+            });
+            
+            Packages.org.apache.commons.io.FileUtils.forceDelete(tempFile);
+         })
+   }
+   
+}catch(e){
+   result = "{\"error\" :  \"" + e + "\"}";
+}
+
+if(isFile){
+   response.setContentType("text/html");
+   out.println("<html> <body> "); 
+   out.println("<textarea>");   
+}else{
+   response.setContentType("application/json");
+}
+
+out.println(result);
+
+if(isFile){
+   out.println("</textarea>");
+   out.println("</body></html>");
+}
+%>

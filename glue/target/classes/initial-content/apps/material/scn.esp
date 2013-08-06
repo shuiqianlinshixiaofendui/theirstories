@@ -1,0 +1,491 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+//out.write("test scn!\n");
+var tm_scn = 
+"scene.camera.lookat = 0.5 -1.4 1.7 0.0 0.0 0.4\n\
+scene.materials.matte.whitematte = 0.75 0.75 0.75\n\
+scene.materials.matte.luxtext = 0.0 0.0 0.75\n\
+scene.materials.matte.blacktext = 0.0 0.0 0.0\n\
+scene.materials.light.whitelight = 40.0 40.0 40.0\n\
+scene.objects.whitematte.room = C:/luxball/room.ply\n\
+scene.objects.whitematte.luxinner = C:/luxball/luxball-inner.ply\n\
+scene.objects.luxtext.luxtext = C:/luxball/luxball-text.ply\n\
+scene.objects.shell.luxshell = C:/luxball/luxball-shell.ply\n\
+scene.objects.whitelight.l1 = C:/luxball/luxball-light1.ply\n\
+scene.objects.whitelight.l2 = C:/luxball/luxball-light2.ply\n\
+scene.objects.blacktext.blacktext = C:/luxball/blacktext.ply\n";
+	
+	var outpath;
+	if(outpath != undefined)
+	{
+		tm_scn = tm_scn.replace(/C:\/luxball\//g,str);
+	}
+	
+	function create_scn(matnode,tm_scn)
+	{
+		
+
+		//判断当前节点类型
+		if(matnode["sling:resourceType"] == "material")
+		{
+
+			
+			//获取matdata节点
+			var matdatanode = matnode["matdata"];
+			//out.write(matdatanode["typename"] + "\n");
+
+			//mat_str目标格式"scene.materials.glass.shell = 0.69 0.78 1.0  0.69 0.78 1.0  1.0 1.45  1 0\n";
+			
+			var mat_str = "";
+
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "matte_material")
+			{
+				mat_str += "scene.materials.matte.shell = ";
+				
+				//获取存储diffuse属性的节点
+				var diffusenode = matdatanode["diffuse"];
+				
+				//判断diffuse值的类型
+				if(diffusenode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = diffusenode["rgbvalue"];
+					mat_str += rgbvalue;
+				}
+				
+			}
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "light_material")
+			{
+				mat_str += "scene.materials.light.shell = ";
+				
+				//获取存储diffuse属性的节点
+				var diffusenode = matdatanode["diffuse"];
+				
+				//判断diffuse值的类型
+				if(diffusenode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = diffusenode["rgbvalue"];
+					mat_str += rgbvalue;
+				}
+				
+			}
+			
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "mirror_material")
+			{
+				mat_str += "scene.materials.mirror.shell = ";
+				
+				//获取存储reflection属性的节点
+				var reflectionnode = matdatanode["reflection"];
+				
+				//判断diffuse值的类型
+				if(reflectionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = reflectionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储specular属性的节点
+				var specularnode = matdatanode["specular"];
+				
+				//判断specular值的类型
+				if(specularnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specularnode["value"];
+					mat_str += value;
+				}
+				
+			}
+			
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "mattemirror_material")
+			{
+				mat_str += "scene.materials.mattemirror.shell = ";
+				
+				//获取存储diffuse属性的节点
+				var diffusenode = matdatanode["diffuse"];
+				
+				//判断diffuse值的类型
+				if(diffusenode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = diffusenode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储reflection属性的节点
+				var reflectionnode = matdatanode["reflection"];
+				
+				//判断diffuse值的类型
+				if(reflectionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = reflectionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储specular属性的节点
+				var specularnode = matdatanode["specular"];
+				
+				//判断specular值的类型
+				if(specularnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specularnode["value"];
+					mat_str += value;
+				}
+				
+			}
+			
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "glass_material")
+			{
+				mat_str += "scene.materials.glass.shell = ";
+				
+				//获取存储transmission属性的节点
+				var transmissionnode = matdatanode["transmission"];
+				
+				//判断transmission值的类型
+				if(transmissionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = transmissionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储reflection属性的节点
+				var reflectionnode = matdatanode["reflection"];
+				
+				//判断reflection值的类型
+				if(reflectionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = reflectionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储outside_index_of_refraction属性的节点
+				var outside_index_of_refractionnode = matdatanode["outside_index_of_refraction"];
+				
+				//判断specular值的类型
+				if(outside_index_of_refractionnode["sling:resourceType"] == "float")
+				{
+					var value = outside_index_of_refractionnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储inside_index_of_refraction属性的节点
+				var inside_index_of_refractionnode = matdatanode["inside_index_of_refraction"];
+				
+				//判断specular值的类型
+				if(inside_index_of_refractionnode["sling:resourceType"] == "float")
+				{
+					var value = inside_index_of_refractionnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				//获取存储specular_reflections属性的节点
+				var specular_reflectionsnode = matdatanode["specular_reflections"];
+				
+				//判断specular值的类型
+				if(specular_reflectionsnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specular_reflectionsnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				//获取存储specular_transmissions属性的节点
+				var specular_transmissionsnode = matdatanode["specular_transmissions"];
+				
+				//判断specular值的类型
+				if(specular_transmissionsnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specular_transmissionsnode["value"];
+					mat_str += value;
+				}
+				
+			}
+			
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "metal_material")
+			{
+				mat_str += "scene.materials.metal.shell = ";
+				
+				
+				//获取存储reflection属性的节点
+				var reflectionnode = matdatanode["reflection"];
+				
+				//判断diffuse值的类型
+				if(reflectionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = reflectionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储exponent属性的节点
+				var exponentnode = matdatanode["exponent"];
+				
+				//判断exponent值的类型
+				if(exponentnode["sling:resourceType"] == "float")
+				{
+					var value = exponentnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储specular属性的节点
+				var specularnode = matdatanode["specular"];
+				
+				//判断specular值的类型
+				if(specularnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specularnode["value"];
+					mat_str += value;
+				}
+				
+			}
+			
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "mattemetal_material")
+			{
+				mat_str += "scene.materials.mattemetal.shell = ";
+				
+				//获取存储diffuse属性的节点
+				var diffusenode = matdatanode["diffuse"];
+				
+				//判断diffuse值的类型
+				if(diffusenode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = diffusenode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储reflection属性的节点
+				var reflectionnode = matdatanode["reflection"];
+				
+				//判断diffuse值的类型
+				if(reflectionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = reflectionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储exponent属性的节点
+				var exponentnode = matdatanode["exponent"];
+				
+				//判断exponent值的类型
+				if(exponentnode["sling:resourceType"] == "float")
+				{
+					var value = exponentnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储specular属性的节点
+				var specularnode = matdatanode["specular"];
+				
+				//判断specular值的类型
+				if(specularnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specularnode["value"];
+					mat_str += value;
+				}
+				
+			}
+			
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "archglass_material")
+			{
+				mat_str += "scene.materials.archglass.shell = ";
+				
+				
+				//获取存储reflection属性的节点
+				var reflectionnode = matdatanode["reflection"];
+				
+				//判断diffuse值的类型
+				if(reflectionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = reflectionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储transmission属性的节点
+				var transmissionnode = matdatanode["transmission"];
+				
+				//判断transmission值的类型
+				if(transmissionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = transmissionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储specular_reflections属性的节点
+				var specular_reflectionsnode = matdatanode["specular_reflections"];
+				
+				//判断specular值的类型
+				if(specular_reflectionsnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specular_reflectionsnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储specular_transmissions属性的节点
+				var specular_transmissionsnode = matdatanode["specular_transmissions"];
+				
+				//判断specular值的类型
+				if(specular_transmissionsnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specular_transmissionsnode["value"];
+					mat_str += value;
+				}
+				
+			}
+			
+			
+			
+			//判断matdata节点类型
+			if(matdatanode["sling:resourceType"] == "alloy_material")
+			{
+				mat_str += "scene.materials.alloy.shell = ";
+				
+				//获取存储diffuse属性的节点
+				var diffusenode = matdatanode["diffuse"];
+				
+				//判断diffuse值的类型
+				if(diffusenode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = diffusenode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储reflection属性的节点
+				var reflectionnode = matdatanode["reflection"];
+				
+				//判断diffuse值的类型
+				if(reflectionnode["sling:resourceType"] == "RGBspectrum")
+				{
+					var rgbvalue = reflectionnode["rgbvalue"];
+					mat_str += rgbvalue;
+					mat_str += " ";
+				}
+				
+				//获取存储exponent属性的节点
+				var exponentnode = matdatanode["exponent"];
+				
+				//判断exponent值的类型
+				if(exponentnode["sling:resourceType"] == "float")
+				{
+					var value = exponentnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				
+				//获取存储schlick_term属性的节点
+				var schlick_termnode = matdatanode["schlick_term"];
+				
+				//判断exponent值的类型
+				if(schlick_termnode["sling:resourceType"] == "float")
+				{
+					var value = schlick_termnode["value"];
+					mat_str += value;
+					mat_str += " ";
+				}
+				
+				//获取存储specular属性的节点
+				var specularnode = matdatanode["specular"];
+				
+				//判断specular值的类型
+				if(specularnode["sling:resourceType"] == "floattexture")
+				{
+					var value = specularnode["value"];
+					mat_str += value;
+				}
+				
+			}
+			
+			
+			//添加回车换行
+			mat_str += "\n";
+			
+			//out.write(mat_str)
+			
+			//获取slg子节点
+			var slgnode = matnode["slg"];
+			
+			//判断是否存在slg子节点
+			if(slgnode != null)
+			{
+				//如果存在slg节点则先删掉
+				slgnode.remove();
+				matnode.save();
+			}
+			
+			//创建slg子节点
+			slgnode = matnode.addNode("slg","sling:Folder");
+			matnode.save();
+			
+			//创建scn子节点
+			var scnnode = slgnode.addNode("luxball.scn","nt:file");
+			
+			//创建jcr:content子节点
+			var resNode = scnnode.addNode("jcr:content", "nt:resource");
+			
+			
+			tm_scn = mat_str + tm_scn;
+			
+			//将数据写入resNode节点之下
+			resNode.setProperty("jcr:data", tm_scn);
+			
+			slgnode.save();
+
+			
+			
+			
+			
+			
+		}
+	}
+
+	create_scn(currentNode,tm_scn);
+
+%>

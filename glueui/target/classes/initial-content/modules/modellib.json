@@ -1,0 +1,8 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"resourceName":"云端模型库",
+		"description":"公共模型库预览",
+		"isActive":true,
+		"isTopMenu":true
+}

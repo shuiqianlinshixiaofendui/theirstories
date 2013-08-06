@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="../JobDialog/css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+			<div   data-dojo-type="dijit/Dialog"  id="createJobProperties" title="选择渲染器类型" style="display: none">
+			</div>
+			<button id= "dfd">添加job</button>
+	</body>	
+	
+		<script language='javascript'>
+		
+			function logg(s){
+				console.log(s);
+			
+			}
+			var json={};
+			require(["dojo/dom","dojo/query","dojo/on","dojo/ready","widgets/JobDialog/JobDialog","dojo/topic"],
+				function(dom,query,on,ready,JobDialog,topic){
+					ready(function(){
+						var cameraList = Array();
+						cameraList[0] = "dd";
+						cameraList[1] = "ddd";
+						cameraList[2] = "ddd";
+						cameraList[3] = "ddd";
+						cameraList[4] = "ddd";
+						json["cameraList"] = cameraList;
+						
+						//init the Dialog when add jobs
+						var dJson = {};
+						dJson["dialog"] = dijit.byId('createJobProperties');
+						dJson["currUser"] = "admin";				
+						var iDialog= new JobDialog(dJson).placeAt("createJobProperties");
+						
+						//init iDialog camera
+						for(var i = 0; i < cameraList.length; i++){
+							iDialog.createCamera(i,cameraList[i]);
+						}		
+						
+						on(dom.byId("dfd"),"click",function(){	
+							dijit.byId('createJobProperties').show();
+						});								
+						
+						//get the createjob button event 
+						on(iDialog,"createJob",function(){	
+							
+							iDialog.createJobs(function(jobArry){
+								if(jobArry.length>0){
+									var  callback = function(isSuccess){
+										addJobs(jobArry);					
+									}
+									//create first ,and  create next by order nitce the usage of method shift() 
+									doAddJob(jobArry.shift(),callback);  
+								}
+							});
+
+						});							
+						
+						function doAddJob(job_json,callback){
+							//todo call the method to createJob api
+							alert("todo call the method to createJob api");
+						};
+						
+						
+				});		
+			});
+
+
+		</script>
+</html>

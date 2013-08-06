@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="no-cache">
+		<meta http-equiv="Expires" content="-1">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta charset="utf-8">
+		<title>Glue 帐户登录</title>
+	
+		<!-- 引入css布局 -->
+		<link rel="stylesheet" type="text/css" href="./css/user.css" />
+		<script>
+			dojoConfig = {
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					}
+				]
+			};
+		</script>
+		<!-- 加载js库 -->
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="/libs/plugin/jquery.form.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+	
+	</head>
+	
+	<script type="text/javascript">
+		
+		var User = new Object;
+		User.username;
+		User.password;
+		
+		require([
+			"dojo/parser",
+			"dojo/ready",
+			"dijit/form/ValidationTextBox",
+			"dijit/form/Button",
+			"dojo/topic",
+			"dojo/query",
+			"dojo/on",
+			"dojo/_base/xhr",
+			"dijit/form/CheckBox",
+			"dojo/dom",
+			"dojo/html",
+			"dojo/dom-style",
+			"spolo/data/user"
+		],function(parser,ready,ValidationTextBox,Button,topic,query,on,xhr,CheckBox,dom,html,domStyle,user_cls){
+			ready(function(){
+				parser.parse();
+				//检查IP，内网显示注册按钮，外网则隐藏
+				user_cls.getRealIP(
+					function(ip){
+						if(ip != null){
+							var user_IP = ip;
+							user_IP = user_IP.split(".");
+							if(user_IP[0]!="192" && user_IP[1]!="168"){
+								domStyle.set(dom.byId("link-singup"),"display","none");
+							}
+						}
+					},
+					function(error){
+						console.log(error);
+					}
+				);
+				
+				// 判读是否是gutil，进行不同的跳转
+				function isGutil(url){
+					// 判断参数
+					if(!url){
+						console.error("[isGutil ERROR]: url is undefined!");
+						return;
+					}
+					var urlMap = Spolo.getUrlVars();
+					var isGutil = urlMap["isGutil"];
+					if(!isGutil){
+						window.location.href = url;
+					}else{
+						Spolo.redirect(url);
+					}	
+				}
+				var checkBox = new dijit.form.CheckBox({
+					name : "persistent",
+					value : "agreed",
+					checked : false,
+					onChange : function(b){}
+				},"persist_box");
+				
+				//提交登录请求
+				on(query("#signIn"),"click",function(e){
+					//获取用户名和密码
+					var name = query("#Email").attr("value");
+					var pwd = query("#Passwd").attr("value");
+					//判断用户名和密码是否为空
+					if(name == ""){
+						$("#Email").focus();
+					}else if(pwd == ""){
+						$("#Passwd").focus();
+					}
+					//调用方法，发送请求
+					xhrLogin(name,pwd);
+				});
+				//判断当前的用户状态
+				on(dom.byId("checkUserRealIp"),"click",function(){
+					user_cls.getRealIP(
+					function(ip){
+						if(ip != null){
+							var user_IP = ip;
+							user_IP = user_IP.split(".");
+							if(user_IP[0]=="192" && user_IP[1]=="168"){
+								// window.location.href="/modules/user/register.html";
+								// 根据是否是gutil 进行不同的跳转
+								isGutil("/modules/user/register.html");
+								
+							}else{
+								// window.location.href="/modules/user/unregister.html";
+								// 根据是否是gutil 进行不同的跳转
+								isGutil("/modules/user/unregister.html");
+							}
+						}
+					},
+					function(error){
+						console.log(error);
+					}
+					);
+				});
+				// 注册跳转进行判断
+				on(dom.byId("link-singup"),"click",function(){
+					
+					var url = "/modules/user/register.html";
+					isGutil(url);
+					
+				});
+				
+				/** 调用 gutil 保存用户登录状态
+				*/
+				function sessionByGutil(args){
+					console.log("sessionByGutil()");
+					var map = {};
+					var username = args["j_username"];
+					var password = args["j_password"];
+					var url = "http://127.0.0.1:10828/savecookie";	//?username="+username+"&password="+password
+					var content = {
+						"username":username,
+						"password":password
+					};
+					var callback = args["callback"];
+					require(["dojo/io/iframe"], function(ioIframe){
+						ioIframe.send({
+							//form: "myform",
+							method : "POST",
+							url : url,
+							content : content,
+							handleAs : "text",
+							load : function(data)
+							{
+								if(callback && typeof(callback)=="function")
+								{
+									callback();
+								}
+							},
+							error : function(err)
+							{
+								if(callback && typeof(callback)=="function")
+								{
+									callback();
+								}
+								console.error(err);
+							}
+						});
+					});
+				}
+				
+				
+				//利用ajxs发送请求
+				function xhrLogin(name,pwd){
+					var username = name;
+					name = Spolo.encodeUname('' + name);
+					xhr.post({
+						postData : "_charset_=UTF-8&resource=/&resource=form&j_username="+name+"&j_password="+pwd,
+						url : "/j_security_check",
+						handleAs : "text",
+						load : function(response){
+							var urlMap = Spolo.getUrlVars();
+							if(urlMap && urlMap["isGutil"]){
+								// 调用 gutil 保存用户登录状态
+								sessionByGutil({
+									"j_username": name,
+									"j_password": pwd,
+									"callback":function()
+									{
+										// 页面跳转到 gutil 请求的 url
+										// var redirect = urlMap["redirect"];
+										var redirectMap = Spolo.getUrlRedirectPar();
+										var redirect = redirectMap["redirect"];
+										if(!redirect){
+											console.error("UrlVars['redirect'] is undefined!");
+											return;
+										}
+										redirect = decodeURIComponent(redirect);
+										console.log("redirect : "+redirect);
+										Spolo.redirectWithVars(redirect);
+									}
+								});
+								
+								
+								
+							}else{
+								//发出登录成功的消息
+								topic.publish("user/login/success");
+								window.location.href = "/index2.html";
+							}
+						},
+						error:function(reponse){ 
+							topic.publish("user/login/failed");
+							dojo.attr("Passwd","value","");
+							dom.byId("error_prompt").innerHTML = "您输入的用户名或密码错误。";
+							domStyle.set("error_prompt","color","red");
+						}
+					}); 
+				}
+				
+				var pwdInput = dom.byId("Passwd");
+				on(pwdInput, "keypress", function(e){
+					if(e.keyCode == dojo.keys.ENTER){
+						on.emit(
+							dom.byId("signIn"),
+							"click",
+							{
+								bubbles: true,
+								cancelable: true
+							}
+						);
+					}
+				});
+				
+				//页面初始化后默认激活用户名输入框
+				dom.byId("Email").focus();
+				
+			});
+		});
+	</script>
+	
+	
+	<body>
+		<div class="wrapper">
+			<div class="google-header-bar">
+				<div class="header content clearfix">
+					<img class="logo" src="./images/logo.png" alt="Glue">
+					<span class="signup-button">
+						<!-- <a id="link-singup" class="g-button g-button-red" href="/modules/user/register.html">注册</a> -->
+						<a id="link-singup" class="g-button g-button-red" style="cursor:pointer;">注册</a>
+					</span>
+				</div>
+			</div>
+			<div class="main content clearfix">
+				<div class="sign-in" style="width: 335px; float: right;">
+					<div class="signin-box">
+						<h2>登录</h2>
+						<form novalidate id="gaia_loginform" action="" method="post">
+							<div class="email-div">
+								<label for="Email"><strong class="email-label">用户名</strong></label>
+								<input  type="email" spellcheck="false" name="Email" id="Email" value="">
+							</div>
+							<div class="passwd-div">
+								<label for="Passwd"><strong class="passwd-label">密码</strong></label>
+								<input type="password" name="Passwd" id="Passwd" >
+							</div>
+							<div id="result-iv">
+								<label>
+									<span id="error_prompt"></span>
+								</label>
+							</div>
+							<a class="g-button g-button-submit" name="signIn" id="signIn" style="margin-top:10px;">登录</a>
+						</form>
+					</div>
+				</div>
+				<div class="product-info ">
+					<div class="product-headers">
+						<h1 class="redtext">帐户</h1>
+					</div>
+					<p>登录 Glue 帐户，享受 Glue 提供的更多服务。
+					<p>在右侧登录，或 <a  id="checkUserRealIp" style="cursor:pointer;"> 免费创建帐户</a>。</p>
+					<ul class="features clearfix">
+						<li>
+							<img src="./images/blender.png" alt="">
+							<p class="title">Glue</p>
+							<p>针对家具和鸟瞰图等需求进行渲染。</p>
+						</li>
+						<li>
+							<img src="./images/blender.png" alt="">
+							<p class="title">个性化渲染</p>
+							<p>定制模型的摆放位置，编辑材质。</p>
+						</li>
+						<li>
+							<img src="./images/weibo.png" alt="">
+							<p class="title">喜欢 Glue 吗？</p>
+							<p><a href="http://weibo.com/u/2827536267">在微博上粉一下吧。</a></p>
+						</li>
+					</ul>
+				</div>
+				<div id="cc_iframe_parent"></div>
+			</div>
+			<div class="google-footer-bar">
+				<div class="footer content clearfix">
+					<ul>
+						<li>版权所有 © 北京飞鹿科技发展有限公司 保留所有权利</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

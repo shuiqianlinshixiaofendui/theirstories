@@ -1,0 +1,440 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>
+			场景列表
+		</title>
+	
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "scenedetail",
+						location: "/modules/scenedetail"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script> 
+		<script type="text/javascript" src="/script/spolo.js"></script> 
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen" />
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen" />
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen" />
+	</head>
+	
+	<body class="claro">
+		<!-- 模型列表显示时 -->
+		<div data-dojo-type="dijit.layout.BorderContainer" style="height:100%;" class="modelDialog">
+			<!-- dialog 头部显示 -->
+			<div class="dialog_head" data-dojo-type="dijit.layout.ContentPane" region="top" style="height:40px;width:100%;">
+				</br>
+				<label>
+					<strong>所选模型列表 -- 请确定各模型数量(份)：</strong>
+				</label>
+			</div>
+			<!-- 具体模型列表显示 -->
+			<div class="modelList_div" id="modelList" data-dojo-type="dijit.layout.ContentPane" region="center" style="height:100px;width:100%;">
+				</br>
+				<div class="modelInfo_div" id="modelInfo_div" style="margin-left:10px;">
+				</div>
+			</div>
+			<div data-dojo-type="dijit.layout.ContentPane" region="bottom" style="height:50px;width:100%;">
+				<!-- 分页div显示 -->
+				<!-- <div class="page_div" id="modelDialogPage_div" data-dojo-type="dijit.layout.ContentPane" style="">
+				</div> -->
+				<div id="modelCountSureBtn-div" style="float:right;">
+					<input type="button" id="_modelCountSureBtn" style="width:60px; height:30px;margin-right:10px;" value="确定" />
+				</div>
+			</div>
+		</div>
+		
+		<!-- 场景列表显示时 -->
+		<div data-dojo-type="dijit.layout.BorderContainer" style="height:100%;" class="sceneDialog">
+			<!-- dialog 头部显示 -->
+			<div class="dialog_head" data-dojo-type="dijit.layout.ContentPane" region="top" style="height:40px;width:100%;">
+				</br>
+				<label>
+					<strong>当前用户下的所有场景 -- 请选择场景：</strong>
+				</label>
+			</div>
+			<!-- 具体场景列表显示 -->
+			<div class="sceneList_div" id="sceneList" data-dojo-type="dijit.layout.ContentPane" region="center" style="height:100px;width:100%;">
+				</br>
+				<div class="sceneInfo_div" id="sceneInfo_div" style="margin-left:45px;">
+				</div>
+			</div>
+			<div data-dojo-type="dijit.layout.ContentPane" region="bottom" style="height:120px;width:100%;">
+				<!-- 分页div显示 -->
+				<div class="page_div" id="sceneDialogPage_div" data-dojo-type="dijit.layout.ContentPane" style="">
+				</div>
+				<div id="cancelBtn-div" style="float:right;">
+					<input type="button" id="_ReturnBtn" style="width:60px; height:30px;margin-right:10px;" value="返回" />
+				</div>
+				<div id="cpyBtn-div" style="float:right;">
+					<input type="button" id="__btnCopyModelTo" style="width:60px; height:30px;margin-right:10px;" value="复制" />
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			require(
+				[
+					"dojo/ready",
+					"dojo/dom",
+					"dojo/dom-style",
+					"dojo/query", 
+					"dojo/on",
+					"spolo/data/scene",
+					"widgets/Mask/Mask",
+					"dijit/form/ValidationTextBox",
+					"dijit/layout/BorderContainer",
+					"dijit/layout/ContentPane",
+					"spolo/data/folder/scenelib",
+					"dijit/form/CheckBox",
+					"dijit/form/TextBox",
+					"dojo/dom-construct",
+					"dijit/registry",
+					"widgets/Pagination/Pagination",
+					"dijit/form/NumberSpinner",
+					"dojo/domReady!"
+				],function(ready, dom, domStyle, query, on, scene_cls, Mask, ValidationTextBox, BorderContainer, ContentPane, scenelib_cls, CheckBox, TextBox, domConstruct, registry, Pagination, NumberSpinner){
+					ready(function(){
+						// 获取参数
+						var data = Spolo.getDialogData();
+						var scene = data["scene"];
+						var modelNameArray = data["modelNameArray"];
+						var referModelArray = data["referModelArray"];
+						var ModelTypeArray = data["ModelTypeArray"];
+						var ModelIDArray = data["ModelIDArray"];
+						var camerasArray = data["camerasArray"];
+						
+						// 初始化参数
+						var modelArray = [];
+						var toPathArray__ = [];
+						var selBoxNameArray = new Array;
+						var dthis = this;
+						dthis.limit = 5;
+						dthis.currentPage = 1;
+						dthis.SpecialMark = true;
+						
+						// 初始化dialog内容 --- 模型列表 or 场景列表
+						initDialog();
+						
+						// 初始化dialog内容
+						function initDialog(){
+							// 隐藏场景列表div 显示模型列表div
+							query(".sceneDialog").style("display","none");
+							query(".modelDialog").style("display","block");
+							
+							// 创建所选模型列表
+							for(var index=0; index < modelNameArray.length; index ++){
+								var inputId = "modelCount_" + index;
+								var type = ModelTypeArray[index];
+								var disabled = "";
+								if(type == "CAMERA"){
+									disabled = "disabled";
+								}
+								var mySpinner = new NumberSpinner({
+									value : 1,
+									smallDelta : 1,
+									constraints: { min:1, max:1000, places:0 },
+									id: inputId,
+									disabled : disabled,
+									style : "width:120px;float:right;margin-right:50px;"
+								}).placeAt("modelInfo_div");
+								
+								var mNameId = "modelName_" + index;
+								var modelName = modelNameArray[index];
+								var style = "font-family:arial,sans-serif;margin-left:10px;margin-right:20px;" + 
+											"font-size:14px;font-weight:bolder;float:left;" + 
+											"cursor:pointer;";
+								var htmlJson = {
+									"value" : modelName,
+									"style" : style,
+									"divId" : "modelInfo_div",
+									"br" : true,
+									"id" : mNameId
+								};
+								domConstructCreate(htmlJson);
+							}
+						}
+						
+						// 确定按钮事件触发 --- 确定各个模型的数量
+						on(dom.byId("_modelCountSureBtn"),"click",function(){
+							if(dthis.SpecialMark){
+								// 遍历所选模型
+								TraverseSelModdel();
+								// 隐藏模型列表div 显示场景列表div
+								query(".sceneDialog").style("display","block");
+								query(".modelDialog").style("display","none");
+								// 初始化场景列表
+								initSceneDialog();
+								dthis.SpecialMark = false;
+							}else{
+								modelArray = [];
+								// 遍历所选模型
+								TraverseSelModdel();
+								// 隐藏模型列表div 显示场景列表div
+								query(".sceneDialog").style("display","block");
+								query(".modelDialog").style("display","none");
+							}
+						});
+						
+						// 遍历所选模型
+						function TraverseSelModdel(){
+							for(var index=0; index < modelNameArray.length; index ++){
+								var name = modelNameArray[index];
+								var referModel = referModelArray[index];
+								var type = ModelTypeArray[index];
+								var ID = ModelIDArray[index];
+								var value = dom.byId("modelCount_" + index).value;
+								var Modeljson = {
+									ID : ID,
+									name : name,
+									type : type,
+									count : value,
+									referModel : referModel
+								};
+								modelArray.push(Modeljson);
+							}
+						}
+						
+						// 初始化场景列表
+						function initSceneDialog(){
+							if(dthis.SpecialMark){
+								// 获取当前用户下的场景列表，供用户选择
+								scenelib_cls.getScenesByQuery({
+									"offset" : ((dthis.currentPage - 1) * dthis.limit).toString() ,
+									"limit" : dthis.limit, 
+									//"orderDesc" : "jcr:created", // 1. 测试orderDesc
+									//"orderAsc" : "jcr:created",  // 2. 测试orderAsc
+									success : function(dataJson, num){
+										// 创建场景列表
+										createSceneList(dataJson,num);
+										// 插入分页控件
+										var pageTotal = Math.ceil(num/dthis.limit);
+										var num = num;
+										var dialogName = "sceneDialog";
+										showPaginationwidget(pageTotal, num, dialogName);
+									},
+									failed : function(error){
+										console.log(error);
+									}
+								});
+							}else{
+								// 隐藏模型列表div 显示场景列表div
+								query(".sceneDialog").style("display","block");
+								query(".modelDialog").style("display","none");
+							}
+						}
+						
+						// 插入分页控件
+						function showPaginationwidget(pageTotal, num, dialogName){
+							var pageJson = {
+								prevLabel : "上一页",
+								nextLabel : "下一页",
+								total : pageTotal
+							}
+							var array = [];
+							var Paginationwidget = new Pagination(pageJson).placeAt(dialogName + "Page_div");
+							// 监听分页事件
+							Paginationwidget.watch(
+								"nowPage", 
+								function()
+								{
+									var nowpage = Paginationwidget.get("nowPage");
+									var total = num;
+									dthis.currentPage = nowpage;
+									Display_list.call(dthis, function(){
+										for(var i = 0; i < selBoxNameArray.length; i++){
+											var element = document.getElementsByName(selBoxNameArray[i])[0];
+											if(!element)
+											{
+												continue;
+											}
+											var elementId = element.id;
+											var checkbox = registry.byId(elementId);
+											checkbox.set("checked", true);
+										}
+									});
+								}
+							);
+						}
+						
+						// 需要一个显示列表的方法
+						function Display_list(callback){
+							var dthis = this;
+							var form = document.getElementById("sceneInfo_div");
+							for(var index = 0; index < form.children.length; index ++)
+							{
+								domConstruct.destroy(form.children[index]);
+								index --;
+							}
+							scenelib_cls.getScenesByQuery({
+								"offset" : ((dthis.currentPage - 1) * dthis.limit).toString() ,
+								"limit" : dthis.limit, 
+								//"orderDesc" : "jcr:created", // 1. 测试orderDesc
+								//"orderAsc" : "jcr:created",  // 2. 测试orderAsc
+								success : function(dataJson, num){
+									// 创建场景列表
+									createSceneList(dataJson,num);
+									callback();
+								},
+								failed : function(error){
+									console.log(error);
+								}
+							});
+						}
+						
+						// 复制按钮事件触发 --- 复制模型到指定场景中
+						on(dom.byId("__btnCopyModelTo"),"click",function(){
+							for(var index=0; index < toPathArray__.length; index++){
+								var topath = toPathArray__[index];
+								if(topath == undefined){
+									continue;
+								}else{
+									Mask.show();
+									// 目标场景的路径
+									var frompath = scene.getURI();
+									// 获取一个 scene 对象
+									var sceneObj = new scene_cls(frompath);
+									// 从当前场景复制模型到指定场景
+									scenelib_cls.copyModelsToScene({
+										srcpath : frompath,
+										scenepath : topath,
+										modelsArray : modelArray,
+										camerasArray : camerasArray,
+										success : function(){
+											Mask.hide();
+											Spolo.notify({
+												text : "成功复制模型到指定场景中!!",
+												type : "success",
+												timeout : 1000
+											});
+											Spolo.dialogHide();
+										},
+										failed : function(error){
+											Mask.hide();
+											console.log(error);
+										}
+									});
+								}
+							}
+						});
+						
+						// 取消按钮事件触发 --- 取消对场景的选择
+						on(dom.byId("_ReturnBtn"),"click",function(){
+							/*var scene_sel = query("#sceneList input:checked");
+							if(scene_sel.length != 0){
+								for(var index = 0; index < scene_sel.length; index++){
+									var id = scene_sel[index].id;
+									registry.byId(id).set("checked",false);
+								}
+							}*/
+							// 隐藏场景列表div 显示模型列表div
+							query(".sceneDialog").style("display","none");
+							query(".modelDialog").style("display","block");
+						});
+						
+						// 创建场景列表
+						function createSceneList(dataJson,num){
+							var sceneList = new Array;
+							var scenePath = new Array;
+							var nodeName = new Array;
+							for(var data in dataJson){
+								var resourceName = dataJson[data]["resourceName"];
+								var scpath = data;
+								var node_name = dataJson[data]["nodeName"];
+								sceneList.push(resourceName);
+								scenePath.push(scpath);
+								nodeName.push(node_name);
+							}
+							for(var index=0; index < sceneList.length; index++){
+								var id = scenePath[index];
+								var name = "CheckBox_" + nodeName[index];
+								var box = new CheckBox({
+									value : id,
+									name : name,
+									checked : false,
+									onChange : function(name){},
+									onClick : function(event){
+										var _this = this;
+										// 判断是否被选中，如果被选中记录nodeName
+										if(_this.checked){
+											selBoxNameArray.push(_this.name);
+											toPathArray__.push(_this.value);
+										}
+										else
+										{
+											for(var index = 0; index < selBoxNameArray.length; index ++)
+											{
+												if(selBoxNameArray[index] == _this.name)
+												{
+													delete selBoxNameArray[index];
+													delete toPathArray__[index];
+													// selBoxNameArray.length --;
+												}
+											}
+										}
+									}
+								}).placeAt("sceneInfo_div");
+								var sceneName = sceneList[index];
+								var style = "font-family:arial,sans-serif;margin-left:20px;" + 
+											"font-size:14px;font-weight:bolder;" + 
+											"cursor:pointer;";
+								var sNameId = "sceneName_" + index;
+								var htmlJson = {
+									"value" : sceneName,
+									"style" : style,
+									"divId" : "sceneInfo_div",
+									"br" : true,
+									"id" : sNameId
+								};
+								domConstructCreate(htmlJson);
+							}
+						}
+					});
+					
+					// 定义dialog格式
+					function domConstructCreate(json, callback){
+						var div = document.getElementById(json["divId"]);
+						if(!json["br"])
+						{
+							domConstruct.create("br", {}, div);
+							domConstruct.create("br", {}, div);
+						}
+						var sceneName = domConstruct.create("a",
+							{
+								innerHTML :  json["value"],
+								style : json["style"],
+								id : json["id"]
+							}, div
+						);
+						on(sceneName, "click", function(e){
+							callback(this, div);
+						});
+						
+						if(json["br"])
+						{
+							domConstruct.create("br", {}, div);
+							domConstruct.create("br", {}, div);
+						}
+					}
+				});
+		</script>
+	</body>
+</html>

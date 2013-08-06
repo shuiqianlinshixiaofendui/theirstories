@@ -1,0 +1,38 @@
+<div class="_jobListItem">     
+    <div class="_modelListItem_check">
+		<input id="___${id}" name="${name}" alt="${path}" type="checkbox" 
+				data-dojo-attach-point="checkNode" data-dojo-attach-event='onclick:__onCheckBoxClick' />
+	</div>
+	<div class="_modelListItem_imgdiv">
+		<img
+			class="_modelListItem_img" src="${img}" 
+			data-dojo-attach-point="renderIcon" data-dojo-attach-event='onclick:_onRenderIconClick'/>
+	</div>
+	<div class="_modelListItem_name">
+		名称：<a data-dojo-attach-point="nameNode">${name}</a> &nbsp;&nbsp;
+		类型：${type} &nbsp;&nbsp;	
+	</div>	
+	<div class="_linebg"></div>
+	<div class="_JobListRender" >
+		<div id="_showRenderBtn" data-dojo-attach-point="showRenderBtn" style="display:none">
+			<button data-dojo-type="dijit/form/Button" id="${id}_start"  
+					data-dojo-attach-point="startRender" 
+					data-dojo-attach-event="onClick: _onStartRender" class="${render}" >	
+					开始渲染		 
+			</button>
+			
+			<button data-dojo-type="dijit/form/Button" id="${id}_stop" 
+					data-dojo-attach-point="stopRender" 
+					data-dojo-attach-event="onClick: _onStopRender" class="${render}">			
+					结束渲染
+			</button>
+			<button data-dojo-type="dijit/form/Button" id="${id}_progress" 
+					data-dojo-attach-point="progressRender" 
+					data-dojo-attach-event="onClick: _onProgressRender" class="${render}" >			
+					获取渲染进度
+			</button>
+	 </div>
+	 <div id="_showRenderMsg" data-dojo-attach-point="showRenderMsg" style="display:block">		
+	 </div>
+</div>	
+	

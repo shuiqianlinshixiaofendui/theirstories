@@ -1,0 +1,281 @@
+<%
+var GVAR_LoadLibrary = true;
+
+load("/apps/util/sysconfig.esp");
+load("/apps/util/request.esp");
+load("/apps/util/file.esp");
+response.setCharacterEncoding("UTF-8");
+function doDownload(file){
+	//响应打包好的blender
+	response.setContentType("application/zip");
+	response.setHeader("Content-Disposition", "attachment; filename=\""+file.getName()+"\"");
+	var inputstream = new Packages.java.io.FileInputStream(file);
+	Packages.org.apache.commons.io.IOUtils.copyLarge(inputstream,response.getOutputStream());
+	inputstream.close();
+}
+function doResponse(str){	
+	response.setContentType("text/html");
+	out.println("<html> <body> "); 
+	out.println("<textarea>");	
+	out.write(str);
+	out.println("</textarea>");
+	out.println("</body></html>");  
+}
+/**
+*获取job参数
+*/
+function getJobInfo(renderInfo){
+	var jobInfo = {}; 
+	//获取参数
+	jobInfo["render"] = "blender";
+	jobInfo["email"] = request.getParameter('notifyEmail');
+	jobInfo["resolution"] = request.getParameter('resolution');
+	jobInfo["samples"] = request.getParameter('samples');
+	//获取用户定义的job名称 和 用户填写的客户名称
+	jobInfo["userJobName"] = request.getParameter('userJobName');
+	jobInfo["customerName"] = request.getParameter('customerName');
+	
+	jobInfo["resultFileName"] = request.getParameter('resultFileName');
+	jobInfo["target"] = request.getParameter('target');
+	jobInfo['pass'] = request.getParameter('pass');
+	jobInfo['cameraName'] = request.getParameter('cameraName');
+	//检测是否有cameraName信息
+	if(!jobInfo["cameraName"]){
+		//如果没有该参数，将renderinfo中的cameraName全部copy
+		var cameras_string = "";
+		var cameras = renderInfo.getJSONArray("cameras");
+		for(var index = 0;index<cameras.length();index++){
+			cameras_string = cameras_string+","+cameras.getJSONObject(index).getString("name"); 
+		}
+		if(cameras_string.length>0){
+			jobInfo['cameraName'] = cameras_string.slice(1);
+		}else{
+			throw "json file -> no cameras";
+		}
+	}else{
+		//如果有，将填错的信息
+		var cameras_string = "";
+		var cameras = jobInfo["cameraName"].split(",");
+		var cameras_render = renderInfo.getJSONArray("cameras");
+		for(var index=0;index<cameras.length;index++){
+			var hasCamera = false;
+			for(var index2 = 0;index2<cameras_render.length();index2++){
+				var camerasName = cameras_render.getJSONObject(index2).getString("name"); 
+				if(camerasName.contentEquals(cameras[index])){
+					hasCamera = true;
+					break;
+				}
+			}
+			if(hasCamera){
+				cameras_string = cameras_string+","+cameras[index]; 
+			}
+		}
+		if(cameras_string.length>0){
+			jobInfo['cameraName'] = cameras_string.slice(1);
+		}else{
+			throw "All specified camera does not exist";
+		}
+	}
+	
+	//将获取的null值删除
+	for(var key in jobInfo){
+		if(!jobInfo[key]){
+			delete jobInfo[key];
+		}
+	}
+	return jobInfo;
+}
+function checkRenderInfo(jobInfo,renderInfo){
+	//检测修改renderinfo的camera信息
+	var cameras = jobInfo["cameraName"].split(",");
+	var cameras_render = renderInfo.getJSONArray("cameras");
+	var cameras_result = new Packages.org.apache.sling.commons.json.JSONArray();
+	for(var index=0;index<cameras_render.length();index++){
+		var hasCamera = false;
+		var camera = cameras_render.getJSONObject(index);
+		var camerasName = camera.getString("name"); 
+		for(var index2 = 0;index2<cameras.length;index2++){
+			if(camerasName.contentEquals(cameras[index2])){
+				hasCamera = true;
+				break;
+			}	
+		}
+		if(hasCamera){
+			cameras_result.put(camera);
+		}
+	}
+	renderInfo.put("cameras",cameras_result);
+	//检测修改渲染质量信息
+	var render = new Packages.org.apache.sling.commons.json.JSONObject();
+		Packages.java.lang.System.out.println("***********************************");
+		GVAR_uploader.foreach(function(name,param){
+				Packages.java.lang.System.out.println(name+":"+param);
+		});
+		Packages.java.lang.System.out.println("***********************************");
+	render.put("resolution",jobInfo["resolution"]);
+	render.put("samples",new Packages.java.lang.Integer(jobInfo["samples"]));
+	renderInfo.put("render",render);
+	return renderInfo;
+}
+function getRenderInfo(jsonfile){
+	var json_string = Packages.org.apache.commons.io.FileUtils.readFileToString(jsonfile,"UTF-8");
+	var renderInfo = new Packages.org.apache.sling.commons.json.JSONObject(json_string);
+	return renderInfo;
+}
+/**
+*创建job
+*/
+function createJob(jobinfo,assetsFile){
+	var jobInfo = jobinfo; 
+	//获取参数
+	jobInfo["assetsFile"] = assetsFile.getName();
+	load("/apps/scene/jobs/jobUtil.esp");
+	return JobUtil.createRenderJobWithAssets(jobInfo,currentNode,assetsFile);
+}
+/**
+*解压上传的文件，并找出json文件
+*/
+function getJsonFile(file){
+	var jsonFile;
+	if(file.getName().endsWith(".json")){
+		jsonFile = file;
+	}else{
+		//将uploadFile解压，得到json文件
+		GVAR_system.runTool("7za", ["x -aoa "+file.getPath()," -o"+file.getParent()]);
+		var fileCollection = Packages.org.apache.commons.io.FileUtils.listFiles(file.getParentFile(),["json"],false);
+		var iterator = fileCollection.iterator();
+		var jsonFiles = new Array();
+		while(iterator.hasNext()){
+			var json_file = iterator.next();
+			jsonFiles.push(json_file);
+		}
+		if(jsonFiles.length>0){
+			jsonFile = jsonFiles[0];
+		}else{
+			throw "reateJobWithJson.post.esp:uncompressZipFile throw exception json file not found"
+		}
+	}
+	return jsonFile;
+}
+//通过json文件生成blender资源
+function generateAssets(jsonfile,tempDir){
+    try{
+		load("/apps/scene/jobs/assetsgenerater.esp");
+		var assetsFile = GVAR_AssetsGenerater.generateBlenderAssetsWithJson(jsonfile.getAbsolutePath(),tempDir.getAbsolutePath());
+		if(!assetsFile){
+			throw "generate assets failed,please check the file 'render.json'"
+		}
+	}catch(e){
+		throw "server error,generate assets failed."
+	}
+	return assetsFile;
+}
+//响应的json字符串
+var r1='{"result":"false","reason":"没有权限！"}';
+var userID=currentNode.getSession().getUserID();
+//生成jobs节点对应的文件路径
+if(userID && !(userID=="anonymous")){
+	
+	var useNginx_str = request.getParameter('useNginx');
+	var useNginx=false;
+	if(useNginx_str == "true"){
+		useNginx = true;
+	}		
+	//标记参数是否错误
+	var badRequest=false;
+	//判断请求中是否有上传的文件
+	var uploadFileName;
+	var nodesPath = GVAR_system.getNodePath(currentNode,true);
+	//临时文件夹
+	var tempDir = GVAR_File.createTempFolder(Packages.java.io.File(nodesPath).getParent());
+	//上传的文件
+	var uploadFile;
+	//下面的代码将上传的文件copy到temp临时目录下
+	if(useNginx){
+		var upfileinfo = Packages.org.spolo.apps.util.UploadFileInfo.getNginxUploadInfo(request);
+		if(!upfileinfo || upfileinfo.length<1){
+			badRequest = true;
+			r1='{"result":"false","reason":"uploadFile not found"}'
+		}else{
+			//现将上传的文件copy到另一个zip文件中，因为从nginx copy来的文件名称没有后缀（不知道原因），则在解压时会出错
+			//所以先将文件copy到temp目录中的以上传文件命名的文件中
+			var ui = upfileinfo[0];
+			uploadFileName = ui.originalname;
+			var uploadFile = new Packages.java.io.File(ui.localfilepath);
+			var importFile = new Packages.java.io.File(tempDir.getPath() + GVAR_system.path_separator + uploadFileName);
+			if(!importFile.exists()){
+				importFile.createNewFile();
+			}
+			Packages.org.apache.commons.io.FileUtils.copyFile(uploadFile,importFile);
+			uploadFile = importFile;
+		}
+	}else{
+		var lastFileParam;
+		GVAR_uploader.foreach(function(name,param){
+			if(!param.isFormField()){
+				lastFileParam = param;
+			}
+		});
+		if(lastFileParam){
+			uploadFileName = lastFileParam.getFileName();
+			uploadFile = GVAR_uploader.copyFile(lastFileParam,tempDir.getPath());
+		}else{
+			badRequest = true;
+			Packages.java.lang.System.out.println(uploadFileName);
+			r1='{"result":"false","reason":"uploadFile not found"}'
+		}	
+	}
+	//将uploadFile解压，得到json文件
+	var jsonfile;
+	var assetsFile;
+	var renderInfo;
+	var jobInfo;
+	if(!badRequest){
+		try{
+			jsonfile = getJsonFile(uploadFile);
+			//获取render.json中的renderInfo
+			renderInfo = getRenderInfo(jsonfile);
+			//获取job信息
+			jobInfo = getJobInfo(renderInfo);
+			//根据jobInfo生成renderInfo
+			renderInfo = checkRenderInfo(jobInfo,renderInfo);
+			Packages.java.lang.System.out.println("***********************************");
+			Packages.java.lang.System.out.println("[INFO]createJobWithJson.esp===>"+renderInfo.toString());
+			Packages.java.lang.System.out.println("***********************************");
+			Packages.org.apache.commons.io.FileUtils.writeStringToFile(jsonfile, renderInfo.toString(), "UTF-8");
+			//生成可渲染文件,并打好包保存
+			assetsFile = generateAssets(jsonfile,tempDir);
+		}catch(e){
+			Packages.java.lang.System.out.println(e);
+			r1='{"result":"false","reason":"'+e+'"}';
+			badRequest = true;
+		}
+		//判断是否需要云渲染
+		var useCloudrender = request.getParameter('useCloudrender');
+		if(useCloudrender == "true"){
+			//创建job
+			if(!badRequest){
+				try{
+					var result = createJob(jobInfo,assetsFile);
+					if(result.result){
+						r1='{"result":"true","jobInfo":'+result.jobInfo.toString()+'}'
+					}else{
+						r1='{"result":"false","reason":"'+result.reason+'"}'
+					}
+				}catch(e){
+					Packages.java.lang.System.out.println(e);
+					r1='{"result":"false","reason":"'+e+'"}';
+				}
+			}
+			doResponse(r1);
+		}else if(!badRequest){
+			doDownload(assetsFile);
+		}else{
+			doResponse(r1);
+		}
+	}else{
+		doResponse(r1);
+	}
+	Packages.org.apache.commons.io.FileUtils.deleteDirectory(tempDir);
+}
+%>

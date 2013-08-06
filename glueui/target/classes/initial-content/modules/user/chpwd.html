@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="description" content=""/>
+		<meta name="keywords" content="" />
+		<title></title>
+	</head>
+<body>
+	<form id="form" action="" method="POST">
+		用户名：<input type="text" id="uid" /><br />
+		旧密码：<input type="password" name="oldPwd" value="" /><br />
+		新密码：<input type="password" name="newPwd" value="" /><br />
+		确定新密码：<input type="password" name="newPwdConfirm" value="" /><br />
+	</form>
+	<input type="button" value="submit" onclick="submit11();" /><br />
+	<script type="text/javascript">
+	
+		function submit11(){
+			var uid = document.getElementById("uid").value;
+			if(uid!="admin"){
+				uid = "_" + encodeURIComponent(uid).replace("%","_");
+			}
+			document.getElementById("form").action = "/system/userManager/user/"+uid+".changePassword.html";
+			form.submit();
+		}
+		
+	</script>
+</body>
+</html>

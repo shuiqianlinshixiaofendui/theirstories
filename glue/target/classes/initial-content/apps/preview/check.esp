@@ -1,0 +1,171 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+response.setCharacterEncoding("UTF-8");
+response.setContentType("text/html");
+out.println("<html> <body> ");
+
+	var GVAR_CurrentNode;
+	var GVAR_Session;
+	var GVAR_WorkSpace;
+	var GVAR_RootNode;
+
+
+	GVAR_CurrentNode = currentNode;
+	GVAR_Session = currentNode.getSession();
+	
+	GVAR_WorkSpace = GVAR_Session.getWorkspace();
+	GVAR_RootNode = GVAR_Session.getRootNode();
+	
+	var GVAR_LoadLibrary = true;
+	
+	load("/apps/util/sysconfig.esp");
+	load("/apps/util/blendercgi.esp");
+	
+	var notifyFunc = request.getParameter("notifier");
+	
+	function notifyClient(msg){
+		if(notifyFunc){
+			response.setCharacterEncoding("UTF-8");
+			out.println("<script>" + notifyFunc + "(\"" + msg + "\");</script>");
+			response.flushBuffer();
+		}
+	}
+
+	
+	function checkimage()
+	{
+		
+		load("/apps/util/sysconfig.esp");
+
+		var previewpath = GVAR_system.getNodePath(currentNode,true);
+
+		var previewdir = new Packages.java.io.File(previewpath);
+
+		var files = previewdir.listFiles();
+
+
+		var previewfile = files[0];
+		if(previewfile.exists())
+		{
+			if(previewfile.length() > 0)
+			{
+				return previewfile.getName();
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	function listmodel()
+	{
+		var modelnode = currentNode["model"];
+	
+		var models = modelnode.getNodes();
+
+		var modellist = [];
+		
+		var rootNode = currentNode.getAncestor(0);
+		
+		for(var i = 0; i < models.length; i++)
+		{
+	
+				var model = models[i];
+				
+				var modelpath = model["modelpath"];
+				
+				if(modelpath != undefined)
+				{
+					try{
+						var refModelNode = rootNode.getNode(modelpath.substring(1));
+					}catch(e){
+						model.remove();
+						continue;
+					}				
+					modellist[model["name"]] = modelpath;
+				}
+				
+		}
+		currentNode.save();
+		
+		return modellist;
+
+	}
+
+	
+	function checkmodels(modellist)
+	{
+		var retjson = new Packages.org.apache.sling.commons.json.JSONObject();
+		
+		for(var i in modellist)
+		{
+			var modeljson = new Packages.org.apache.sling.commons.json.JSONObject();
+			
+			var modelname = i;
+			var modelpath = modellist[i];
+
+			var modelnode = GVAR_RootNode.getNode(modelpath.substr(1));
+			
+			// modeljson.put("modelpath",modelpath);
+			notifyClient("[INFO]:检查模型...");
+			notifyClient("[INFO]:"+modelpath);
+			
+			var checkocm = GVAR_bcgi.forward({cgi : "model/checkocmmat.py",node : modelnode, useEmptyBlend : false});
+
+			notifyClient("[INFO]:检查OCM是否存在...");
+			notifyClient("[INFO]:"+checkocm);
+			
+			// retjson.put(modelname,modeljson.toString());
+		}
+		
+		return retjson;
+	}
+	
+	response.setCharacterEncoding("UTF-8");
+	
+	var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+	
+	var modellist = listmodel();
+	notifyClient("开始检查模型");
+	var modelscheck_json = checkmodels(modellist);
+	notifyClient("  ");
+	
+	notifyClient("开始检查效果图:");
+	var imagefile = checkimage();
+	if(imagefile == false)
+	{
+		notifyClient("[ERROR]:"+imagefile);
+		notifyClient("效果图不存在!");
+		notifyClient("  ");
+	}
+	else
+	{
+		// jsonobj.put("imagefile","suc");
+		// jsonobj.put("imagefilename",imagefile);
+		notifyClient("[INFO]:"+imagefile);
+		notifyClient("效果图正确.");
+		notifyClient("  ");
+	}
+	
+	// jsonobj.put("checkmodels",modelscheck_json.toString());
+	
+	// var jsonstring = jsonobj.toString();
+
+out.println("<textarea>");
+out.println("检查完毕!");
+out.println("</textarea>");
+out.println("</body></html>");
+
+%>

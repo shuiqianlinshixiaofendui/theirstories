@@ -1,0 +1,242 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+ var GVAR_LoadLibrary = true;
+ load("/apps/util/sysconfig.esp");
+ load("/apps/util/request.esp");
+ 
+ 
+ var notifyFunc = null;
+ function	notifyClient(msg)
+ {
+ 	if(notifyFunc)
+ 	{
+ 		//Packages.java.lang.System.out.println("Notify client msg = " + msg);
+ 		out.println("<script>" + notifyFunc + "(\"" + msg + "\");</script>");
+ 		response.flushBuffer();
+ 	}
+ }
+ //递归文件
+function recursionFile(filename,dataPath_File){
+
+	if(filename.isDirectory()){
+		var tmp = filename.listFiles();
+		for(var param = 0; param < tmp.length; param++){
+			recursionFile(tmp[param],dataPath_File);}
+	}else{
+		Packages.org.apache.commons.io.FileUtils.copyFileToDirectory(filename,dataPath_File);
+	}
+	return ;
+}
+ 
+ 
+ function create(materialnode,mat_prop)
+ {
+	response.setCharacterEncoding("UTF-8");
+	response.setContentType("application/json");
+
+	var GVAR_LoadLibrary = true;
+	load("/apps/util/sysconfig.esp");
+
+	var result = new Packages.org.apache.sling.commons.json.JSONObject();
+	try{  
+	   // var nodePath = GVAR_system.getNodePath(materialnode, true);
+			materialnode.setProperty("sling:resourceType", "material");
+			
+			for(var ip in mat_prop)
+			{
+				materialnode.setProperty(ip, mat_prop[ip]);
+			}
+			materialnode.save();
+			
+			var NodePath = GVAR_system.getNodePath(materialnode,true);
+
+			var dataPath = NodePath + GVAR_system.path_separator + "data";
+			
+			var previewPath = NodePath + GVAR_system.path_separator + "preview";
+			
+			var dataPath_File = new Packages.java.io.File(dataPath);
+			
+			var previewPath_File = new Packages.java.io.File(previewPath);
+			
+			if(!dataPath_File.exists())
+			{
+				dataPath_File.mkdirs();
+			}
+			
+			if(!previewPath_File.exists())
+			{
+				previewPath_File.mkdirs();
+			}
+			
+			//根据传入的参数配置如下几个全局变量。
+			//notifyFunc指示了我们使用何种方式来回应客户端。
+			notifyFunc = request.getParameter("notifier");
+
+			//useNginx指示了是否使用nginx作为proxy来处理文件上传。
+			var useNginx = true;
+			{
+				var useNginx_str = request.getParameter("useNginx");
+				if(useNginx_str == "false")
+					useNginx = false;
+				Packages.java.lang.System.out.println("useNginx_str = " + useNginx_str + " and useNginx = " + useNginx);
+			}
+
+			//isDebug指示了我们是否需要在textarea中输出blender的内容。
+			var isDebug = false;
+			var debugStr = request.getParameter("debug");
+			if(debugStr && debugStr != "false")
+				isDebug = true;
+
+			//保存了输出给客户端的内容.
+			// var result;
+
+			var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+
+			//reuqest_merge指示了本次请求是否合并到当前内容上。如果是false,则
+			var reuqest_merge = false;
+			reuqest_merge_str = request.getParameter("merge");
+			if(reuqest_merge_str != null && reuqest_merge_str == "true")
+				reuqest_merge = true;
+			
+			if(useNginx)
+			{//使用nginx作为上传处理器。
+				var upfileinfo = Packages.org.spolo.apps.util.UploadFileInfo.getNginxUploadInfo(request);
+				var count = upfileinfo.length;
+				for(var i = 0; i < count; i++)
+				{
+					var ui = upfileinfo[i];
+					try{
+						//TODO: 给出客户端正在处理的提示。
+						var notifyInfo = "uncompress file '" + ui.originalname + "'...";
+						notifyClient(notifyInfo);
+
+						//1.3 检查刚上传的文件是否是一个压缩文件。如果是，保持目录结构并解压到import目录。
+						var resultHandler = GVAR_system.nginxUncompress(ui.originalname,ui.localfilepath,dataPath);
+						//												压缩包			解压位置				datapath
+						var start = Date.now();
+						out.println(resultHandler);
+						if(resultHandler != null)//压缩包存在
+						{//是一个压缩文件，删除原始文件．
+							
+							while(!resultHandler.hasResult())
+							{
+								resultHandler.waitFor(2 * 1000);
+								var end = Date.now();
+								var elapsed = (end - start) / 1000;
+								notifyClient("uncompress continued for about " + elapsed + " seconds,please waiting...");
+							}
+							//如果处于调试模式.将进程内容输出到result.
+							if(isDebug)
+							{
+								jsonobj.put("Uncompress",resultHandler.stdout.toString());
+							}
+							
+							//调用遍历函数，进行复制
+							recursionFile(dataPath_File,dataPath_File);
+							//再一遍历,判断是文件就删除
+							var dataPathListTmp = dataPath_File.listFiles();
+							for(var tmp = 0; tmp < dataPathListTmp.length; tmp++)
+							{
+								if(dataPathListTmp[tmp].isDirectory())
+								{
+									Packages.org.apache.commons.io.FileUtils.forceDelete(dataPathListTmp[tmp]);
+								}
+							}
+							materialnode.setProperty("keyInfo ", "wangziqiang");
+							materialnode.save();
+							//删除压缩包
+							Packages.org.apache.commons.io.FileUtils.forceDelete(new Packages.java.io.File(ui.localfilepath));
+						
+						}
+						else
+						{
+						
+							// GVAR_system.copyFile(ui.localfilepath,previewPath + "/preview.jpg");
+							var outfilepath = previewPath + GVAR_system.path_separator + ui.originalname;
+							// Packages.org.apache.commons.io.FileUtils.copyFileToDirectory(new Packages.java.io.File(filepath),new Packages.java.io.File(previewPath));
+							
+							// result.put('preview', ui.localfilepath);
+							// result.put('originalname', ui.originalname);
+							// result.put('outfilepath', outfilepath);
+							var infile = new Packages.java.io.File(ui.localfilepath);
+							var outfile = new Packages.java.io.File(outfilepath);
+							var cf = outfile.createNewFile();
+							
+							// result.put('cf', cf);
+							// var b = new Packages.java.io.File(previewPath);
+							Packages.org.apache.commons.io.FileUtils.copyFile(infile,outfile);//将文件复制到相应位置。
+						}
+						notifyClient(notifyInfo + "done!");
+					}catch(e)
+					{
+						notifyClient("can not uncompress file : " + e);
+					}
+					// Packages.java.lang.System.out.println("ui.fieldname=" + ui.fieldname);
+					// Packages.java.lang.System.out.println("ui.originalname=" + ui.originalname);
+					// Packages.java.lang.System.out.println("ui.localfilepath=" + ui.localfilepath);
+					// Packages.java.lang.System.out.println("ui.mime=" + ui.mime);
+					// Packages.java.lang.System.out.println("ui.sequence=" + ui.sequence);
+				}
+			}else{
+				GVAR_uploader.foreach(function(name,param){
+					Packages.java.lang.System.out.println("recieve " + name + "=" + param);
+					if(!param.isFormField())
+					{
+						try
+						{
+							//TODO: 给出客户端正在处理的提示。
+							var notifyInfo = "copy and uncompress file '" + param.getFileName() + "'...";
+							notifyClient(notifyInfo);
+							//1.2
+							var file = GVAR_uploader.copyFile(param,dataPath);
+							//1.3 检查刚上传的文件是否是一个压缩文件。如果是，保持目录结构并解压到当前目录。
+							if(GVAR_system.uncompress(file))//解压，是压缩包，成功返回0 否则返回false
+							{//如果是一个压缩文件，删除原始文件．
+								
+								//调用遍历函数，进行复制
+								recursionFile(dataPath_File,dataPath_File);
+								//再一遍历,判断是文件就删除
+								var dataPathListTmp = dataPath_File.listFiles();
+								for(var tmp = 0; tmp < dataPathListTmp.length; tmp++)
+								{
+									if(dataPathListTmp[tmp].isDirectory())
+									{
+										Packages.org.apache.commons.io.FileUtils.forceDelete(dataPathListTmp[tmp]);
+									}
+								}
+
+								Packages.org.apache.commons.io.FileUtils.forceDelete(file);//删除压缩包
+							}
+							else
+							{
+								GVAR_uploader.copyFile(param,previewPath);//拷贝到previewPath
+							}
+							notifyClient(notifyInfo + "done!");
+						}
+						catch(e)
+						{//uncompress error!
+							notifyClient("can not uncompress file : " + e);
+						}
+					}
+				});
+			}
+			
+			result.put('suc', true);
+	}catch(e){
+	   result.put('suc', false);
+	   result.put('reason', e);
+	}
+	return(result);
+}
+%>

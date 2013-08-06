@@ -1,0 +1,78 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+load("/apps/folder/userManagerRef.esp");
+
+var result = modifyGroupProperty(request);
+out.println(result.toString());
+
+function modifyGroupProperty (req) {                                    // 得到request参数
+		var reqMap = req.getRequestParameterMap();
+		var reqIter = reqMap.entrySet().iterator();
+		var group = null;
+		var result = new Packages.org.apache.sling.commons.json.JSONObject();
+
+		while (reqIter.hasNext()) {                                             // 得到groupName参数，等到group
+			var param = reqIter.next(),
+				  paramKey = param.getKey(),
+				  paramValue = param.getValue()[0].getString().trim();
+				  
+				  
+					//out.println(paramKey);
+					//out.println(paramValue);
+					if (paramKey == "groupName")  {
+						group = returnGroup(paramValue);
+						if (typeof(group) == "string") {
+							//out.println(group);
+							result.put("success", false);
+							result.put("reason", group);
+							return result;
+							// out.println(result.toString());	
+						}							
+				}
+		}
+		var session = currentNode.getSession();                         // 得到valueFactory（）
+		var vf = session.getValueFactory();
+		reqIter = reqMap.entrySet().iterator();                              // 初始化reqlter
+		while (reqIter.hasNext()) {                                            // 得到节点属性和节点值
+			var param = reqIter.next(),
+				paramKey = param.getKey(),
+				paramValue = param.getValue()[0].getString().trim();
+				if (paramKey != "groupName") {
+					//out.println(paramKey);
+					var porpertyV = vf.createValue(paramValue);             // modify group's property
+					if (!group) {
+						result.put("success",false);
+						result.put("reason","groupName must not be null!");
+						//out.println(result.toString());
+						return result;
+					}
+					try {
+						group.setProperty(paramKey,porpertyV);
+					}catch(e) {
+						result.put("success",false);
+						result.put("reason","You have no permission!");
+						// out.println(result.toString());
+						return result;
+						}
+				
+				}
+			}
+		session.save();
+		result.put("success",true);
+		return result;
+		// out.println(result.toString());
+}
+%>

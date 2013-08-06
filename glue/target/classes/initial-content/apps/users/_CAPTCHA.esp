@@ -1,0 +1,67 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+//生成随机颜色
+function getRandColor(fc,bc){
+	var random = new Packages.java.util.Random();
+    if(fc>255) fc=255;
+    if(bc>255) bc=255;
+    var r = (fc+random.nextInt(bc-fc))/255;
+    var g = (fc+random.nextInt(bc-fc))/255;
+    var b = (fc+random.nextInt(bc-fc))/255;
+    return new Packages.java.awt.Color(r,g,b);
+}
+//随机生成验证码
+function captchaCreate(length){
+	var captcha = "";
+	var selectChar = new Array(1,2,3,4,5,6,7,8,9,
+	'a','b','c','d','e','f','g','h','j','k','l','m',
+	'n','p','q','r','s','t','u','v','w','x','y','z',
+	'A','B','C','D','E','F','G','H','J','K','L','M',
+	'N','P','Q','R','S','T','U','V','W','X','Y','Z');
+	for(var i = 0;i < length;i++) {      
+		var charIndex = Math.floor(Math.random()*57);      
+		captcha +=selectChar[charIndex];      
+	}
+	return captcha;
+}
+//根据验证码生成验证图
+function imageCreate(width, height, captcha){
+	var random = new Packages.java.util.Random();
+	var image = new Packages.java.awt.image.BufferedImage(width, height, Packages.java.awt.image.BufferedImage.TYPE_INT_RGB);
+	var g = image.getGraphics();
+	g.setColor(getRandColor(200,250));
+    g.fillRect(0, 0, width, height);
+    g.setColor(getRandColor(160,200));
+	for (var i=0;i<10;i++)
+	{
+	  var x = random.nextInt(width);
+	  var y = random.nextInt(height);
+	  var xl = random.nextInt(12);
+	  var yl = random.nextInt(12);
+	  g.drawLine(x,y,x+xl,y+yl);
+	}
+	g.setColor(new Packages.java.awt.Color((20+random.nextInt(110))/255,(20+random.nextInt(110))/255,(20+random.nextInt(110))/255));
+    g.drawString(captcha,5,15);
+    g.dispose(); 
+	return image;
+}
+//对验证码进行比较
+function captchaCheck(captcha, input){
+	if(captcha.toLowerCase() == input.toLowerCase())
+		return '{success:true}';
+	else
+		return '{success:false}';
+}
+
+%>

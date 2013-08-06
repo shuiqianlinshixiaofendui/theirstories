@@ -1,0 +1,34 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ response.setCharacterEncoding("UTF-8");
+ var GVAR_LoadLibrary = true;
+ load("/apps/users/_validity.esp");
+
+ var GVAR_CurrentNode = currentNode;
+ var GVAR_Session = GVAR_CurrentNode.getSession();
+ var GVAR_RootNode = GVAR_Session.getRootNode();
+ 
+ var username = GVAR_Session.getUserID();
+ var targetPath = '/content/users/' + username;
+ var targetNode = GVAR_RootNode.getNode(targetPath.substr(1));
+ var result = checkValidity(targetNode);
+ if(result){
+ response.sendRedirect('/index2.html');
+ }
+ else{
+ request.getSession().invalidate()
+ out.println("用户使用期已到");
+ }
+%>

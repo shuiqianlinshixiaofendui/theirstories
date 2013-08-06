@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title>修改用户</title>
+	<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap-responsive.min.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
+</head>
+
+<body>
+	<div class="container">
+		<ul class="breadcrumb">
+		  <li><a href="addUser.html">首页</a> <span class="divider">/</span></li>
+		  <li><a href="userList.html">用户列表</a> <span class="divider">/</span></li>
+		  <li class="active">修改用户</li>
+		</ul>
+		<form class="form-horizontal">
+		  <div class="control-group">
+			<label class="control-label" for="inputEmail">用户名</label>
+			<div class="controls">
+			  <input class="span3 input-xlarge" type="email" placeholder="yuxiangliang@spolo.org" required>
+			</div>
+		  </div>
+		  <div class="control-group error">
+			<label class="control-label" for="inputPassword">密&nbsp;&nbsp;&nbsp;码</label>
+			<div class="controls">
+			  <input class="input-large" type="password" id="inputPassword" placeholder="Password">
+			  <span class="help-inline">Please correct the error</span>
+			</div>
+		  </div>
+		  <div class="control-group">
+			<label class="control-label" for="inputUsertime">有效期</label>
+			<div class="controls">
+			  <input class="input-large" type="text" id="inputUsertime" placeholder="2012-01-01">
+			</div>
+		  </div>
+		  <div class="control-group">
+			<label class="control-label">用户角色</label>
+			<div class="span4">
+			  <table class="table table-bordered">
+				 <thead>
+					<tr>
+						<th>角色名称</th>
+						<th>是否赋予角色</th>
+					</tr>
+				 </thead>
+				 <tbody>
+					<tr>
+						<td>超级管理员</td>
+						<td><input type="checkbox" id="checkbox1" value="option1"></td>
+					</tr>
+					<tr>
+						<td>模型管理员</td>
+						<td><input type="checkbox" id="checkbox2" value="option2" checked></td>
+					</tr>
+					<tr>
+						<td>材质管理员</td>
+						<td><input type="checkbox" id="checkbox3" value="option3" checked></td>
+					</tr>
+				 </tbody>
+			  </table><!-- end of table-->
+		  	</div><!-- end of span4 -->
+		  </div>
+		  
+		  <div class="control-group">
+			<label class="control-label"></label>
+			<button type="submit" class="btn btn-large btn-primary">修改</button>
+			<button type="reset" class="btn btn-large btn-primary btn_left">取消</button>
+		  </div>
+		  
+		</form><!-- end of form -->
+	</div><!-- end of container -->
+</body>
+
+</html>

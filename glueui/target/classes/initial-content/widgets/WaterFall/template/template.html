@@ -1,0 +1,43 @@
+<div data-dojo-attach-point="waterfallWidget">
+    
+     <div data-dojo-attach-point="rightUI" data-dojo-attach-event='onmouseover: onMouseOverEvent , onmouseout: onMouseOutEvent' class="water_rightUI">
+        <div data-dojo-attach-event='onclick: clickUpEvent' >
+            <div data-dojo-attach-point="square_up" class="waterfall_square_up"></div>
+            <div data-dojo-attach-point="triangle_up" class="waterfall_triangle_up"></div> 
+            <div data-dojo-attach-point="triangle_inline_up" class="waterfall_triangle_inline_up"></div> 
+        </div>
+        
+        <div data-dojo-attach-event='onclick: clickDownEvent' >
+            <div data-dojo-attach-point="square_down" class="waterfall_square_down"></div>
+            <div data-dojo-attach-point="triangle_down" class="waterfall_triangle_down"></div>
+            <div data-dojo-attach-point="triangle_inline_down" class="waterfall_triangle_inline_down"></div> 
+        </div>
+        
+        <div data-dojo-attach-point="inputDiv" class="waterfall_input_div"></div>
+        
+        <div data-dojo-attach-point="input_inline" class="waterfall_input_inline">
+            <input  data-dojo-attach-point="inputContext"   type="text"  value="1" data-dojo-attach-event='onblur : inputEvent' class="waterfall_inputContext"  />
+            <input data-dojo-attach-point="total"  type="text"  value="/10" class="waterfall_total" readonly />
+        </div>
+        
+     </div>
+     
+     <div class="loadDia"  data-dojo-attach-point="loadDia">
+        <p>正在加载</p>
+     </div>
+
+     
+     <div data-dojo-attach-point="waterfall" class="waterfall_waterfall">
+         
+     </div>
+
+      <!-- 返回顶部 div -->
+
+     <div class="waterfall_backToTop" data-dojo-attach-point="waterfall_backToTop"></div>
+     
+     <!-- <link href="../css/style.css" rel="stylesheet" type="text/css"/> -->
+     <link href = ${hrefURL} rel="stylesheet" type="text/css"/> 
+</div>
+
+
+

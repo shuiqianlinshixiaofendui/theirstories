@@ -1,0 +1,44 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	font-size:14px;
+}
+#renderjob{
+	width:100%;
+	height:100%;
+}
+#3dpreview{
+	width:100%;
+	height:100%;
+	border: 1px solid #E5E5E5;
+}
+#saveViewBtn,#setTimeBtn,#uploadRenderJobBtn{
+	border: 1px solid #3079ed;
+	color: #fff;
+	padding:3px;
+	width: auto;
+	font-size:16px;
+	font-weight:bold;
+	line-height: 30px;
+	text-align: center;
+	display: inline-block;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	cursor: pointer;
+}
+#boxStep1{
+	width:auto;
+	height:50px;
+	
+}
+#boxStep2{
+	width:auto;
+	height:80px;
+	
+}
+#boxStep3{
+	width:auto;
+	height:50px;
+	
+}

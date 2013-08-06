@@ -1,0 +1,84 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+*/
+response.setCharacterEncoding("UTF-8");
+	
+	
+	var fixcount = 0;
+	var fixmodelInfo = [];
+	
+	
+	fixpublishdate();
+	// 打印总数
+	out.println("count" + fixcount);
+	// 修复publishdate
+	function fixpublishdate(){
+		var language = "xpath";
+		var expression = "/jcr:root/content/modellib/*[@publishdate>0]";
+		var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+		var qry = queryManager.createQuery(expression,language);
+		
+		try{
+			var result = qry.execute().getNodes();
+		}
+		catch(e){
+			out.println("{error}");
+		}
+		
+		// 遍历所有的model
+		while(result.hasNext()){
+			var fixnodes = result.nextNode();
+			out.println(fixnodes);
+			var publishdate = fixnodes["publishdate"];
+			out.println(publishdate);
+			publishdate = new Date(publishdate);
+			out.println(publishdate.getFullYear());
+			out.println(publishdate.getMonth()+1);
+			out.println(publishdate.getDate());
+			out.println(publishdate.getHours());
+			out.println(publishdate.getMinutes());
+			out.println(publishdate.getSeconds());
+			
+			var year = publishdate.getFullYear();
+			var month = publishdate.getMonth();
+			var date = publishdate.getDate();
+			var hours = publishdate.getHours();
+			var minutes = publishdate.getMinutes();
+			var seconds = publishdate.getSeconds();
+			var calendar = new Packages.java.util.Calendar.getInstance();
+			//publishdate = calendar.setTime(publishdate);
+			
+			// calendar.set(Packages.java.util.Calendar.YEAR,2012);
+			// calendar.set(Packages.java.util.Calendar.MONTH,2013);
+			// calendar.set(Packages.java.util.Calendar.DAY,2013);
+			// calendar.set(Packages.java.util.Calendar.DAY,2013);
+			// calendar.set(Packages.java.util.Calendar.DAY,2013);
+			// calendar.set(Packages.java.util.Calendar.DAY,2013);
+			// calendar.set(Packages.java.util.Calendar.DAY,2013);
+			calendar.set(year,month,date,hours,minutes,seconds);
+		    out.println(calendar);
+			
+			fixnodes.setProperty("publishdate", calendar);
+			// 进行保存
+			try{
+				fixnodes.save();
+				fixcount ++;
+				//fixmodelInfo.push(modelStatus.toString());
+			}catch(e){
+				out.println(e);
+			}	
+			
+			
+		}
+	
+	}
+%>

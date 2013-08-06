@@ -1,0 +1,75 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/sysconfig.esp");
+
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_RootNode;
+
+
+GVAR_CurrentNode = currentNode;
+
+GVAR_Session = GVAR_CurrentNode.getSession();
+
+GVAR_RootNode = GVAR_Session.getRootNode();
+
+var previewlibpath = currentNode["previewlib"];
+
+if(previewlibpath != undefined)
+{
+	var previewlib = GVAR_RootNode.getNode(previewlibpath.substring(1,previewlibpath.length));
+	
+	// out.println(previewlib);
+	
+	var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+	
+	for(var i in previewlib)
+	{
+		var preview = previewlib[i];
+		
+		if(preview["sling:resourceType"] == "preview")
+		{	
+			// imgurl : /content/users/admin/previewlib/scene20134111419374969585305/preview餐桌椅子盆景花瓶餐具
+			var imgurl = preview.getPath();
+			//out.println(imgurl);
+			// previewName : preview餐桌椅子盆景花瓶餐具
+			var previewName = imgurl.substring(imgurl.lastIndexOf("/")+1);
+			//out.println(previewName);
+			// imgurl : /content/users/admin/previewlib/scene20134111419374969585305/preview%e9%a4%90%e6%a1%8c%e6%a4%85%e5%ad%90%e7%9b%86%e6%99%af%e8%8a%b1%e7%93%b6%e9%a4%90%e5%85%b7
+			imgurl = imgurl.substring(0,imgurl.lastIndexOf("/")+1) + encodeURIComponent(previewName);
+			//out.println(imgurl);
+			
+			//jsonobj.put(preview["name"],preview.getPath());
+			jsonobj.put(preview["name"],imgurl);
+		}
+	}
+	
+	var jsonstring = jsonobj.toString();
+	
+	// console.log(encodeURIComponent(preview));
+	
+	out.print(jsonstring);
+	
+	
+}
+else
+{
+	out.print("nopreview");
+}
+
+
+%>

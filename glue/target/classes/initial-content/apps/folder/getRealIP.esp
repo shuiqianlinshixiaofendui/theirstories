@@ -1,0 +1,20 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+// 获取真实IP 
+try{
+	var x_real_IP = request.getHeader("X-Real-IP");
+	out.println(x_real_IP);
+}catch(e){
+	out.println("error");
+}
+%>

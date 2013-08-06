@@ -1,0 +1,45 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+response.setCharacterEncoding("UTF-8");
+ 
+var GVAR_LoadLibrary = true;
+
+load("/apps/model/_zipfile.esp");
+load("/apps/util/response.esp");
+
+// out.println("test model zip");
+
+var formats = String(request.getRequestParameter("formatlist"));
+
+var outfile = modelzipfile(currentNode,formats);
+
+if(outfile == null)
+{
+	out.print("can not support format : " + formats);
+}
+// out.println("outfile : " + outfile.getName());
+
+//开始将正文定向回客户端。
+if(outfile.exists())
+{
+	response.setHeader("content-length", outfile.length());
+	var inputstream = new Packages.java.io.FileInputStream(outfile);
+	Packages.org.apache.commons.io.IOUtils.copyLarge(inputstream,response.getOutputStream());
+	inputstream.close();
+
+}
+
+%>

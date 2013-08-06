@@ -1,0 +1,143 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+var diffuseNodeCfg = {
+	"concept": {
+		"name":"diffuse",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"RGBspectrum",
+		"name":"rgbvalue",
+		"value":"0.8 0.8 0.8"
+	}
+	
+}
+var specularNodeCfg = {
+	"concept": {
+		"name":"specular",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"floattexture",
+		"name":"value",
+		"value":"1"
+	}
+	
+}
+var exponentNodeCfg = {
+	"concept": {
+		"name":"exponent",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"floattexture",
+		"name":"value",
+		"value":"1"
+	}
+	
+}
+var schlick_termNodeCfg = {
+	"concept": {
+		"name":"schlick_term",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"float",
+		"name":"value",
+		"value":"1"
+	}
+	
+}
+var specular_reflectionsNodeCfg = {
+	"concept": {
+		"name":"specular_reflections",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"floattexture",
+		"name":"value",
+		"value":"1"
+	}
+	
+}
+var specular_transmissionsNodeCfg = {
+	"concept": {
+		"name":"specular_transmissions",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"floattexture",
+		"name":"value",
+		"value":"1"
+	}
+	
+}
+var outside_index_of_refractionNodeCfg = {
+	"concept": {
+		"name":"specular",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"floattexture",
+		"name":"value",
+		"value":"1"
+	}	
+}
+var outside_index_of_refractionNodeCfg = {
+	"concept": {
+		"name":"outside_index_of_refraction",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"float",
+		"name":"value",
+		"value":"1."
+	}	
+}
+var inside_index_of_refractionNodeCfg = {
+	"concept": {
+		"name":"inside_index_of_refraction",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"float",
+		"name":"value",
+		"value":"1.45"
+	}	
+}				
+var reflectionNodeCfg = {
+	"concept": {
+		"name":"reflection",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"RGBspectrum",
+		"name":"rgbvalue",
+		"value":"0.8 0.8 0.8"
+	}
+	
+}
+var transmissionNodeCfg = {
+	"concept": {
+		"name":"transmission",
+		"type":"sling:Folder"
+	},
+	"implement":{
+		"type":"RGBspectrum",
+		"name":"rgbvalue",
+		"value":"0.8 0.8 0.8"
+	}
+	
+}
+%>

@@ -1,0 +1,71 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+*/
+response.setCharacterEncoding("UTF-8");
+
+
+	var language = "xpath";
+	var expression = "/jcr:root/content/users//modules";
+	var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+	var qry = queryManager.createQuery(expression,language);
+	
+	try{
+		var result = qry.execute().getNodes();
+	}
+	catch(e){
+		out.println("{error}");
+	}
+	
+	// 遍历所有的用户的modules 
+	while(result.hasNext()){
+		var usrModules = result.nextNode();
+		out.println(usrModules);
+	
+	    // 遍历某一个用户modules
+		if(usrModules.hasNodes()){
+			out.println(usrModules.hasNodes());
+			if(!usrModules.getNode("mydesignsketch"))
+				break;
+			// 获取 mydesignsketch	
+			var mydesignsketch = usrModules.getNode("mydesignsketch");
+			var myindex = mydesignsketch["index"];
+			out.println(mydesignsketch);
+			out.println(myindex);
+			
+			var usrModulesArray = usrModules.getNodes();
+			
+			// 修改 index
+			for(var usrModule in usrModulesArray){
+			    out.println(usrModule);
+				// var usrIndex = usrModule["index"];
+				var usrIndex = usrModules.getNode(usrModule)["index"];
+				out.println(usrIndex);
+				if(usrIndex > myindex){
+				    usrIndex = usrIndex - 1;
+					usrModules.getNode(usrModule).setProperty("index",usrIndex.toString());
+					usrIndex = usrModules.getNode(usrModule)["index"];
+					out.println(usrIndex);
+					// 保存index 修改
+					usrModules.getNode(usrModule).save();
+				}
+			}
+			try{
+				// 删除 mydesignsketch
+				mydesignsketch.remove();
+				usrModules.save();
+			}catch(e){
+				out.println(e);
+			}	
+		}
+		
+	}
+%>

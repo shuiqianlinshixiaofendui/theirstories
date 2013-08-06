@@ -1,0 +1,93 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("utf-8");
+var characterEncoding = request.getCharacterEncoding();
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/request.esp");
+load("/apps/util/file.esp");
+
+var para = new Array();
+para[0] =  "/root/sppscript/python/email/sendmail2.py";
+para[1] =  " ";
+para[2] =  " ";
+
+var target = request.getParameter("target");
+if(target){
+    target = Packages.org.apache.commons.io.IOUtils.toString(target.getBytes(characterEncoding), 'utf-8');
+    para[2] +=  " --target \"zhangwei@spolo.org\"";
+}
+
+var subject = request.getParameter("subject");
+if(subject){
+    subject = Packages.org.apache.commons.io.IOUtils.toString(subject.getBytes(characterEncoding), 'utf-8');
+}else{
+    subject = "";
+}
+para[2] +=  " --subject \""+ subject +"\"";
+
+var content = request.getParameter("content");
+if(content){
+    content = Packages.org.apache.commons.io.IOUtils.toString(content.getBytes(characterEncoding), 'utf-8');
+}else{
+    content = "";
+}
+para[2] +=  " --content \""+ content +"\"";
+
+var NodePath = GVAR_system.getNodePath(currentNode,true);
+var tempDir = GVAR_File.createTempFolder(NodePath);
+GVAR_uploader.foreach(function(name,param){
+    if(!param.isFormField())
+    {
+        try
+        {
+            
+            var filenew = GVAR_uploader.copyFile(param,tempDir.getPath());
+        }
+        catch(e)
+        {
+            Packages.java.lang.System.out.println(e);
+        }
+    }
+});
+para[2] +=  " --file \""+ tempDir.getPath() +"\"";
+
+var tel = request.getParameter("tel");
+if(tel){
+    tel = Packages.org.apache.commons.io.IOUtils.toString(tel.getBytes(characterEncoding), 'utf-8');
+}else{
+    tel = "";
+}
+para[2] +=  " --tel \""+ tel +"\"";
+
+var email = request.getParameter("email");
+if(email){
+    email = Packages.org.apache.commons.io.IOUtils.toString(email.getBytes(characterEncoding), 'utf-8');
+}else{
+    email = "";
+}
+para[2] +=  " --email \""+ email +"\"";
+
+var type = request.getParameter("type");
+if(type){
+    type = Packages.org.apache.commons.io.IOUtils.toString(type.getBytes(characterEncoding), 'utf-8');
+}else{
+    type = "idea";
+}
+para[2] +=  " --type \""+ type +"\"";
+
+GVAR_system.runTool("python",para);
+Packages.org.apache.commons.io.FileUtils.deleteDirectory(tempDir);
+out.println("<html><body><textarea>{\"success\":true}</textarea></body></html>");
+%>

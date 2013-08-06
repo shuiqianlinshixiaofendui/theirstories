@@ -1,0 +1,46 @@
+<%
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/scene/jobs/jobUtil.esp");
+
+response.setCharacterEncoding("UTF-8");
+response.setContentType("application/json");
+
+var r1=' ';
+
+var jobName=request.getRequestParameter('jobName');
+
+//生成jobs节点对应的文件路径
+var jobsPath=GVAR_system.getNodePath(currentNode);
+var jobsDir= new Packages.java.io.File(jobsPath);
+if(!jobsDir.exists()){
+	r1='{"result":"true","jobInfo":{}}';
+}else{
+	var jobPath;
+	var jobJSONFile;
+	var jobJSONFilePath;
+	//如果传入jobname
+	if(jobName){
+		var jobInfo = JobUtil.getJobAsJsonObject(currentNode,jobName);		
+		if(jobInfo){
+			var jobJSONString = jobInfo.toString();
+			r1='{"result":"true","jobInfo":'+jobJSONString+'}';
+		}else{
+			r1='{"result":"false","reason":"job not exist"}';
+		}
+	}else{
+		//没有jobname 获取所有job信息返回
+		var jobNames=jobsDir.list();
+		var jobsInfo = new Packages.org.apache.sling.commons.json.JSONObject();		
+		for(var index=0;index<jobNames.length;index++){
+			var jobName = jobNames[index];
+			var jobInfo = JobUtil.getJobAsJsonObject(currentNode,jobName);	
+			if(jobInfo){
+				jobsInfo.put(jobName,jobInfo);
+			}				
+		}
+		r1='{"result":"true","jobInfo":'+jobsInfo.toString()+'}';		
+	}
+}
+out.write(r1);
+%>

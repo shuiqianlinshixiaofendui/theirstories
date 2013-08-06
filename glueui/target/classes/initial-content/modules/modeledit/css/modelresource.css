@@ -1,0 +1,38 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	font-size:14px;
+}
+#modelresource{
+	width:100%;
+	height:100%;
+}
+#btnuploadmodelresource{
+	border: 1px solid #3079ed;
+	color: #fff;
+	padding: 0 8px;
+	width: auto;
+	font-weight:bold;
+	line-height: 30px;
+	text-align: center;
+	display: inline-block;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	cursor: pointer;
+	background:#3079ed;
+	float:right;
+}
+#modelresourcepreview{
+	width:90%;
+	//height:20%;
+	margin:0 auto;
+}
+#modelpreviewiframe{
+"height" : "100%";
+"width" : "100%";
+"border" : "none";
+"padding" :"0px";
+"margin" : "0px";
+"overflow" : "hidden";
+}

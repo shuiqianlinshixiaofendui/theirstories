@@ -1,0 +1,53 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+var GVAR_LoadLibrary;
+	
+GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp"); // Load sysconfig.esp
+load("/apps/util/file.esp"); // Load file.esp
+
+
+function zip(node)
+{
+	var fileArray = new Array(); // Array to keep all file
+	var tmpFolder = GVAR_File.createTempFolder();
+	var tmpRootPath = tmpFolder.path; // Get tmp path
+	tmpRootPath = GVAR_File.backSlash(tmpRootPath);
+	
+	var ocmNode = node.getNode("ocm");
+	var ocmFileNode = ocmNode.getNodes()[0]; // ocm file node
+	var ocmFile = GVAR_File.dumpFile(ocmFileNode, tmpRootPath); // Dump ocm file
+	
+	var prevNode = node.getNode("preview");
+	var prevFileNode = prevNode.getNodes()[0];	// preview file node
+	var prevFile = GVAR_File.dumpFile(prevFileNode, tmpRootPath); // Dump preview file
+	
+	fileArray.push(ocmFile);
+	fileArray.push(prevFile);
+	
+	var zipName = node.getName();
+	zipName = new Packages.java.net.URLEncoder.encode(zipName, "UTF-8")
+	
+	response.setContentType("application/zip"); 
+	response.setHeader("Content-Disposition", "attachment; filename=\"" + zipName + ".zip\"");
+	var sos = response.getOutputStream();	// Download zip
+	GVAR_File.zipFiles(sos, fileArray);
+	sos.close();
+	
+	GVAR_File.deleteFile(tmpFolder); // Delete tmp file	
+}
+
+zip(currentNode)
+%>

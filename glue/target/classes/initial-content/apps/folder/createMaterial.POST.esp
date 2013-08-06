@@ -1,0 +1,73 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+// response.setContentType("application/json");
+
+var GVAR_LoadLibrary = true;
+load("/apps/folder/_createMaterial.esp");
+load("/apps/util/request.esp");
+
+response.setCharacterEncoding("UTF-8");
+// response.setContentType("text/html");
+// out.println("<html> <body> ");
+
+// out.println(currentNode);
+
+var mat_prop = {};
+
+var characterEncoding = request.getCharacterEncoding();
+
+var matname = request.getParameter("matname");
+var matname = Packages.org.apache.commons.io.IOUtils.toString(matname.getBytes(characterEncoding), 'utf-8');
+
+var mattype = request.getParameter("mattype");
+var mattype = Packages.org.apache.commons.io.IOUtils.toString(mattype.getBytes(characterEncoding), 'utf-8');
+
+var keyInfo = request.getParameter("keyInfo");
+var keyInfo = Packages.org.apache.commons.io.IOUtils.toString(keyInfo.getBytes(characterEncoding), 'utf-8');
+
+var introduction = request.getParameter("introduction");
+var introduction = Packages.org.apache.commons.io.IOUtils.toString(introduction.getBytes(characterEncoding), 'utf-8');
+
+// out.println(request.getCharacterEncoding());
+
+mat_prop["resourceName"] = String(matname);
+
+mat_prop["categoryName"] = String(mattype);
+
+mat_prop["keyInfo"] = String(keyInfo);
+
+mat_prop["introduction"] = String(introduction);
+
+mat_prop["publishAuthor"] = currentNode.getSession().getUserID();
+
+mat_prop["publishdate"] = new Packages.java.util.Calendar.getInstance();
+
+
+
+var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+
+var cret = createMaterial(currentNode,mat_prop);
+
+response.setContentType("text/html");
+
+jsonobj.put('result', cret);
+
+out.println("<textarea>");
+out.println(jsonobj.toString());
+out.println("</textarea>");
+// out.println("<script>window.parent.notifyInfo(2);</script>");
+out.println("</body></html>");
+
+%>

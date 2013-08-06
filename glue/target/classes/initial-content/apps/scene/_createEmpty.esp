@@ -1,0 +1,61 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+ function createEmpty(scenenode)
+ {
+	response.setCharacterEncoding("UTF-8");
+	response.setContentType("application/json");
+
+	var GVAR_LoadLibrary = true;
+	load("/apps/util/sysconfig.esp");
+
+	var result = new Packages.org.apache.sling.commons.json.JSONObject();
+	try{  
+	   var nodePath = GVAR_system.getNodePath(scenenode, true);
+	   if(nodePath){
+
+		  var dataPath = nodePath + GVAR_system.path_separator + "data";
+		  var dataDirectory = new Packages.java.io.File(dataPath);
+		  if(!dataDirectory.exists()){
+			 dataDirectory.mkdirs();
+		  }
+		  
+		  var mainBlendPath = dataPath + GVAR_system.path_separator + "main.blend";
+		  var mainBlendFile = new Packages.java.io.File(mainBlendPath);
+		  
+		  var emptyBlendPath = GVAR_system.getEmptyblendPath();
+		  var emptyBlendFile = new Packages.java.io.File(emptyBlendPath);
+		  if(emptyBlendPath && emptyBlendFile.exists())
+		  {
+			 var inputstream = Packages.org.apache.commons.io.FileUtils.openInputStream(emptyBlendFile);
+			 var outputstream = Packages.org.apache.commons.io.FileUtils.openOutputStream(mainBlendFile);
+			 Packages.org.apache.commons.io.IOUtils.copyLarge(inputstream, outputstream);
+			 Packages.org.apache.commons.io.IOUtils.closeQuietly(inputstream);
+			 Packages.org.apache.commons.io.IOUtils.closeQuietly(outputstream);
+			 var statusJSON = new Packages.org.apache.sling.commons.json.JSONObject();
+			 statusJSON.put("isProcessing", 3);
+			 var statusJSONPath = dataPath + GVAR_system.path_separator + "status.json";
+			 var statusJSONFile = new Packages.java.io.File(statusJSONPath);
+			 Packages.org.apache.commons.io.FileUtils.writeStringToFile(statusJSONFile, statusJSON, "UTF-8");
+			 result.put('suc', true);
+		  }else{
+			 throw("Can not find empty.blend");
+		  }   
+	   }
+	}catch(e){
+	   result.put('suc', false);
+	   result.put('reason', e);
+	}
+	return(result);
+}
+%>

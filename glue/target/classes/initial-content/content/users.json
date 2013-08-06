@@ -1,0 +1,33 @@
+{
+	"sling:resourceType":"folder",
+	"jcr:primaryType":"sling:Folder",
+	"admin":{
+		"sling:resourceType":"users",
+		"jcr:primaryType":"sling:Folder",
+		"nickname":"管理员",
+		"scenelib":{
+			"sling:resourceType":"folder",
+			"jcr:primaryType":"sling:Folder"
+		},
+		"modellib":{
+			"sling:resourceType":"folder",
+			"jcr:primaryType":"sling:Folder",
+			"defaultCategory":{
+				"sling:resourceType":"folder",
+				"jcr:primaryType":"sling:Folder"
+			}
+		},
+		"materiallib":{
+			"sling:resourceType":"folder",
+			"jcr:primaryType":"sling:Folder",
+			"defaultCategory":{
+				"sling:resourceType":"folder",
+				"jcr:primaryType":"sling:Folder"
+			}
+		},
+		"modules":{
+			"sling:resourceType":"folder",
+			"jcr:primaryType":"sling:Folder"
+		}
+	}
+}

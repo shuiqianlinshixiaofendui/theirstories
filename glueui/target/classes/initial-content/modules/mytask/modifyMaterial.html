@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>模型bug信息</title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script> 
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/modifyMaterial.css" media="screen"/>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="js/modifyMaterial.js"></script>
+	</head>	
+	<body class="claro">
+		<div data-dojo-type="dijit/layout/ContentPane" style="width:98%; height:96%;"  >
+			<div data-dojo-type="dijit/layout/TabContainer" >
+				<div class="content">
+					<div class="upfile">
+						<div class="uploadMap">
+							<div class="uploadMapBox">
+							</div>
+						</div>
+						<div class="uploadFile">
+							上传材质文件
+						</div>
+					</div>
+					<div class="messageList">
+						<div style="position:relative;top:30px">
+							<label class="label">材质名称:</label>
+							<input id="input_material" class="input" disabled="disabled"></input>
+						</div>
+						<div style="position:relative;top:60px">
+							<label class="label" style="height:50px">作者：</label>
+							<input id="input_author" class="input" disabled="disabled"></input>
+						</div>
+						<div style="position:relative;top:90px">
+							<label class="label" style="height:50px">bug信息：</label>
+							<textarea class="input" style="height:220px" disabled="disabled"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+

@@ -1,0 +1,8 @@
+{
+	"sling:resourceType" : "module",
+	"jcr:primaryType" : "sling:Folder",
+	"resourceName" : "系统信息",
+	"description" : "系统信息",
+	"isActive" : true,
+	"isTopMenu" : true
+}

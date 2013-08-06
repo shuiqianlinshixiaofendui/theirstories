@@ -1,0 +1,167 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8");
+var characterEncoding = request.getCharacterEncoding();
+
+var GVAR_LoadLibrary = true;
+load("/apps/folder/modellib/_modellist.esp");
+
+var limit = request.getParameter("limit");
+var offset = request.getParameter("offset");
+var term = request.getParameter("term");
+var startdate = request.getParameter("startdate");
+var enddate = request.getParameter("enddate");
+var publishAuthor = request.getParameter("publishAuthor");
+var resourceName = request.getParameter("resourceName");
+var keyInfo = request.getParameter("keyInfo");
+var introduction = request.getParameter("introduction");
+var categoryPath = request.getParameter("categoryPath");
+var stylePath = request.getParameter("stylePath");
+var madeOfPath = request.getParameter("madeOfPath");
+var brandPath = request.getParameter("brandPath");
+var roomPath = request.getParameter("roomPath");
+var sightfeelingPath = request.getParameter("sightfeelingPath");
+var sortByElem = request.getParameter("sortByElem");//参数为resourceName、resourceNameDesc、publishdate、publishdateDesc、jcr:created、jcr:createdDesc
+
+if(term){
+    term =  Packages.org.apache.commons.io.IOUtils.toString(term.getBytes(characterEncoding), 'utf-8');
+}
+if(publishAuthor){
+    publishAuthor =  Packages.org.apache.commons.io.IOUtils.toString(publishAuthor.getBytes(characterEncoding), 'utf-8');
+}
+if(resourceName){
+    resourceName =  Packages.org.apache.commons.io.IOUtils.toString(resourceName.getBytes(characterEncoding), 'utf-8');
+}
+if(keyInfo){
+    keyInfo =  Packages.org.apache.commons.io.IOUtils.toString(keyInfo.getBytes(characterEncoding), 'utf-8');
+}
+if(introduction){
+    introduction =  Packages.org.apache.commons.io.IOUtils.toString(introduction.getBytes(characterEncoding), 'utf-8');
+}
+//获取前端参数
+if(!offset)
+{
+	offset = "0";
+}
+
+if(!limit)
+{
+	limit = "15";
+}
+
+//根据参数确定expression
+var expression = "/jcr:root/content/modellib//*[jcr:like(fn:lower-case(@sling:resourceType),'%model%')";
+var language = "xpath";
+var terms = ["resourceName","keyInfo","introduction","publishAuthor"];
+var ret;
+for(var i = 0 ;i<terms.length ; i++){
+    if(term){
+        expression += " and jcr:like(fn:lower-case(@"+terms[i]+"),'%"+term.toLocaleLowerCase()+"%')";
+    }
+        
+    if(publishAuthor){
+         expression += " and (jcr:like(@publishAuthor,'%"+publishAuthor.toLocaleLowerCase()+"%'))";
+    }
+    
+    if(resourceName){
+         expression += " and (jcr:like(@resourceName,'%"+resourceName.toLocaleLowerCase()+"%'))";
+    }
+    
+    if(keyInfo){
+         expression += " and (jcr:like(@keyInfo,'%"+keyInfo.toLocaleLowerCase()+"%'))";
+    }
+    
+    if(introduction){
+         expression += " and (jcr:like(@introduction,'%"+introduction.toLocaleLowerCase()+"%'))";
+    }
+    
+    if(startdate){
+        // var startdates = startdate.split(" ");
+        expression += " and @publishdate >= xs:dateTime('"+startdate+"')";
+    }
+    
+    if(enddate){
+        // var enddates = enddate.split(" ");
+        expression +=" and @publishdate <= xs:dateTime('"+enddate+"')";
+    }
+    
+    if(categoryPath){
+        expression += " and @categoryPath='"+categoryPath+"'";
+    }
+    
+    if(stylePath){
+        stylePaths = stylePath.split(";");
+        expression += " and (jcr:like(@stylePath,'%"+stylePaths[0]+"%')";
+        for(var j = 1;j<stylePaths.length;j++){
+            expression += " or jcr:like(@stylePath,'%"+stylePaths[j]+"%')";
+        }
+        expression += ")";
+    }
+    
+    if(madeOfPath){
+        expression += " and @madeOfPath='"+madeOfPath+"'";
+    }
+    
+    if(brandPath){
+        expression += " and @brandPath='"+brandPath+"'";
+    }
+    
+    if(roomPath){
+        roomPaths = roomPath.split(";");
+        expression += " and (jcr:like(@roomPath,'%"+roomPaths[0]+"%')";
+        for(var j = 1;j<roomPaths.length;j++){
+            expression += " or jcr:like(@roomPath,'%"+roomPaths[j]+"%')";
+        }
+        expression += ")";
+    }
+    
+    if(sightfeelingPath){
+        sightfeelingPaths = sightfeelingPath.split(";");
+        expression += " and (jcr:like(@sightfeelingPath,'%"+sightfeelingPaths[0]+"%')";
+        for(var j = 1;j<sightfeelingPaths.length;j++){
+            expression += " or jcr:like(@sightfeelingPath,'%"+sightfeelingPaths[j]+"%')";
+        }
+        expression += ")";
+    }
+    
+    expression += "]";
+    
+    //排序
+    if(sortByElem){
+        var sortByElems = sortByElem.split("Desc");
+        expression += " order by @"+sortByElems[0];
+        if(sortByElem.indexOf("Desc")!=-1){
+            expression += " descending";
+        }
+    }else{
+        expression += " order by @publishdate  descending";
+    }
+    
+    ret = modellist(currentNode, offset, limit, expression, language);
+    
+    if(ret != "{\"totalNum\":0,\"data\":{}}"){
+        break;
+    }
+    
+    expression="/jcr:root/content/modellib//*[jcr:like(fn:lower-case(@sling:resourceType),'%model%')";
+}
+
+
+var isiframe = request.getParameter("isiframe");
+if(!isiframe){
+	out.print(ret);
+}else{
+	out.println("callback("+ret+");");
+}
+
+%>

@@ -1,0 +1,120 @@
+<%                                                                     
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+var adminSession = currentNode.getSession();
+// 兼容以前版本uname
+//var goupName = request.getParameter("groupName");
+// 升级版本users
+var groupNames = request.getParameter("groupNames");
+var grant = request.getParameter("grant");
+var path = currentNode.getPath();                    //       应该拼成要节点在哪个组赋予的权限的节点路径
+var uid = adminSession.getUserID();
+
+
+do{
+	if (!adminSession.getUserManager().getAuthorizable(adminSession.getUserID()).isAdmin()) {   //判断当前用户是否是管理员
+		out.println("{\"res\":\"AccessDenied\"}");
+		break;
+	}	
+
+	// 兼容以前版本,此处存在组的概念
+	if(groupNames){
+		if(grant=="0"){
+			setGroupNull(adminSession, groupNames, path);
+		}
+		if(grant=="1"){
+			setGroupRead(adminSession, groupNames, path);
+		}else if(grant=="2"){
+			setGroupEdit(adminSession, groupNames, path);
+		}else if(grant=="3"){
+			setGroupAdmin(adminSession, groupNames, path);	
+		}
+	}
+	out.println("{\"res\":\"success\"}");
+}while(false); 
+
+// 给组只读权限
+function setGroupRead(adminSession, groupName, path){
+	grantGroup(adminSession, groupName, path, 
+			[],
+			["jcr:all"],
+			[]
+		);
+ 	grantGroup(adminSession, groupName, path, 
+			["jcr:read"],
+			[],
+			[]
+		); 
+}
+
+// 给组编辑权限
+function setGroupEdit(adminSession, groupName, path){
+	grantGroup(adminSession, groupName, path, 
+			["jcr:all"],
+			[],
+			[]
+		);
+	grantGroup(adminSession, groupName, path, 
+			[],
+			[],
+			["jcr:removeNode","jcr:removeChildNodes","jcr:addChildNodes","jcr:removeChildNodes"]
+		);
+}
+
+// 给组不可访问权限
+function setGroupNull(adminSession, groupName, path){
+	grantGroup(adminSession, groupName, path, 
+			[],
+			["jcr:all"],
+			[]
+		);
+}
+
+// 给组所有权限
+function setGroupAdmin(adminSession, groupName, path){
+	grantUser(adminSession, groupName, path, 
+			["jcr:all"],
+			[],
+			[]
+		);
+}
+
+
+// 给组授权
+function grantGroup(adminSession, groupName, path, 
+			grantedPrivilegeNames, deniedPrivilegeNames, removedPrivilegeNames){
+
+	var item = adminSession.getItem(path);
+	var resourcePath = item.getPath();
+	
+	var principalManager = Packages.org.apache.sling.jcr.base.util.AccessControlUtil.getPrincipalManager(adminSession);
+	var principal = principalManager.getPrincipal(groupName);
+	
+	// 权限列表详见
+	// http://sling.apache.org/site/managing-permissions-jackrabbitaccessmanager.html
+	// var grantedPrivilegeNames = ["jcr:all"];
+	// var deniedPrivilegeNames = [];
+	// var removedPrivilegeNames = [];
+	
+	Packages.org.apache.sling.jcr.base.util.AccessControlUtil.replaceAccessControlEntry(
+						adminSession, resourcePath, principal, grantedPrivilegeNames,
+						deniedPrivilegeNames,	//deniedPrivilegeNames
+						removedPrivilegeNames,	//removedPrivilegeNames
+						null    //order 
+					); 
+	adminSession.save();
+
+}
+%>

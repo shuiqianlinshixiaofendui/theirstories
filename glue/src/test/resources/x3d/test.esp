@@ -1,0 +1,69 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+/*本文件用于测试的目的。先临时放在这里了。
+*/
+
+var GVAR_LoadLibrary = true;
+var GVAR_CurrentNode = currentNode;
+
+response.setCharacterEncoding("UTF-8");
+response.setContentType("text/html");
+
+try{
+%>
+
+<!DOCTYPE html > 
+<html > 
+	<head> 
+        <meta http-equiv="X-UA-Compatible" content="chrome=1" /> 
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
+		<title>Hello World</title> 
+        <link rel="stylesheet" type="text/css" href="/libs/x3dom/x3dom.css" /> 
+		<script type="text/javascript" src="/libs/x3dom/x3dom.js"></script> 
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+	</head> 
+<body> 
+
+   <h1>Resource Show Testing.</h1> 
+	<p>首先测试字符串。
+	</p>
+	<%
+		var username = "_@D{T哈*哈";
+		response.getWriter().println("username:" + username + "<br/>");
+		var enc = Packages.org.spolo.utils.EncodeUname.encode(username);
+		response.getWriter().println("encode:" + enc + "<br/>");
+		var dec = Packages.org.spolo.utils.EncodeUname.decode(enc);
+		response.getWriter().println("decode:" + dec + "<br/>");
+	%>
+	<script>
+		var username = "_@D{T哈*哈";
+		alert("原始的username = " + username);
+		var enc = Spolo.encodeUname(username);
+		alert("编码后的username = " + enc);
+		var orig = Spolo.decodeUname(enc);
+		alert("解码后的username = " + orig);
+	</script>
+	
+</body> 
+</html> 
+
+<%
+}catch(e)
+{
+	response.getWriter().println("show.esp error:" + e);
+}
+%>

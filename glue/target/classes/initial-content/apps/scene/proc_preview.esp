@@ -1,0 +1,257 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+// out.println("test proc_preview!!!");
+
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+
+//获取并设置所需全局变量
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_WorkSpace;
+var GVAR_RootNode;
+
+
+GVAR_CurrentNode = currentNode;
+GVAR_Session = currentNode.getSession();
+
+
+var publishauthor = GVAR_Session.getUserID();
+
+
+var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+var adminSession = slingRepos.loginAdministrative(null);
+GVAR_Session = adminSession;
+
+GVAR_WorkSpace = GVAR_Session.getWorkspace();
+GVAR_RootNode = GVAR_Session.getRootNode();
+				
+				
+function list_files(dir,filelist)
+{
+	var files = dir.listFiles();
+
+	
+	for(var i = 0; i < files.length; i++)
+	{
+		var file = files[i];
+		
+		if(file.isDirectory())
+		{
+			list_files(file,filelist)
+		}
+		else
+		{
+			filelist[file.getName()] = file;
+			
+			// out.println(file.getName());
+			// out.println(ext);
+		}
+		
+	}
+}
+
+
+
+//在此处理缩略图发布
+var scenename = currentNode.getName();
+
+/*var content_node = GVAR_RootNode.getNode("content");
+
+var previewlib_node;
+
+if(!content_node.hasNode("previewlib"))
+{
+	
+	previewlib_node = content_node.addNode("previewlib","sling:Folder");
+	content_node.save();
+}
+
+previewlib_node = content_node["previewlib"];
+
+var scene_previewnode;
+
+if(GVAR_RootNode.hasNode("content/previewlib/" + scenename))
+{
+	scene_previewnode = GVAR_RootNode.getNode("content/previewlib/" + scenename);
+}
+else
+{
+	scene_previewnode = previewlib_node.addNode(scenename,"sling:Folder");
+	previewlib_node.save();
+}*/
+
+
+var usernode = currentNode.getParent();
+
+while(1)
+{
+	if(usernode["sling:resourceType"] == "users")
+	{
+		break;
+	}
+	
+	 usernode = usernode.getParent();
+}
+
+var previewlib_node;
+
+if(usernode.hasNode("previewlib"))
+{
+	previewlib_node = usernode["previewlib"];
+	
+	previewlib_node.setProperty("sling:resourceType","folder");
+	
+	previewlib_node.save();
+}
+else
+{
+	previewlib_node = usernode.addNode("previewlib","sling:Folder");
+	
+	usernode.save();
+	
+	previewlib_node.setProperty("sling:resourceType","folder");
+	
+	previewlib_node.save();
+}
+
+
+
+
+
+var scenepath = GVAR_system.getNodePath(currentNode,true);
+
+var importpath = scenepath + GVAR_system.path_separator + "import";
+
+// out.println("importpath : " + importpath);
+
+var importfiles = [];
+
+
+var importdir = new Packages.java.io.File(importpath);
+
+list_files(importdir,importfiles)
+
+for(var i in importfiles)
+{
+	// out.println(i);
+	var filename = i.split(".")[0];
+	var ext = i.split(".")[1];
+	// out.println(ext);
+	if((ext == "json") || (ext == "ocs") || (ext == "obj") || (ext == "mtl")|| (ext == "max"))
+	{
+		continue;
+	}
+	// out.println(filename);
+	if((importfiles[filename + ".json"] != undefined) && (ext != "json"))
+	{
+		// out.println(i);
+		
+		var scene_previewnode;
+
+		if(previewlib_node.hasNode(scenename))
+		{
+			scene_previewnode = previewlib_node[scenename];
+		}
+		else
+		{
+			scene_previewnode = previewlib_node.addNode(scenename,"sling:Folder");
+			
+			//添加resourceName属性
+			scene_previewnode.setProperty("resourceName",currentNode["resourceName"]);
+			
+			//添加sling:resourceType属性,值为folder
+			scene_previewnode.setProperty("sling:resourceType","folder");
+			
+			previewlib_node.save();
+		}
+		
+		var previewnode = scene_previewnode.addNode("preview" + filename,"sling:Folder");
+
+		scene_previewnode.save();
+		
+		previewnode.setProperty("scene",currentNode.getPath());
+		
+		previewnode.setProperty("sling:resourceType","preview");
+		
+		//添加resourceName属性
+		previewnode.setProperty("resourceName",previewnode.getName());
+		
+		previewnode.save();
+		
+		var preview_models = previewnode.addNode("model","sling:Folder");
+		
+		previewnode.save();
+		
+		preview_models.setProperty("publishauthor",publishauthor);
+		
+		//添加resourceName属性
+		preview_models.setProperty("resourceName",preview_models.getName());
+		
+		preview_models.save();
+		
+		currentNode.setProperty("previewlib",scene_previewnode.getPath());
+		
+		//添加resourceName属性
+		//currentNode.setProperty("resourceName",currentNode.getName());
+		
+		currentNode.save();
+		
+		var models = currentNode["model"];
+		
+		for(var im in models)
+		{
+			var model = models[im];
+			if(model["sling:resourceType"] == "model")
+			{
+				var preview_model = preview_models.addNode(model["name"],"sling:Folder");
+				preview_models.save();
+				
+				preview_model.setProperty("modelpath",model.getPath());
+				
+				//添加resourceName属性
+				preview_model.setProperty("resourceName",model["resourceName"]);
+				
+				preview_model.save();
+				
+				// var model_previewlib = model["previewlib"];
+				// if(model_previewlib == undefined)
+				// {
+					// model_previewlib = model.addNode("previewlib","sling:Folder");
+					
+					// model.save();
+				// }
+				// var model_preview = model_previewlib.addNode(filename,"sling:Folder");
+				
+				// model_previewlib.save();
+				
+				// model_preview.setProperty("previewpath",previewnode.getPath());
+				
+				// model_preview.save();
+				
+				// model.save();
+			}
+		}
+		
+		var destPath = GVAR_system.getNodePath(previewnode,true);
+		
+		var destfile = new Packages.java.io.File(destPath);
+		
+		Packages.org.apache.commons.io.FileUtils.copyFileToDirectory(importfiles[i], destfile);
+		
+	}
+}
+
+%>

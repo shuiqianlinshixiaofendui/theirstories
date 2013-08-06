@@ -1,0 +1,51 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ //直接调用export_octane.py就行了
+ 
+var GVAR_LoadLibrary = true;
+load("/apps/util/response.esp");
+load("/apps/util/checkRefProp.esp");
+load("/apps/util/clearcache.esp");
+
+if(!checkRefProp(currentNode))
+{
+	clearcache(currentNode)
+}
+
+//获取目标类型参数
+var target_type = request.getRequestParameter("target_type");
+
+target_type = String(target_type);
+
+// out.println(target_type)
+
+try{
+	if(!GVAR_response.download({
+		bcgi : "scene/export_octane.py",
+		cache : "octane.zip" ,
+		env : {
+				"target_type" : "sample",
+				"LANG" : "en_US.UTF-8"
+			}
+		}))
+	{//未能正确下载。
+		Packages.java.lang.System.out.println("download in ocs.zip.esp failed.");
+	}
+}catch(e){
+   var error = new Packages.org.apache.sling.commons.json.JSONObject();
+   error.put("error", e);
+   out.write(error)
+}
+%>

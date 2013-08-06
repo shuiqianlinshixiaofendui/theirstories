@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            场景详细信息
+        </title>
+
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "scenedetail",
+						location: "/modules/scenedetail"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script> 
+		<script type="text/javascript" src="/script/spolo.js"></script> 
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/update.css" media="screen" />
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		
+		<style type="text/css">
+			.inputBox{ 
+				width:200px; 
+				height:20px; 
+				padding:5px;
+			}
+		</style>
+		
+    </head>
+    
+    <body class="claro">
+		<div data-dojo-type="dijit.layout.BorderContainer" style="height:100%;">
+			<div data-dojo-type="dijit.layout.ContentPane" region="top" style="height:60px;width:100%;">
+				<br />
+				需要您输入场景名称：
+				<input id="sceneName" promptMessage="请输入名称" class="inputBox" 
+					data-dojo-type="dijit.form.ValidationTextBox" trim="true" value=""/>
+			</div>
+			<div data-dojo-type="dijit.layout.ContentPane" region="center">
+				<div data-dojo-type="dijit.layout.BorderContainer" gutters="false">
+					<div data-dojo-type="dijit.layout.ContentPane" region="center" ><span id="modelNum"></span>个模型</div>
+					<div data-dojo-type="dijit.layout.ContentPane" region="right" style="width:100px;">
+						<input type="button" id="btnSubmit" style="width:90px; height:30px;" value="新建" />
+					</div>
+				</div>
+			</div>
+		</div>
+	<script type="text/javascript">
+		require(
+			[
+				"dojo/ready","dojo/dom","dojo/dom-style","dijit/ProgressBar", "dojo/query", "dojo/on","spolo/data/scene","widgets/Mask/Mask",
+				"dijit/form/ValidationTextBox","dijit/layout/BorderContainer","dijit/layout/ContentPane","spolo/data/folder/scenelib"
+				
+			],function(
+				ready, dom, domStyle,ProgressBar,query,on,scene_cls,Mask,ValidationTextBox,BorderContainerm,ContentPane,scenelib
+			){
+				ready(function(){
+					var data = Spolo.getDialogData();
+					var scene = data["scene"];
+					var modelNum = data["modelNum"];
+					var scenePath = data["scenepath"];
+					var modellist = data["modellist"];
+					console.log(data);
+					dom.byId("modelNum").innerHTML = modelNum;
+					on(dom.byId("btnSubmit"),"click",function(){
+						var value = dom.byId("sceneName").value;
+						if(value == ""){
+							value = "未命名";
+						}
+						Mask.show();
+						scenelib.createSceneBySelfModels({
+							sceneName : value,
+							parentScene : scenePath,
+							modelsArray : modellist,
+							success : function(){
+								setTimeout(function(){
+									Spolo.notify({
+										"text" : "创建成功!",
+										"type" : "success",
+										"timeout" : 1000
+									});
+									Mask.hide();
+									Spolo.dialogHide();
+								},500);
+							},
+							failed : function(){
+								console.log("error");
+							}
+						});		
+					});
+				});
+			}
+		);
+	</script>	
+    </body>
+</html>

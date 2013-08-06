@@ -1,0 +1,339 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>sling</artifactId>
+        <version>10</version>
+    </parent>
+
+	<groupId>org.spolo.gluebase</groupId>
+	<artifactId>org.spolo.gluebase</artifactId>
+	<version>1.0.0</version>
+	<packaging>bundle</packaging>
+
+	<name>Superpolo WebTools Base Bundle</name>
+
+	<description>this is spolo web tool-chain package</description>
+
+	<build>
+		<plugins>
+            <!-- Generation of SCR descriptors -->
+            <plugin>
+				<groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+
+            <!-- Bundling the sample project -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+						<Export-Package>
+							org.spolo.utils,
+							org.spolo.apps,
+							org.spolo.apps.util,
+							org.spolo.xmpp,
+							org.spolo.xmpp.proxy,
+							org.spolo.xmpp.proxy.result,
+							org.spolo.service.internal,
+							me.xuender.unidecode,
+							org.antlr.runtime.*,
+							org.antlr.stringtemplate.*,
+							org.stringtemplate.v4.*,
+                            org.spolo.service;version=${pom.version}
+                        </Export-Package>
+                        <Private-Package>
+							org.spolo.service.xmppimpl,
+                            org.spolo.video,
+                            org.spolo.servlet,
+							org.spolo.misc,							
+							org.spolo.xmpp.bean,
+							org.spolo.xmpp.object,
+							org.spolo.xmpp.listener,
+							org.spolo.xmpp.stub,
+							org.spolo.xmpp.utils,
+							org.spolo.xmpp.jobProcess,
+							org.spolo.xmpp.jobProcessImpl,
+							org.spolo.render.job,
+                        </Private-Package>							
+                        <!-- initial content to be loaded on bundle installation -->
+                        <Sling-Initial-Content>
+                        </Sling-Initial-Content>
+						<Bundle-Activator>
+							org.spolo.misc.BundleActivator
+						</Bundle-Activator>
+                        <Embed-Dependency>
+							commons-exec,
+							commons-lang,
+							smack,
+							smackx,
+							gson,
+							commons-io,
+							commons-codec,
+							unidecode,
+							antlr
+                        </Embed-Dependency>
+                        <Bundle-Vendor>
+                            SanPolo Co.LTD
+                        </Bundle-Vendor>
+                        <Bundle-License>
+                            http://www.spolo.org/licenses/LICENSE.txt
+                        </Bundle-License>
+                        <Bundle-DocURL>
+                            http://glue.spolo.org/documents
+                        </Bundle-DocURL>
+						<!--<Bundle-ClassPath>
+							${sling.home}/libs/
+						</Bundle-ClassPath>-->
+                    </instructions>
+                </configuration>
+            </plugin>
+			<plugin>
+			   <groupId>org.codehaus.mojo</groupId>
+			   <artifactId>findbugs-maven-plugin</artifactId>
+			   <version>1.2</version>
+			   <configuration>
+				  <findbugsXmlOutput>true</findbugsXmlOutput>
+				  <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+				  <xmlOutput>true</xmlOutput>
+			   </configuration>
+			</plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <!--
+                Use this profile to install the OSGi bundle
+                automatically, during development
+            -->
+            <id>autoInstallBundle</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bundle</id>
+                                <goals>
+									<goal>validate</goal>
+                                    <goal>install</goal>
+                                </goals>
+                                <configuration>
+                                    <mountByFS>false</mountByFS>
+                                </configuration>								
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.annotations</artifactId>
+            <version>1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.jcr.jackrabbit.server</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.engine</artifactId>
+            <version>2.1.0</version>
+        </dependency>		
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.jcr.api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.commons.json</artifactId>
+            <version>2.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+			<version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.servlets.post</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+		<dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.2</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+		   <groupId>org.apache.commons</groupId>
+		   <artifactId>commons-exec</artifactId>
+		   <version>1.0.1</version>
+		</dependency>
+		<!--
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.5.0-b01</version>
+		</dependency>            
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-email</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.event</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.commons.scheduler</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.commons.threads</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+            
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+		</dependency>		
+		
+		<dependency>
+			<groupId>jivesoftware</groupId>
+			<artifactId>smack</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>jivesoftware</groupId>
+			<artifactId>smackx</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		
+		<!--  Gson: Java to Json conversion -->
+		<dependency>
+		  <groupId>com.google.code.gson</groupId>
+		  <artifactId>gson</artifactId>
+		  <version>2.2.2</version>
+		  <scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>	
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>me.xuender</groupId>
+		    <artifactId>unidecode</artifactId>
+		    <version>0.0.4</version>
+		</dependency>
+		
+		<dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>2.7.7</version>
+        </dependency>
+		
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>3.3</version>
+		</dependency>
+		
+		
+        <dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>ST4</artifactId>
+			<version>4.0.7</version>
+		</dependency>
+    </dependencies>
+
+
+	<!--
+	<repositories>  
+		<repository>  
+			<id>nexus</id>
+			<url>http://192.168.3.78:8081/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>  
+	</repositories>  
+	<pluginRepositories>  
+		<pluginRepository>
+			<id>nexus</id>
+			<url>http://192.168.3.78:8081/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>   -->
+	
+</project>

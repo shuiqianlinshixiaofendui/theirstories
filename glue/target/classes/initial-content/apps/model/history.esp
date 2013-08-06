@@ -1,0 +1,102 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8"); 
+var GVAR_LoadLibrary = true;
+load("/apps/util/history.esp");
+
+try {
+   var versionID = currentNode.getProperty("NewestVersion").toString();
+} catch(e) {
+   var versionID = null;
+}
+if(versionID) {		
+   option = {};
+   option.version = versionID;	
+   var result = GVAR_Git_History.showAllHistory(option);
+} else {
+   var result = GVAR_Git_History.showAllHistory();
+}
+
+result = new Packages.org.apache.sling.commons.json.JSONObject(result);
+var success = result.getString("success")
+if(success.equals("true")) {
+   var startDate = request.getParameter("sd");
+   var endDate = request.getParameter("ed");
+   var keyWord = request.getParameter("kw");
+   
+   var currentVersion = currentNode.getProperty("CurrentVersion").getString();
+   var newestVersion = currentNode.getProperty("NewestVersion").getString();
+   
+   result.put("current", currentVersion);
+   result.put("newest", newestVersion);
+   
+   if(startDate || endDate || keyWord) {
+      var dateFormat = Packages.java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+
+      if(startDate) {
+         startDate = dateFormat.parse(startDate);
+      }
+      if(endDate) {
+         endDate = dateFormat.parse(endDate);
+      }
+      if(startDate && endDate && startDate.after(endDate)) {
+         startDate = null;
+         endDate = null;
+      }
+      if(keyWord) {
+         keyWord = Packages.org.apache.commons.io.IOUtils.toString(keyWord.toString().getBytes("ISO-8859-1"), "UTF-8").toLowerCase();
+      } else {
+         keyWord = null;
+      }
+
+      var histories = result.get("history");
+      var historyToDel = new Array();
+      historiesKeys = histories.keys();
+      while(historiesKeys.hasNext()) {
+         var historiesKey = historiesKeys.next();
+         var history = histories.get(historiesKey);
+         var historyID = history.getString("id").toLowerCase();
+         var historyDate = history.getString("date");
+         historyDate = dateFormat.parse(historyDate);
+         var historyUser = history.get("msg").getString("user").toLowerCase();
+         var historyMsg = Packages.java.net.URLDecoder.decode(history.get("msg").getString("msg"), "utf-8").toLowerCase();
+         
+         if(startDate && startDate.after(historyDate)) {
+            historyToDel.push(historiesKey);
+            continue;
+         }
+         if(endDate && endDate.before(historyDate)) {
+            historyToDel.push(historiesKey);
+            continue;
+         }
+         
+         if(keyWord) {
+            if(historyID.contains(keyWord)) {
+               continue;
+            } else if (historyUser.contains(keyWord)) {
+               continue;
+            } else if (historyMsg.contains(keyWord)) {
+               continue;
+            } else {
+               historyToDel.push(historiesKey);
+            }
+         }
+      }
+      for(var i = 0; i < historyToDel.length; ++i) {
+         histories.remove(historyToDel[i]);
+      }
+   }
+}
+
+out.println(Packages.java.net.URLDecoder.decode(result.toString(), "utf-8").replace("\\", "\\\\").replaceAll("\\\\\\\\\"(?!})", "\\\\\\\\\\\\\"").replaceAll("\r\n", "\\\\r\\\\n"));
+%>

@@ -1,0 +1,53 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+ var GVAR_LoadLibrary = true;
+ load("/apps/util/sysconfig.esp");
+ load("/apps/util/file.esp");
+ //遍历节点，找出material节点
+	var language = "xpath";
+	var expression = "/jcr:root/content/materiallib//*[@sling:resourceType='material']"; //目前只检查公共材质库
+	var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+	var qry = queryManager.createQuery(expression,language);
+	try{
+			var result = qry.execute().getNodes();
+		}
+	catch(e){
+			out.println("{error}");
+		}
+	
+	while(result.hasNext()){
+		var fixnode = result.nextNode();
+		var NodePath = GVAR_system.getNodePath(fixnode,true);
+		var filePath = NodePath + '/data';
+		var dataDir = Packages.java.io.File(filePath);
+		var regDirFilter = Packages.org.apache.commons.io.filefilter.DirectoryFileFilter.INSTANCE
+		var files = GVAR_File.listFiles(Packages.java.io.File(filePath),'*',true);
+		//移动文件
+		for (var index in files)
+		{
+			var file = files[index];
+			try{
+				Packages.org.apache.commons.io.FileUtils.moveToDirectory(file, dataDir, false)
+			}catch(e){}
+		}
+		findSub = Packages.org.apache.commons.io.filefilter.TrueFileFilter.INSTANCE;
+		var dirs = dataDir.listFiles();
+		//删除目录
+		for (var index in dirs)
+		{
+			if(dirs[index].isDirectory()) {
+				Packages.org.apache.commons.io.FileUtils.deleteDirectory(dirs[index]);
+			}
+		}
+	}		

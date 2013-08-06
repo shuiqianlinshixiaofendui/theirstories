@@ -1,0 +1,129 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+
+response.setCharacterEncoding("UTF-8");
+response.setContentType("text/html");
+
+
+var result = "{suc:true}";
+//设置git参数
+var option = {};
+
+	
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/request.esp");
+load("/apps/util/git.esp");
+load("/apps/util/history.esp");
+load("/apps/util/file.esp");
+
+try {
+    var NodePath = GVAR_system.getNodePath(currentNode, true);
+
+    var updatePath = NodePath + GVAR_system.path_separator + "update";
+    var updateDir = new Packages.java.io.File(updatePath);
+    updateDir.mkdirs();
+    //初始化git仓库
+    GVAR_Git.preCommit();
+
+    //防止出现git分支
+    if(currentNode.hasProperty("NewestVersion") && currentNode.hasProperty("CurrentVersion"))
+    {
+        var newestVersion = currentNode.getProperty("NewestVersion").toString();
+        var currentVersion = currentNode.getProperty("CurrentVersion").toString();
+        if(newestVersion != currentVersion)
+        {
+            option.version = newestVersion;	
+            GVAR_Git_History.reVersion(option);
+            currentNode.setProperty("CurrentVersion", newestVersion);
+            currentNode.save();
+        }
+    }
+    var file = null;
+    GVAR_uploader.foreach(function(name,param){
+        if(param["size"] != 0.0){
+            if(!param.isFormField())
+            {
+               var notifyInfo = "copy and uncompress file '" + param.getFileName() + "'...";
+               file = GVAR_uploader.copyFile(param, updateDir);
+            }
+            if(GVAR_system.uncompress(file))
+            {
+                Packages.org.apache.commons.io.FileUtils.forceDelete(file);
+            }
+        }
+    });
+    
+	var modelDataPath = NodePath + GVAR_system.path_separator + "data";
+    var lowPolyModelPath = modelDataPath + GVAR_system.path_separator + "lowPoly";
+    var lowPolyModelDir = new Packages.java.io.File(lowPolyModelPath);
+    var SH3DFile = GVAR_File.listFiles(lowPolyModelDir, '*', true)[0];
+    var highPolyModelPath = modelDataPath + GVAR_system.path_separator + "highPoly";
+    var highPolyModelDir = new Packages.java.io.File(highPolyModelPath);
+    var blendFile = GVAR_File.listFiles(highPolyModelDir, '*', true)[0];
+    
+    var tmp = updateDir.listFiles();
+    for(var k = 0;k < tmp.length;k++){
+        var tmpFileExtension = Packages.org.apache.commons.io.FilenameUtils.getExtension(tmp[k].getName());
+        if(tmpFileExtension.equals("sh3f") || tmpFileExtension.equals("sh3d")){
+            if(SH3DFile){
+                Packages.org.apache.commons.io.FileUtils.forceDelete(SH3DFile);
+            }
+            Packages.org.apache.commons.io.FileUtils.copyFileToDirectory(tmp[k],lowPolyModelDir);
+        }else{
+            if(blendFile){
+                Packages.org.apache.commons.io.FileUtils.forceDelete(blendFile);
+            }
+            Packages.org.apache.commons.io.FileUtils.copyFileToDirectory(tmp[k],highPolyModelDir);
+        }
+    }
+    
+    Packages.org.apache.commons.io.FileUtils.forceDelete(updateDir);
+    
+    var author = request.getRequestParameter("author");
+    var msg = request.getRequestParameter("msg");
+    
+    option.name = author ? Packages.org.spolo.utils.EncodeUname().decode(author.getString()) : "Anonymous";
+    option.msg = msg ? Packages.org.apache.commons.io.IOUtils.toString(msg.getString().getBytes("ISO-8859-1"), "UTF-8") : "";
+   
+
+   //提交此版本到git
+   GVAR_Git.postCommit(option);
+
+
+   //获取版本号作为最新版本号
+   var versionID = GVAR_Git_History.showNewestVersion();
+   if(versionID) {
+      currentNode.setProperty("NewestVersion", versionID);
+      currentNode.setProperty("CurrentVersion", versionID);
+      currentNode.save();
+   } else {
+      throw Error("Can not get NewestVersion")
+   }
+   
+} catch(e) {
+   result = "{suc : false, reason : \"" + e + "\"}";
+}finally{
+out.println("<html> <body> ");
+out.println("<textarea>");
+out.println(result);
+out.println("</textarea>");
+out.println("</body></html>");
+
+}
+
+
+
+%>

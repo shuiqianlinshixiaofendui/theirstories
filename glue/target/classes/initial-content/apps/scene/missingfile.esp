@@ -1,0 +1,44 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+response.setCharacterEncoding("UTF-8");
+response.setContentType("application/json");
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/request.esp");
+
+// out.println("localPath : " + localPath);
+//开始检查本地路径。
+//TODO: 构造File对象，并检查不会索引父级目录。
+var rootPath = GVAR_system.getNodePath(currentNode,false) + GVAR_system.path_separator + "data";
+// out.println("rootPath : " + rootPath);
+var missingfilePath = rootPath + GVAR_system.path_separator + "missingfile.json";
+var missingfile = new Packages.java.io.File(missingfilePath);
+var CanonicalPath = missingfile.getCanonicalPath();
+if(String(CanonicalPath) == String(missingfilePath))
+{
+	if(missingfile.exists())
+	{
+		var inputstream = new Packages.java.io.FileInputStream(missingfile);
+		
+		var count = Packages.org.apache.commons.io.IOUtils.copyLarge(inputstream,response.getOutputStream());
+		Packages.java.lang.System.out.println("copy " + count + " bytes from " + missingfilePath);
+	}
+}
+else
+{
+	
+}
+%>

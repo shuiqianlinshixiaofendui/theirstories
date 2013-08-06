@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D version="3.0" profile="Immersive" xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance" xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
+	
+	<Scene>
+		
+		<Transform DEF="tianpeng_TRANSFORM"
+		           translation="0.000000 0.000000 0.000000"
+		           scale="1.000000 1.000000 1.000000"
+		           rotation="0.000000 0 0 0"
+		           >
+			<Transform DEF="tianpeng_ifs_TRANSFORM"
+			           translation="0.000000 0.000000 0.000000"
+			           scale="1.000000 1.000000 1.000000"
+			           rotation="1.000000 0.000000 0.000000 0.000000"
+			           >
+				<Group DEF="group_ME_ShapeIndexedFaceSet_002">
+					<Shape>
+						<Appearance>
+							<Material DEF="MA_XXX_001"
+							          diffuseColor="0.588 0.588 0.588"
+							          specularColor="0.001 0.001 0.001"
+							          emissiveColor="0.000 0.000 0.000"
+							          ambientIntensity="0.111"
+							          shininess="0.012"
+							          transparency="0.0"
+							          />
+						</Appearance>
+						<IndexedFaceSet solid="true"
+						                texCoordIndex="0 1 2 3 -1 4 5 6 7 -1 "
+						                coordIndex="1 2 3 4 -1 5 6 7 8 -1 "
+						                >
+							<Coordinate DEF="coords_ME_ShapeIndexedFaceSet_002"
+							            point="0.000000 0.000000 0.000000 -2024.111328 -16.882446 2466.034180 -2024.111328 -16.882324 -2466.034180 2024.111572 -16.882324 -2466.034180 2024.111572 -16.882446 2466.034180 -2024.111328 16.882446 2466.034180 2024.111328 16.882446 2466.034180 2024.111328 16.882568 -2466.034180 -2024.111328 16.882568 -2466.034180 "
+							            />
+							<TextureCoordinate point="1.0000 0.0000 1.0000 1.0000 0.0000 1.0000 0.0000 0.0000 0.0000 0.0000 1.0000 0.0000 1.0000 1.0000 0.0000 1.0000 " />
+						</IndexedFaceSet>
+					</Shape>
+				</Group>
+			</Transform>
+		</Transform>
+        
+	</Scene>
+</X3D>

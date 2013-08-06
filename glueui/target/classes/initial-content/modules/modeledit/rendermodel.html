@@ -1,0 +1,297 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>渲染模型</title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script> 
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/main.css" media="screen"/>
+		<link rel="stylesheet" href="css/renderjob.css" media="screen"/>
+	</head>	
+	<body class="claro">
+		<div id="renderjob" style="width:510px;height:510px;border:1px solid #ccc;position:absolute;top:20px;left:20px;">
+			<div id="3dpreview" style="width:500px;height:500px;border:1px solid #ccc;position:absolute;top:4px;left:4px;">
+				<iframe id="iframeX3d" name="web3d" frameborder="no" border="0" marginwidth="0" 
+					marginheight="0" scrolling="no" allowtransparency="yes" style="width:100%;height:100%"
+					src="">
+				</iframe>
+			</div>
+			<div id="rendermodel" style="position:absolute;top:20px;left:550px;font-family:微软雅黑, Arial, Helvetica, sans-serif;font-weight:bold;">
+				<div id="boxStep1" class="boxStep" style="position:absolute;top:5px;left:20px;width:300px;">
+					1. 调整一个观察模型的最佳视角.
+					<input value="保存视角" id="saveViewBtn" type="button"/>
+				</div>	
+				<div id="boxStep2" class="boxStep" style="position:absolute;top:90px;left:20px;width:300px;">
+					2. 设定开始渲染的时间.
+					<br />
+					<div id="dateTextBoxDiv">
+					</div>
+					<div id="timeTextBoxDiv">
+					</div>
+					<input type="button" value="设定时间" id="setTimeBtn" style="position:absolute;top:30px;left:200px;"/>
+				</div>
+				<div id="boxStep3" class="boxStep" style="position:absolute;top:200px;left:20px;width:300px;">
+					3. 提交渲染任务.
+					<input type="button" id="uploadRenderJobBtn" value="提交渲染任务" />
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			require(
+				[
+					"dojo/parser",
+					"dojo/ready",
+					"dojo/dom",
+					"dojo/dom-style",
+					"dojo/query",
+					"dojo/on",
+					"dijit/layout/BorderContainer",
+					"dijit/layout/ContentPane",
+					"dojo/_base/array",
+					"dijit/form/DateTextBox",
+					"dijit/registry",
+					"dijit/form/TimeTextBox",
+					"spolo/data/user"
+				],
+				function(
+					parser, ready, dom, domStyle, query, on, BorderContainer, ContentPane, arrayUtil, DateTextBox, registry, TimeTextBox, user
+				){
+					ready(function(){
+						var path = getParameter("modelPath");
+						console.log(path);
+						var grant = false;
+						var userName = Spolo.getUserId();
+						user.isGranted(
+							userName,
+							path,
+							function(result)
+							{
+								var varsMap = Spolo.getUrlVars();
+								var isGrant = varsMap ['isGrant'];
+								if(result == "True")
+								{
+									hasGrant.call(this);
+									if(isGrant == "false")
+									{
+										hasNoGrant.call(this);
+									}
+									else
+									{
+										grant = true;
+									}
+								}
+								else
+								{
+									hasNoGrant.call(this);
+								}
+							},
+							function(error){
+								throw error;
+							}
+						);
+						
+						
+						// init iframe
+						var dpreview = dom.byId("3dpreview");
+						dpreview.children[0].src = "/widgets/viewx3d/viewX3D.html?path=" + path;
+						
+						var props = {	
+							name: "date1",
+							value: new Date(),
+							id : "dateTextBox",
+							hasDownArrow: false,
+							style:'float:left;height:25px;position:absolute;top:40px;left:5px;width:90px;',
+							onChange: function(){
+								
+							}						
+						};
+						var german = new DateTextBox(props, dom.byId("dateTextBoxDiv"));
+						german.startup();
+						
+						var timetextbox = new TimeTextBox({
+							name : "progval",
+							value : new Date(),
+							id : "timeTextBox",
+							constraints : 
+							{
+								timePattern: 'HH:mm:ss',
+								clickableIncrement: 'T00:15:00',
+								visibleIncrement: 'T00:15:00',
+								visibleRange: 'T01:00:00'
+							},
+							style:'float:left;height:25px;position:absolute;top:40px;left:100px;width:90px;',
+						}, dom.byId("timeTextBoxDiv"));
+						
+					});
+					
+					function hasGrant(){
+						var saveViewBtn = dom.byId("saveViewBtn");
+						saveViewBtn.style["background"] = "#3079ed";
+						saveViewBtn.style["cursor"] = "pointer";
+						var setTimeBtn = dom.byId("setTimeBtn");
+						setTimeBtn.style["background"] = "#3079ed";
+						setTimeBtn.style["cursor"] = "pointer";
+						var uploadRenderJobBtn = dom.byId("uploadRenderJobBtn");
+						uploadRenderJobBtn.style["background"] = "#3079ed";
+						uploadRenderJobBtn.style["cursor"] = "pointer";
+					}
+					
+					function hasNoGrant()
+					{
+						var saveViewBtn = dom.byId("saveViewBtn");
+						saveViewBtn.style["background"] = "#aaaaaa";
+						saveViewBtn.style["cursor"] = "default";
+						saveViewBtn.disabled = "disabled";
+						var setTimeBtn = dom.byId("setTimeBtn");
+						setTimeBtn.style["background"] = "#aaaaaa";
+						setTimeBtn.style["cursor"] = "default";
+						setTimeBtn.disabled = "disabled";
+						var uploadRenderJobBtn = dom.byId("uploadRenderJobBtn");
+						uploadRenderJobBtn.style["background"] = "#aaaaaa";
+						uploadRenderJobBtn.style["cursor"] = "default";
+						uploadRenderJobBtn.disabled = "disabled";
+					}
+					
+					var saveView = dom.byId("saveViewBtn");
+					saveView.onclick = function()
+					{
+						document.getElementById("iframeX3d").contentWindow.setCameraJson(
+							function(json){
+								Spolo.notify({
+									"text" : "保存视角成功！",
+									"type" : "success",
+									"timeout" : 1000
+								});
+							},
+							function(error){
+								Spolo.notify({
+									"text" : "保存视角失败！",
+									"type" : "error",
+									"timeout" : 1000
+								});
+							}
+						);
+					}
+					
+					// 时间 < 10的时候用 “0” 补
+					function Appendzero(obj)
+					{
+						if(obj<10)
+							return "0" +""+ obj;
+						else
+							return obj;
+					}
+					
+					var setTime = dom.byId("setTimeBtn");
+					setTime.onclick = function()
+					{
+						console.log("setTimeBtn");
+						// Date
+						var dateText = registry.byId("dateTextBox").value;
+						// Time
+						var timeText = registry.byId("timeTextBox").value;
+						
+						var _date = new Date(dateText);
+						var dateString = Appendzero(_date.getFullYear()) + "."
+									+ Appendzero(_date.getMonth()+1) + "."
+									+ Appendzero(_date.getDate()) + " ";
+									
+						var date_ = new Date(timeText);
+						dateString += Appendzero(date_.getHours()) + ":"
+									+ Appendzero(date_.getMinutes()) + ":"
+									+ Appendzero(date_.getSeconds());
+						
+						Spolo.notify({
+							"text" : "您设定的时间为：" + dateString,
+							"type" : "information",
+							"timeout" : 2000
+						});
+						Spolo.notify({
+							"text" : "该功能暂时没有支持，请随时关注Glue产品!",
+							"type" : "error",
+							"timeout" : 2000
+						});
+					}
+					
+					var uploadRenderJob = dom.byId("uploadRenderJobBtn");
+					uploadRenderJob.onclick = function()
+					{
+						document.getElementById("iframeX3d").contentWindow.renderPreview(
+							function(){
+								uploadRenderJob.value = "正在提交渲染任务...";
+								uploadRenderJob["disabled"] = true;
+								uploadRenderJob["style"]["background"] = "#cccccc";
+								Spolo.notify({
+									"text" : "开始提交渲染任务！",
+									"type" : "information",
+									"timeout" : 1000
+								});
+							},
+							function(){
+								uploadRenderJob.value = "提交渲染任务";
+								uploadRenderJob["disabled"] = false;
+								uploadRenderJob["style"]["background"] = "#3079ed";
+								Spolo.notify({
+									"text" : "提交渲染任务成功！",
+									"type" : "success",
+									"timeout" : 1000
+								});
+							},
+							function(error){
+								uploadRenderJob.value = "提交渲染任务";
+								uploadRenderJob["disabled"] = false;
+								uploadRenderJob["style"]["background"] = "#3079ed";
+								Spolo.notify({
+									"text" : "提交渲染任务失败！",
+									"type" : "error",
+									"timeout" : 1000
+								});
+							}
+						);
+					}
+					
+					//根据参数名，获取值
+					function getParameter(param){
+						var value = "";
+						var paramSearch = param+"=";
+						var paramStr = location.search;
+						var decode_paramStr = decodeURIComponent(paramStr).substring(1);
+						var paramsArr = new Array();
+						if(decode_paramStr.search(/&/)!=-1){
+							paramsArr = decode_paramStr.split("&");
+						}
+						if(paramsArr[0]){
+							arrayUtil.forEach(paramsArr,function(item,i){
+								if(item.indexOf(param+"=")!=-1){
+									value = item.substr(item.indexOf(param+"=")+paramSearch.length);
+								}
+							});
+						}else{
+							value = decode_paramStr.substr(decode_paramStr.indexOf(param+"=")+paramSearch.length);
+						}
+						return value;
+					}
+				}
+			);
+		</script>
+	</body>
+</html>

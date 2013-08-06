@@ -1,0 +1,61 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+	response.setCharacterEncoding("UTF-8");
+	
+	var destNode = currentNode;
+
+	var parentNode = currentNode.getParent();
+	var parentNodeName = parentNode.getName();
+	
+	var previewlibNode = parentNode.getParent();
+	
+	var files = parentNode.getNodes();
+	
+	var result = new Packages.org.apache.sling.commons.json.JSONObject();
+	//判断删除对象是否存在，感觉这步没用
+	//if(!parentNode.hasNode(currentNode.getName()))
+	//{
+	//	out.print("Don't have this preview!\n");
+	//}
+	//查看路径，如果不在users下，至少保留一个效果图
+
+	if(!(files.length == 1 && parentNode.toString().indexOf("users") == -1))
+	{
+		if(files.length == 1){
+			parentNode.remove();
+		}else if(files.length > 1){
+			destNode.remove();
+			var subNodes = parentNode.getNodes();
+			parentNode.setProperty("preview",subNodes[0]+".image");
+		}
+		previewlibNode.save();
+	}else{
+	
+		result.put("msg","Content at least have one preview!");
+		
+	}
+	//检查是否成功删除
+	if(!previewlibNode.hasNode(parentNodeName)||!parentNode.hasNode(currentNode.getName()))
+	{
+		result.put("suc",true);
+		
+	}else{
+	
+		result.put("suc",false);
+		
+	}
+	
+	out.println(result.toString());
+	
+%>

@@ -1,0 +1,74 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+
+function getmodelpreview(model)
+{
+	//获取路径信息。
+	var RequestPathInfo = request.getRequestPathInfo();
+	// out.println("RequestPathInfo : " + RequestPathInfo);
+	//获取mime map service.
+	var mimeService = sling.getService(Packages.org.apache.sling.commons.mime.MimeTypeService);
+
+	//首先尝试获取suffix。
+	var extension;
+
+	//开始检查本地路径。
+	//TODO: 构造File对象，并检查不会索引父级目录。
+	var rootPath = GVAR_system.getNodePath(model,false) + GVAR_system.path_separator + "data";
+	// out.println("rootPath : " + rootPath);
+	var dataPath = rootPath + GVAR_system.path_separator;
+	var imagePath = dataPath + "preview.jpg";
+	// out.println("imagePath : " + imagePath);
+	var imageFile = new Packages.java.io.File(imagePath);
+	var imageIsExists = imageFile.exists();
+	if(!imageIsExists){
+		imagePath = dataPath + "preview.png";
+		imageFile = new Packages.java.io.File(imagePath);
+		imageIsExists = imageFile.exists();
+	}
+
+	var CanonicalPath = imageFile.getCanonicalPath();
+	if(String(CanonicalPath) == String(imagePath))
+	{
+		if(imageIsExists)
+		{
+			// var MIME = mimeService.getMimeType(extension);
+			// response.setContentType(MIME);
+			// response.setHeader("content-length", imageFile.length());
+			// var inputstream = new Packages.java.io.FileInputStream(imageFile);
+			
+			// var buffer = new Packages.java.lang.Byte(imageFile.length());
+			
+			// inputstream.read(buffer);
+			// inputstream.close();
+			// return GVAR_system.base64(imagePath);
+			// return imageFile;
+			return "imagefile";
+		}
+		else
+		{
+			return("false");
+			// response.sendError(404)
+		}
+	}
+	else
+	{
+		return("error");
+		// response.sendError(404)
+	}
+}
+%>

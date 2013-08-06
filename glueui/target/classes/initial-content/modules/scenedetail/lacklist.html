@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            场景详细信息
+        </title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				//parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "scenedetail",
+						location: "/modules/scenedetail"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+		<script type="text/javascript" src="/system/sling.js"></script>
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/lacklist.css" media="screen" />
+		
+    </head>
+    
+    <body class="claro">
+		<div id="mainContainer" dojoType="dijit.layout.BorderContainer" 
+			design="sidebar">
+			<div id="menuContentPane" dojoType="dijit.layout.ContentPane" region="top">
+			</div>
+			<div id="mainContent" dojoType="dijit.layout.ContentPane" region="center">
+			</div>
+		</div>
+		<script type="text/javascript">
+			if ( !String.prototype.endsWith ) {  
+				String.prototype.endsWith = function(pattern) {
+					var d = this.length - pattern.length;
+					return d >= 0 && this.lastIndexOf(pattern) === d;
+				};
+			}
+			function getFileExtension(name)
+			{
+				var found = name.lastIndexOf(".") + 1;
+				return (found > 0 ? name.substr(found) : "");
+			}
+			
+			require(
+				[
+					"dojo/parser","dojo/ready","dojo/dom","dojo/dom-style","dojo/query","dijit/layout/BorderContainer","dijit/layout/ContentPane","dojo/dnd/Source","spolo/data/scene","dojo/dom-attr","dojo/NodeList-traverse"
+					
+				],function(
+					parser, ready, dom, domStyle, query,BorderContainer,ContentPane, source,scene,domAttr
+				){
+					ready(function(){
+						// 把 dojo widget 展开为 HTML DOM
+						parser.parse();
+					
+						// 获取父级页面的 scene 对象
+						this.scene = this.parent.scene;
+						//为了上传需要重新new一个scene对象出来
+						var sceneUpload = new scene(this.scene.getURI());
+						
+
+						//添加提示信息
+						$("#menuContentPane").append('<div class="infoGroup"><div id="info"></div><div id="info2"></div></div>');
+						
+						//添加列表
+						$("#mainContent").append('<ul id="mainList"></ul>');
+						
+						//当前场景是否缺失资源
+						this.scene.getMissingFile(function(suc){
+							var mainList = $("#mainList");
+							function isEmpty(obj)
+							{
+								for (var property in obj)
+								{
+									return true;
+								}
+								return false;
+							}
+							if(isEmpty(suc))
+							{
+								//添加上传zip包按钮
+								$("#menuContentPane").append('<form id="zipForm" action="" method="POST" enctype="multipart/form-data" >'+
+									'<div class="uploadZip border_radius box_shadow">上传zip包</div>'+
+									'<div class="uploadZipRule">zip包中的文件名要与缺失的文件名称一致</div>'+
+									'<input class="hideSelectZipFile" name="*" style="display:none;" type="file"/>'+
+									'<input type="hidden" name="*@TypeHint" value="nt:file" />'+
+									'</form>');
+								for(var i in suc){
+									var uuid = dojo.dnd.getUniqueId();
+									mainList.append('<li class="box_sizing border_radius box_shadow">'+
+										'<div class="sc_name"><font style="font-size:15px;font-weight:bold;">文件名称：</font>'+i+'</div>'+
+										'<div class="matname"><font style="font-size:15px;font-weight:bold;">模型名称：</font>'+suc[i].matname+'</div>'+
+										'<div class="matpath" style="display:none;">'+suc[i].matpath+'</div>'+
+										'<div class="ocmmatname" style="display:none;">'+suc[i].ocmmatname+'</div>'+
+										'<div class="uploadGroup">'+
+											'<form id="frm_'+uuid+'" method="post" action="" enctype="multipart/form-data">'+
+												'<input class="hideSelectFile" missFile="'+i+'" name="*" style="display:none;" type="file"/>'+
+												'<input type="hidden" name="*@TypeHint" value="nt:file" />'+
+												'<div class="uploadFile border_radius box_shadow">上传文件</div>'+
+											'</form>'+
+										'</div>'+
+									'</li>');
+								}
+							}
+							else
+							{
+								dom.byId("info").innerHTML = "该场景没有缺失文件!";
+							}
+						},function(err){
+							console.log(err)
+						});
+						
+						//上传按钮事件
+						$(".uploadFile").live("click",function(){
+							$(this).siblings(".hideSelectFile").trigger("click");
+						});
+						
+						//将文件填充至input组件
+						$(".hideSelectFile").live("change",function(){
+							var missFileName = domAttr.get(this,"missfile");
+							var liNode = query(this).parents("li")[0];
+							var fileName = $(this).val().split('/').pop().split('\\').pop();
+							var missFileType = getFileExtension(missFileName);
+							var fileNameType = getFileExtension(fileName);
+							if(missFileType == fileNameType)
+							{
+								if(missFileName == fileName)
+								{
+									sceneUpload.uploadMissingfile(query(this).parent()[0].id,{
+										//debug : false,
+										resumable : true,
+										filename : missFileName,
+										load : function(data){
+											if(data.suc)
+											{
+												dom.byId("info").innerHTML = missFileName+"上传成功!";
+												sceneUpload.proc_messingfiles(function(){},function(err){})
+												liNode.parentNode.removeChild(liNode);
+											}
+											else
+											{
+												//dom.byId("info").innerHTML = data.reason;
+												dom.byId("info").innerHTML = "ERROR:" + data.reason.replace(new RegExp("\\n",'g'),"\n<BR>").replace(new RegExp("\\r",'g'),"\r<BR>");
+											}
+										},
+										error : function(err){
+											dom.byId("info").innerHTML = "ERROR:" + err;
+										}
+									});
+								}
+								else
+								{
+									dom.byId("info").innerHTML = "ERROR : 请上传文件名称为：“ " + missFileName + " ”的文件";
+								}
+							}
+							else
+							{
+								dom.byId("info").innerHTML = "ERROR : 请上传文件类型为：“ " + missFileType + " ”的文件";
+							}
+							$(this).val("");
+						});
+						
+						
+						//上传zip包按钮事件
+						$(".uploadZip").live("click",function(){
+							$(this).siblings(".hideSelectZipFile").trigger("click");
+						});
+						//将文件填充至input组件
+						
+						$(".hideSelectZipFile").live("change",function(){
+								var s = sceneUpload;
+								require(["dojo/dom","spolo/data/scene"], function(dom,scene){
+								s.getNodePath(function(nodepath){
+									var s1 = new scene(nodepath);
+									s1.uploadMissingfileByZip("zipForm",{
+										//debug : false,
+										resumable : true,
+										notifier : function(msg){
+											dom.byId("info2").innerHTML = msg;
+										},
+										load : function(data){
+											if(data.suc)
+											{
+												dom.byId("info").innerHTML = "上传成功!\n";
+												s1.proc_messingfiles(
+													function(){
+														dom.byId("info").innerHTML += "处理成功!\n";
+													},
+													function(){
+														dom.byId("info").innerHTML += "处理失败!\n";
+													}
+												);
+											}
+											else
+											{
+												//dom.byId("info").innerHTML = data.reason;
+												dom.byId("info").innerHTML = "ERROR:" + data.reason.replace(new RegExp("\\n",'g'),"\n<BR>").replace(new RegExp("\\r",'g'),"\r<BR>");
+											}
+										},
+										error : function(err){
+											dom.byId("info").innerHTML = "ERROR:" + err;
+										}
+									});
+								});
+								
+								
+							});
+							
+							//清空相关组件
+							$(this).val("");
+						});
+					});
+				}
+			);
+		</script>
+    </body>
+
+</html>

@@ -1,0 +1,62 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+var GVAR_LoadLibrary = true;
+load("/apps/util/response.esp");
+load("/apps/util/sysconfig.esp");
+load("/apps/util/file.esp");
+
+try{
+   var decimate = request.getRequestParameter("dec");
+   if(decimate){
+      try{
+         decimate = parseInt(decimate);
+      }catch(e){
+         decimate = decimate.getString();
+      }
+   }
+   
+   var decimatFlag = 0;
+   var cacheName = "blend.scene.zip";
+   
+   if(decimate){
+      decimatFlag = 1;
+      cacheName = "blend.scene.dec.zip";
+   }
+
+	if(!GVAR_response.download({
+		bcgi : "scene/blend.py",
+		cache : cacheName,
+		forward:{
+				useEmptyBlend : false,
+            env : {
+               "decimate" : decimatFlag,
+               }
+				}
+		}))
+	{//未能正确下载。
+		Packages.java.lang.System.out.println("download in blend.zip.esp failed.");
+	}
+}catch(e){
+   var tempFolder = GVAR_File.createTempFolder();
+   var os = response.getOutputStream();
+   var infoFilePath = tempFolder.path + GVAR_system.path_separator + "info.txt";
+   var infoFile = new Packages.java.io.File(infoFilePath);
+   var error = new Packages.org.apache.sling.commons.json.JSONObject();
+   error.put("error", e);
+   Packages.org.apache.commons.io.FileUtils.writeStringToFile(infoFile, error.toString());
+   GVAR_File.zipFile(os, infoFile);
+   GVAR_File.deleteFile(tempFolder);
+}
+%>

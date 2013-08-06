@@ -1,0 +1,8 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"resourceName":"我的场景",
+		"description":"个人场景信息",
+		"isActive":true,
+		"isTopMenu":true
+}

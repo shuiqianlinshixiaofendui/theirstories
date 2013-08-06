@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <link href="/libs/dojo/resources/dojo.css" rel="stylesheet">
+		<link href="/libs/dijit/themes/claro/claro.css" rel="stylesheet">
+        <script type="text/javascript" >
+			dojoConfig = {packages: [
+                    {
+						name: "room",
+						location: "/modules/room"
+					},
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+                    {
+						name: "widgets",
+						location: "/widgets"
+					}]};
+		</script>
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+        
+    </head>
+    
+    <body>
+        <div id="TestMenu"></div>
+    </body>
+    
+    <script type="text/javascript">
+        require(["dojo/ready","room/ui/menu"],function(ready,menu){
+            ready(function(){
+                var testAAClick = function(){
+                    alert("aa is click");
+                }
+                var testBBClick = function(){
+                    alert("bb is click");
+                }
+                
+                var list  = [
+                    {type:"ITEM",label:"aa",onClick:testAAClick},
+                    {type:"ITEM",label:"bb"},
+                    {type:"ITEM",label:"cc"},
+                    {
+                        type:"CITEM",
+                        parentLabel : "Submenu",
+                        childLabel : [
+                            {
+                                label:"sub item 1",
+                                onClick:testBBClick       
+                            },
+                            {
+                                label:"sub item 2"
+                            }
+                        ]
+                    }
+                ]
+                var _menu = new menu("TestMenu","Model Edit",list);
+                
+                
+            });
+        });
+        
+        
+    </script>
+    
+</html>

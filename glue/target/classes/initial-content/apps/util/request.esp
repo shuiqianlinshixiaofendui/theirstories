@@ -1,0 +1,86 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ /*本文件维护了上传文件常用的辅助方法。这些方法被添加给request.
+ 
+ 如下全局变量被定义和使用:
+ GVAR_LoadLibrary : 必须被设置，否则视同直接从客户端访问。这将直接返回空。
+ 
+ 使用方法:
+ <code>
+
+	var GVAR_LoadLibrary = true;
+	load("/apps/util/request.esp");
+	//遍历所有的参数。
+	GVAR_uploader.foreach(function(name,param){});
+ </code>
+*/
+var GVAR_uploader;
+(function()
+{
+	if( !GVAR_uploader && GVAR_LoadLibrary )
+	{
+		GVAR_uploader = {};
+		GVAR_uploader.foreach = function(callback)
+		{
+			if(typeof(callback) != "function")
+				return;
+			///pmap : Parameter MAP.
+			var pmap = request.getRequestParameterMap();
+			var entrySet = pmap.entrySet();
+			var it = entrySet.iterator();
+			while (it.hasNext())
+			{
+				var pairs = it.next();
+				var name = pairs.getKey();
+				var params = pairs.getValue();
+				for(var idx = 0; idx < params.length; idx++)
+				{
+					var param = params[idx];
+					callback(name,param);
+				}
+			}
+		};
+		
+		/// @brief 把param指定的filed拷贝到指定目录下，文件名与客户端保持一致.并返回拷贝完成之后的文件对象。
+		GVAR_uploader.copyFile = function(param,target)
+		{
+			if(param.isFormField())
+				throw "param is not repsetation file";
+
+			//获取原始文件名.
+			//查找最后一个路径分割符，防止浏览器送回全路径。
+			var origNames = param.getFileName();
+			var sepidx = origNames.lastIndexOf("/");
+			if(sepidx < 0)
+				sepidx = origNames.lastIndexOf("\\");
+			if(sepidx >= 0)
+			{
+				origNames = origNames.substring(sepidx+1);
+			}
+			var file = new Packages.java.io.File(target + GVAR_system.path_separator + origNames);
+			var outstream = Packages.org.apache.commons.io.FileUtils.openOutputStream(file);
+			var instream = param.getInputStream();
+			var length = Packages.org.apache.commons.io.IOUtils.copy(instream,outstream);
+			Packages.org.apache.commons.io.IOUtils.closeQuietly(outstream)
+
+			if(length != param.getSize())
+				throw 'can not copy content to target';
+			return file;
+		};
+	}
+	
+}());
+
+%>

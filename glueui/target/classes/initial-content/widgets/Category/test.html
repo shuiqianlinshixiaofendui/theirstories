@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+			}
+			#testContainer{
+				height:100%;
+				width: 900px; 
+				border:1px solid #000;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+	
+		<div id="testContainer"></div>
+		
+		<script>
+			require(
+				[
+					"widgets/Category/Category",
+					"dojo/on",
+					"dijit/Dialog"
+				],
+				function
+				(
+				Category, on, Dialog
+				)
+				{
+					var json = {
+						title1:"请选择分类：",
+						path : "/content/modellibcategory/modelcategory",
+						text : ""
+					};
+					var cate = new Category(json);
+					var temp = cate.placeAt("testContainer");
+					cate.initialize();
+					// cate.setSelectedItem(json);
+					
+					var json2 = {
+						title1:"请选择分类：",
+						path : "/content/modellibcategory/modelbrand",
+						text : ""
+					};
+					var cate2 = new Category(json2);
+					var temp2 = cate2.placeAt("testContainer");
+					cate2.initialize();
+					
+					// 
+					on(temp, "onSelectedItemClose", function(data){
+						console.log("onSelectedItemClose");
+						console.log(data);
+						console.log("");
+						
+					});
+					
+					on(temp, "onSelectedItemClick", function(data){
+						console.log("onSelectedItemClick");
+						console.log(data);
+						console.log("");
+					});
+					
+					on(temp, "onCategoryItemClick", function(data){
+						console.log("onCategoryItemClick");
+						console.log(data);
+						console.log("");
+					});
+					
+					on(temp, "onCategoryIsLastLayer", function(flag){
+						console.log("onCategoryIsLastLayer");
+						console.log(flag);
+						console.log("");
+					});
+					
+					on(temp, "onSelectedListChanged", function(data){
+						console.log("onSelectedListChanged");
+						console.log(data);
+						console.log("");
+					});	
+			});
+		</script>
+	</body>
+</html>

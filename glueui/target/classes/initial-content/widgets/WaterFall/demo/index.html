@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>WaterFall</title>
+        <!-- 禁止使用 dojo css 样式 -->
+        <script type="text/javascript" >
+			dojoConfig = {packages: [
+                    {
+						name: "modules",
+						location: "/modules"
+					},
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+                    {
+						name: "widgets",
+						location: "/widgets"
+					}]};
+		</script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/jquery/jquery.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/jsjac-1.3.4/jsjac.js"></script>
+        
+
+    </head>
+    <body>
+        
+        <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:true,region:'center'" id="canvasPan" style="width:1366px">
+        </div>
+        
+        <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:true,region:'center'" id="test">
+        </div>
+        
+
+        <script type="text/javascript" >
+            
+            require(["dojo/ready","dojo/on","widgets/WaterFall/main"], function(ready,on,waterfall){
+                var waterfall_ref;
+                ready(function(){
+                    
+                    // 模拟一段数据，给到widget中
+                    var dataList = [];
+                    var fieldsList = {
+                        "Author" : "baidubaidubaidubaidu",
+                        "Date" : "2013/6/19",
+                        "Person" : "liushishi"
+                    }
+                    /*
+                    var json = {
+                        "id" : "1",
+                        "img" : "/widgets/WaterFall/img/shishi.jpg",
+                        "fields" : fieldsList
+                    }*/
+                    
+                    for(var i=0;i<15;i++){
+                        var json = {
+                            "id" : parseInt( Math.random()*50 ),
+                            "img" : "/widgets/WaterFall/img/shishi.jpg",
+                            "fields" : fieldsList,
+                            "button" : "点击下载"
+                        }
+                        dataList.push(json);
+                    }
+                   
+                    // 初始化widget
+					waterfall_ref = new waterfall();
+                    waterfall_ref.initData(dataList,15);
+                    // 将widget添加到canvasPan div中
+                    waterfall_ref.placeAt("canvasPan");
+                    
+                    on(waterfall_ref,"loadingData",function(){
+                        var tempList = [];
+                        for(var i=0;i<15;i++){
+                            var json = {
+                                "id" : parseInt( Math.random()*50 ),
+                                "img" : "/widgets/WaterFall/img/shishi.jpg",
+                                "fields" : fieldsList
+                            }
+                           tempList.push(json);
+                        }
+                        waterfall_ref.addData(tempList);
+                    });
+                    
+                    on(waterfall_ref,"loadPic",function(args){
+                        var tempList = [];
+                        for(var i=0;i<args.amount ;i++){
+                           tempList.push(json);
+                        }
+                        waterfall_ref.receiveData(tempList,args);
+                    });
+                 
+                    
+                    on(waterfall_ref,"delPic",function(args){
+                        // args 被删除元素的 id
+                        console.log(" WaterFall Log : delete element id -- " + args)
+                        waterfall_ref.deleteData(true,15);
+                    });
+                    
+                    on(waterfall_ref,"sourceDownload",function(args){
+                        // args 被删除元素的 id
+                        console.log(" WaterFall Log : download source id -- " + args)
+                    });
+                    
+                    
+                    /*
+                    // 此部分测试 widget 是否可以多次new，测试成功，证明没有id冲突
+                    // 当前waterfall widget可以测试成功
+					var aa = new waterfall(waterfall);
+                    aa.initData(dataList);
+                    aa.placeAt("test");
+                    */
+                    on(waterfall_ref,"picClick", function(data){
+                        console.log(data)
+                    //   console.log(data.dataUrl + " && " + data.dataDesc + " && " + data.dataAuthor);
+                    });
+
+                    // 将删除按钮设置成隐藏，让用户无法删除数据
+                    waterfall_ref.setDelButtonDisplay("none");
+                    
+				});
+                
+                
+			});
+            
+        </script>
+    </body>
+</html>

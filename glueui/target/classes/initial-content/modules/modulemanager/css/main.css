@@ -1,0 +1,38 @@
+@charset "utf-8"; 
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+	font-size:12px;
+}
+#_sp_main_container {
+    height: 100%;
+	padding:0px;
+}
+.moduleItem{
+	color: #bcbcbc;
+	float:left;
+	padding:8px 10px 0px 10px;
+	font-size:13px;
+	font-weight: bold;
+	cursor:pointer;
+}
+#_sp_mainframe_content {
+	border:none;
+	padding:0px;
+	overflow:hidden;
+	background:#69c;
+}
+#_sp_mainframe_iframe{
+	width:100%;
+	height:100%;
+	border:none;
+}
+.selectedItem{
+	color:#fff;
+}
+.fouccItem{
+	color:#fff;
+}

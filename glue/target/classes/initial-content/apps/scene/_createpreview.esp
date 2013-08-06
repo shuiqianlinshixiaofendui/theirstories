@@ -1,0 +1,173 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+// out.println("test proc_preview!!!");
+
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+
+function createpreview(sceneNode,imgpath)
+{
+
+	//获取并设置所需全局变量
+	var GVAR_sceneNode;
+	var GVAR_Session;
+	var GVAR_WorkSpace;
+	var GVAR_RootNode;
+
+
+	GVAR_sceneNode = sceneNode;
+	GVAR_Session = sceneNode.getSession();
+
+
+	var publishauthor = GVAR_Session.getUserID();
+
+
+	var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+	var adminSession = slingRepos.loginAdministrative(null);
+	GVAR_Session = adminSession;
+
+	GVAR_WorkSpace = GVAR_Session.getWorkspace();
+	GVAR_RootNode = GVAR_Session.getRootNode();
+					
+
+
+
+	//在此处理缩略图发布
+	var scenename = sceneNode.getName();
+
+
+
+	var usernode = sceneNode.getParent();
+
+	while(1)
+	{
+		if(usernode["sling:resourceType"] == "users")
+		{
+			break;
+		}
+		
+		 usernode = usernode.getParent();
+	}
+
+	var previewlib_node;
+
+	if(usernode.hasNode("previewlib"))
+	{
+		previewlib_node = usernode["previewlib"];
+		
+		previewlib_node.setProperty("sling:resourceType","folder");
+		
+		previewlib_node.save();
+	}
+	else
+	{
+		previewlib_node = usernode.addNode("previewlib","sling:Folder");
+		
+		usernode.save();
+		
+		previewlib_node.setProperty("sling:resourceType","folder");
+		
+		previewlib_node.save();
+	}
+
+	var scene_previewnode;
+
+	if(previewlib_node.hasNode(scenename))
+	{
+		scene_previewnode = previewlib_node[scenename];
+	}
+	else
+	{
+		scene_previewnode = previewlib_node.addNode(scenename,"sling:Folder");
+		
+		//添加resourceName属性
+		scene_previewnode.setProperty("resourceName",sceneNode["resourceName"]);
+		
+		//添加sling:resourceType属性,值为folder
+		scene_previewnode.setProperty("sling:resourceType","folder");
+		
+		previewlib_node.save();
+	}
+	
+	var previewName = "preview";
+	var date = new Date();
+	previewName += ""+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds()+date.getMilliseconds();
+	var num = Math.ceil(Math.random()*10000000);
+	previewName+=""+ num ;
+	
+	var previewnode = scene_previewnode.addNode(previewName,"sling:Folder");
+
+	scene_previewnode.save();
+
+	previewnode.setProperty("scene",sceneNode.getPath());
+
+	previewnode.setProperty("sling:resourceType","preview");
+
+	//添加resourceName属性
+	previewnode.setProperty("resourceName",previewnode.getName());
+
+	previewnode.save();
+
+	var preview_models = previewnode.addNode("model","sling:Folder");
+
+	previewnode.save();
+
+	preview_models.setProperty("publishauthor",publishauthor);
+
+	//添加resourceName属性
+	preview_models.setProperty("resourceName",preview_models.getName());
+
+	preview_models.save();
+
+	sceneNode.setProperty("previewlib",scene_previewnode.getPath());
+
+	//添加resourceName属性
+	//sceneNode.setProperty("resourceName",sceneNode.getName());
+
+	sceneNode.save();
+
+	var models = sceneNode["model"];
+
+	for(var im in models)
+	{
+		var model = models[im];
+		if(model["sling:resourceType"] == "model")
+		{
+			var preview_model = preview_models.addNode(model["name"],"sling:Folder");
+			preview_models.save();
+			
+			preview_model.setProperty("modelpath",model.getPath());
+			
+			//添加resourceName属性
+			preview_model.setProperty("resourceName",model["resourceName"]);
+			
+			preview_model.save();
+			
+		}
+	}
+	
+	var srcfile = new Packages.java.io.File(imgpath);
+	
+	var destPath = GVAR_system.getNodePath(previewnode,true);
+
+	var destfile = new Packages.java.io.File(destPath);
+
+	Packages.org.apache.commons.io.FileUtils.copyFileToDirectory(srcfile, destfile);
+	
+	return previewnode;
+
+}
+
+%>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue 账户注册</title>
+		
+		<!-- 引入css布局 -->
+		<link rel="stylesheet" type="text/css" href="./css/register.css" />
+		<script>
+			dojoConfig = {
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					}
+				]
+			};
+		</script>
+		
+		<!-- 加载js库 -->
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		
+	</head>
+	
+	<script type="text/javascript">
+		require([
+				"spolo/data/grant",
+				"spolo/data/grantManager",
+				"dojo/request/xhr"
+			], function( grant ,grantManager, xhr){
+			
+				// 实例化group对象
+				var grant_class = new grant();
+				
+				
+				// 1.创建用户权限组
+				function createGroup(groupName,groupName_cn,callback){
+					var createGroupJSON = {
+						"groupName" : groupName,
+						"groupName_CN" : groupName_cn,
+						"success" : function(data){
+							console.log(data);
+							console.log("addGroupSuccess");
+							callback();
+						},
+						"failed" : function(error){
+							console.log(error);
+						}
+					};
+					grant_class.creatGroup(createGroupJSON);
+				}
+				
+				// 2.给用户组设置权限
+				function setPermissionGroup(groupName, callback){
+					var url = "/content/users" + ".fixmodelandpreivewgrant?groupName="+groupName;	
+					//var url = "/content/users" + ".fixmodelandpreivewgrant"	
+					xhr(url,{
+						handleAs : "text",
+						method : "GET"
+					}).then(
+						function(data){
+							console.log(data);
+							callback();
+						},
+						function(error){
+							console.log(error);
+						}
+					);
+					
+				}
+				
+				// 3.获取所有用户
+				function getAllUsers(callback){
+					var url = "/system/userManager/user.tidy.1.json";	
+					xhr(url,{
+						handleAs : "json",
+						method : "GET"
+					}).then(
+						function(userdata){
+							var users = [];
+							console.log(userdata);
+							for(var user in userdata){
+								if(user=="admin"||user=="anonymous"|| user == "hasObject"){
+									continue;
+								}
+								users.push(user);
+								
+							}
+							console.log(users);
+							callback(users);
+							
+						},
+						function(error){
+							console.log(error);
+						}
+					);
+					
+				}
+				//getAllUsers();
+				
+				// 4.将用户添加到权限组中
+				function addUsersToGroup(groupName, users, callback){
+					
+					var updateGroupJSON = {
+						groupName : groupName , 
+						":member" : users ,
+						success : function(data){
+							console.log("AddUsersToGroupSuccess");
+							callback();
+						},
+						failed : function(error){
+							console.log(error);
+						}	
+					};
+					grant_class.updateGroup(updateGroupJSON);
+				
+				}
+				
+				var groupName = "editPublicLibGroup";
+				var groupName_cn = "公共库编辑权限组(无删除权限)";
+				createGroup(
+					groupName,
+					groupName_cn,
+					function(){
+						setPermissionGroup(
+							groupName,
+							function(){
+								getAllUsers(
+									function(users){
+										addUsersToGroup(
+											groupName,
+											users,
+											function(){
+												console.log("success addUsersToGroup");
+											}
+										);//addUsersToGroup
+									}
+								);//getAllUsers
+							}	
+						); //setPermissionGroup
+					}
+				); // createGroup
+				
+				
+		
+		});	
+		
+		
+		
+	</script>
+	
+	<body>
+		
+	</body>
+</html>

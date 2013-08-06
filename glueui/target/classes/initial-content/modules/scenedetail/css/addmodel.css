@@ -1,0 +1,21 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	font-size:12px;
+}
+
+#addmodelContent{
+	width:100%;
+	height:100%;
+}
+#addmodelfrompublicmodellib,
+#addmodelfromprivatemodellib,
+#addmodelfrompreviewlib,
+#addmodelfrommypreviewlib,
+#addmodel£,
+#addmodelfrommyfavoritemodel,
+#addmodelfrommyfavoritepreview{
+	width:100%;
+	height:100%;
+}

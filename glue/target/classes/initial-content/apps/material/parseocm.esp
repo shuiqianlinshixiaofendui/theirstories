@@ -1,0 +1,3301 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+//获取并设置所需全局变量
+	var GVAR_CurrentNode;
+	var GVAR_Session;
+	var GVAR_WorkSpace;
+	var GVAR_RootNode;
+	var GVAR_COUNT;
+
+	GVAR_CurrentNode = currentNode;
+	GVAR_Session = currentNode.getSession();
+	GVAR_WorkSpace = GVAR_Session.getWorkspace();
+	GVAR_RootNode = GVAR_Session.getRootNode();
+	GVAR_COUNT = 0;
+
+	out.write("test parseocm!!!\n");
+
+
+//处理diffuse
+	function process_diffuse(matdatanode,NodePin)
+	{
+		//创建matdata节点的diffuse子节点
+		var diffusenode = matdatanode.addNode("diffuse", "sling:Folder");
+		matdatanode.save();
+		
+		//设置typename属性
+		diffusenode.setProperty("typename","diffuse");
+		
+		//获取diffuse属性的Node子节点
+		var diffuse_Node = NodePin.getElementsByTagName("Node").item(0);
+		
+		//获取Node子节点的typename属性
+		var diffuse_Node_typename = diffuse_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+		
+		//根据typename确定添加节点类型
+		if(diffuse_Node_typename == "RGBspectrum")
+		{
+			//设置sling:resourceType
+			diffusenode.setProperty("sling:resourceType","RGBspectrum");
+			
+			//获取rgbvalue
+			var rgbvalue = diffuse_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			diffusenode.setProperty("rgbvalue",rgbvalue);
+			
+			diffusenode.save();
+		}
+		
+		
+		if(diffuse_Node_typename == "floattexture")
+		{
+			//设置sling:resourceType
+			diffusenode.setProperty("sling:resourceType","floattexture");
+			
+			//获取value
+			var value = diffuse_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			diffusenode.setProperty("value",value);
+			
+			diffusenode.save();
+		}
+		
+		//image
+		if(diffuse_Node_typename == "image")
+		{
+			//设置sling:resourceType
+			diffusenode.setProperty("sling:resourceType","image");
+			
+			//获取linkedfilename
+			var linkedfilename = diffuse_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+
+			//设置linkedfilename
+			diffusenode.setProperty("linkedfilename",linkedfilename);
+			diffusenode.save();
+			//
+			
+			//获取medium_Node下的所有NodePin子节点
+			var NodePins = diffuse_Node.getElementsByTagName("NodePin");
+			
+			//遍历所有NodePin子节点
+			for(var i =0; i < NodePins.length; i++)
+			{
+				var NodePin = NodePins.item(i);
+				
+				//获取NodePin节点的typename
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//处理typename为power的属性
+				if(typename == "power")
+				{
+					//创建priority子节点
+					var powernode = diffusenode.addNode("power", "sling:Folder");
+					diffusenode.save();
+					//获取priority的Node子节点
+					var power_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置power节点的sling:resourceType
+						powernode.setProperty("sling:resourceType","floattexture");
+						
+						//获取power的value
+						var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置power节点的value
+						powernode.setProperty("value",value);
+						powernode.save();
+					}					
+				}
+				
+				//处理typename为gamma的属性
+				if(typename == "gamma")
+				{
+					//创建priority子节点
+					var gammanode = diffusenode.addNode("gamma", "sling:Folder");
+					diffusenode.save();
+					//获取priority的Node子节点
+					var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置gamma节点的sling:resourceType
+						gammanode.setProperty("sling:resourceType","float");
+						
+						//获取gamma的value
+						var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置gamma节点的value
+						gammanode.setProperty("value",value);
+						gammanode.save();
+					}					
+				}
+				
+				//处理typename为scale的属性
+				if(typename == "scale")
+				{
+					//创建priority子节点
+					var scalenode = diffusenode.addNode("scale", "sling:Folder");
+					diffusenode.save();
+					//获取priority的Node子节点
+					var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置scale节点的sling:resourceType
+						scalenode.setProperty("sling:resourceType","float");
+						
+						//获取scale的value
+						var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scale节点的value
+						scalenode.setProperty("value",value);
+						scalenode.save();
+					}					
+				}
+				
+				//处理typename为invert的属性
+				if(typename == "invert")
+				{
+					//创建invert子节点
+					var invertnode = diffusenode.addNode("invert", "sling:Folder");
+					diffusenode.save();
+					//获取invert的Node子节点
+					var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "bool")
+					{
+						//设置invert节点的sling:resourceType
+						invertnode.setProperty("sling:resourceType","bool");
+						
+						//获取invert的value
+						var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置invert节点的value
+						invertnode.setProperty("value",value);
+						invertnode.save();
+					}					
+				}
+			}
+		}
+	}
+
+	//处理specular
+	function process_specular(matdatanode,NodePin)
+	{
+		//创建matdata节点的specular子节点
+		var specularnode = matdatanode.addNode("specular", "sling:Folder");
+		matdatanode.save();
+		
+		//设置typename属性
+		specularnode.setProperty("typename","specular");
+		
+		//获取diffuse属性的Node子节点
+		var specular_Node = NodePin.getElementsByTagName("Node").item(0);
+		
+		//获取Node子节点的typename属性
+		var specular_Node_typename = specular_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+		
+		//根据typename确定添加节点类型
+		if(specular_Node_typename == "RGBspectrum")
+		{
+			//设置sling:resourceType
+			specularnode.setProperty("sling:resourceType","RGBspectrum");
+			
+			//获取rgbvalue
+			var rgbvalue = transmission_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			specularnode.setProperty("rgbvalue",rgbvalue);
+			
+			specularnode.save();
+		}
+		
+		
+		if(specular_Node_typename == "floattexture")
+		{
+			//设置sling:resourceType
+			specularnode.setProperty("sling:resourceType","floattexture");
+			
+			//获取value
+			var value = specular_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			specularnode.setProperty("value",value);
+			
+			specularnode.save();
+		}
+		
+		
+		//image
+		if(specular_Node_typename == "image")
+		{
+			//设置sling:resourceType
+			specularnode.setProperty("sling:resourceType","image");
+			
+			//获取linkedfilename
+			var linkedfilename = specular_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置linkedfilename
+			specularnode.setProperty("linkedfilename",linkedfilename);
+			
+			//
+			
+			//获取medium_Node下的所有NodePin子节点
+			var NodePins = specular_Node.getElementsByTagName("NodePin");
+			
+			//遍历所有NodePin子节点
+			for(var i =0; i < NodePins.length; i++)
+			{
+				var NodePin = NodePins.item(i);
+				
+				//获取NodePin节点的typename
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//处理typename为power的属性
+				if(typename == "power")
+				{
+					//创建priority子节点
+					var powernode = specularnode.addNode("power", "sling:Folder");
+					specularnode.save();
+					//获取priority的Node子节点
+					var power_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置power节点的sling:resourceType
+						powernode.setProperty("sling:resourceType","floattexture");
+						
+						//获取power的value
+						var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置power节点的value
+						powernode.setProperty("value",value);
+						powernode.save();
+					}					
+				}
+				
+				//处理typename为gamma的属性
+				if(typename == "gamma")
+				{
+					//创建priority子节点
+					var gammanode = specularnode.addNode("gamma", "sling:Folder");
+					specularnode.save();
+					//获取priority的Node子节点
+					var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置gamma节点的sling:resourceType
+						gammanode.setProperty("sling:resourceType","float");
+						
+						//获取gamma的value
+						var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置gamma节点的value
+						gammanode.setProperty("value",value);
+						gammanode.save();
+					}					
+				}
+				
+				//处理typename为scale的属性
+				if(typename == "scale")
+				{
+					//创建priority子节点
+					var scalenode = specularnode.addNode("scale", "sling:Folder");
+					specularnode.save();
+					//获取priority的Node子节点
+					var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置scale节点的sling:resourceType
+						scalenode.setProperty("sling:resourceType","float");
+						
+						//获取scale的value
+						var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scale节点的value
+						scalenode.setProperty("value",value);
+						scalenode.save();
+					}					
+				}
+				
+				//处理typename为invert的属性
+				if(typename == "invert")
+				{
+					//创建invert子节点
+					var invertnode = specularnode.addNode("invert", "sling:Folder");
+					specularnode.save();
+					//获取invert的Node子节点
+					var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "bool")
+					{
+						//设置invert节点的sling:resourceType
+						invertnode.setProperty("sling:resourceType","bool");
+						
+						//获取invert的value
+						var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置invert节点的value
+						invertnode.setProperty("value",value);
+						invertnode.save();
+					}					
+				}
+			}
+		}
+	}
+
+
+	//处理roughness
+	function process_roughness(matdatanode,NodePin)
+	{
+		//创建matdata节点的roughness子节点
+		var roughnessnode = matdatanode.addNode("roughness", "sling:Folder");
+		matdatanode.save();
+		
+		//设置typename属性
+		roughnessnode.setProperty("typename","roughness");
+		
+		//获取diffuse属性的Node子节点
+		var roughness_Node = NodePin.getElementsByTagName("Node").item(0);
+		
+		//获取Node子节点的typename属性
+		var roughness_Node_typename = roughness_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+		
+		//根据typename确定添加节点类型
+		if(roughness_Node_typename == "RGBspectrum")
+		{
+			//设置sling:resourceType
+			roughnessnode.setProperty("sling:resourceType","RGBspectrum");
+			
+			//获取rgbvalue
+			var rgbvalue = transmission_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			roughnessnode.setProperty("rgbvalue",rgbvalue);
+			
+			roughnessnode.save();
+		}
+		
+		
+		if(roughness_Node_typename == "floattexture")
+		{
+			//设置sling:resourceType
+			roughnessnode.setProperty("sling:resourceType","floattexture");
+			
+			//获取value
+			var value = roughness_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			roughnessnode.setProperty("value",value);
+			
+			roughnessnode.save();
+		}
+		
+		
+		//image
+		if(roughness_Node_typename == "image")
+		{
+			//设置sling:resourceType
+			roughnessnode.setProperty("sling:resourceType","image");
+			
+			//获取linkedfilename
+			var linkedfilename = roughness_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置linkedfilename
+			roughnessnode.setProperty("linkedfilename",linkedfilename);
+			
+			//
+			
+			//获取medium_Node下的所有NodePin子节点
+			var NodePins = roughness_Node.getElementsByTagName("NodePin");
+			
+			//遍历所有NodePin子节点
+			for(var i =0; i < NodePins.length; i++)
+			{
+				var NodePin = NodePins.item(i);
+				
+				//获取NodePin节点的typename
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//处理typename为power的属性
+				if(typename == "power")
+				{
+					//创建priority子节点
+					var powernode = roughnessnode.addNode("power", "sling:Folder");
+					roughnessnode.save();
+					//获取priority的Node子节点
+					var power_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置power节点的sling:resourceType
+						powernode.setProperty("sling:resourceType","floattexture");
+						
+						//获取power的value
+						var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置power节点的value
+						powernode.setProperty("value",value);
+						powernode.save();
+					}					
+				}
+				
+				//处理typename为gamma的属性
+				if(typename == "gamma")
+				{
+					//创建priority子节点
+					var gammanode = roughnessnode.addNode("gamma", "sling:Folder");
+					roughnessnode.save();
+					//获取priority的Node子节点
+					var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置gamma节点的sling:resourceType
+						gammanode.setProperty("sling:resourceType","float");
+						
+						//获取gamma的value
+						var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置gamma节点的value
+						gammanode.setProperty("value",value);
+						gammanode.save();
+					}					
+				}
+				
+				//处理typename为scale的属性
+				if(typename == "scale")
+				{
+					//创建priority子节点
+					var scalenode = roughnessnode.addNode("scale", "sling:Folder");
+					roughnessnode.save();
+					//获取priority的Node子节点
+					var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置scale节点的sling:resourceType
+						scalenode.setProperty("sling:resourceType","float");
+						
+						//获取scale的value
+						var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scale节点的value
+						scalenode.setProperty("value",value);
+						scalenode.save();
+					}					
+				}
+				
+				//处理typename为invert的属性
+				if(typename == "invert")
+				{
+					//创建invert子节点
+					var invertnode = roughnessnode.addNode("invert", "sling:Folder");
+					roughnessnode.save();
+					//获取invert的Node子节点
+					var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "bool")
+					{
+						//设置invert节点的sling:resourceType
+						invertnode.setProperty("sling:resourceType","bool");
+						
+						//获取invert的value
+						var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置invert节点的value
+						invertnode.setProperty("value",value);
+						invertnode.save();
+					}					
+				}
+			}
+		}
+	}
+
+
+	//处理filmwidth
+	function process_filmwidth(matdatanode,NodePin)
+	{
+		//创建matdata节点的filmwidth子节点
+		var filmwidthnode = matdatanode.addNode("filmwidth", "sling:Folder");
+		matdatanode.save();
+		
+		//设置typename属性
+		filmwidthnode.setProperty("typename","filmwidth");
+		
+		//获取diffuse属性的Node子节点
+		var filmwidth_Node = NodePin.getElementsByTagName("Node").item(0);
+		
+		//获取Node子节点的typename属性
+		var filmwidth_Node_typename = filmwidth_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+		
+		//根据typename确定添加节点类型
+		if(filmwidth_Node_typename == "RGBspectrum")
+		{
+			//设置sling:resourceType
+			filmwidthnode.setProperty("sling:resourceType","RGBspectrum");
+			
+			//获取rgbvalue
+			var rgbvalue = transmission_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			filmwidthnode.setProperty("rgbvalue",rgbvalue);
+			
+			filmwidthnode.save();
+		}
+		
+		
+		if(filmwidth_Node_typename == "floattexture")
+		{
+			//设置sling:resourceType
+			filmwidthnode.setProperty("sling:resourceType","floattexture");
+			
+			//获取value
+			var value = filmwidth_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			filmwidthnode.setProperty("value",value);
+			
+			filmwidthnode.save();
+		}
+		
+		
+		//image
+		if(filmwidth_Node_typename == "image")
+		{
+			//设置sling:resourceType
+			filmwidthnode.setProperty("sling:resourceType","image");
+			
+			//获取linkedfilename
+			var linkedfilename = filmwidth_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置linkedfilename
+			filmwidthnode.setProperty("linkedfilename",linkedfilename);
+			
+			//
+			
+			//获取medium_Node下的所有NodePin子节点
+			var NodePins = filmwidth_Node.getElementsByTagName("NodePin");
+			
+			//遍历所有NodePin子节点
+			for(var i =0; i < NodePins.length; i++)
+			{
+				var NodePin = NodePins.item(i);
+				
+				//获取NodePin节点的typename
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//处理typename为power的属性
+				if(typename == "power")
+				{
+					//创建priority子节点
+					var powernode = filmwidthnode.addNode("power", "sling:Folder");
+					filmwidthnode.save();
+					//获取priority的Node子节点
+					var power_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置power节点的sling:resourceType
+						powernode.setProperty("sling:resourceType","floattexture");
+						
+						//获取power的value
+						var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置power节点的value
+						powernode.setProperty("value",value);
+						powernode.save();
+					}					
+				}
+				
+				//处理typename为gamma的属性
+				if(typename == "gamma")
+				{
+					//创建priority子节点
+					var gammanode = filmwidthnode.addNode("gamma", "sling:Folder");
+					filmwidthnode.save();
+					//获取priority的Node子节点
+					var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置gamma节点的sling:resourceType
+						gammanode.setProperty("sling:resourceType","float");
+						
+						//获取gamma的value
+						var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置gamma节点的value
+						gammanode.setProperty("value",value);
+						gammanode.save();
+					}					
+				}
+				
+				//处理typename为scale的属性
+				if(typename == "scale")
+				{
+					//创建priority子节点
+					var scalenode = filmwidthnode.addNode("scale", "sling:Folder");
+					filmwidthnode.save();
+					//获取priority的Node子节点
+					var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置scale节点的sling:resourceType
+						scalenode.setProperty("sling:resourceType","float");
+						
+						//获取scale的value
+						var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scale节点的value
+						scalenode.setProperty("value",value);
+						scalenode.save();
+					}					
+				}
+				
+				//处理typename为invert的属性
+				if(typename == "invert")
+				{
+					//创建invert子节点
+					var invertnode = filmwidthnode.addNode("invert", "sling:Folder");
+					filmwidthnode.save();
+					//获取invert的Node子节点
+					var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "bool")
+					{
+						//设置invert节点的sling:resourceType
+						invertnode.setProperty("sling:resourceType","bool");
+						
+						//获取invert的value
+						var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置invert节点的value
+						invertnode.setProperty("value",value);
+						invertnode.save();
+					}					
+				}
+			}
+		}
+	}
+
+
+
+	//处理filmindex
+	function process_filmindex(matdatanode,NodePin)
+	{
+		//创建matdata节点的medium子节点
+		var filmindexnode = matdatanode.addNode("filmindex", "sling:Folder");
+		matdatanode.save();
+		
+		//设置typename属性
+		filmindexnode.setProperty("typename","filmindex");
+		
+		//获取medium属性的Node子节点
+		var filmindex_Node = NodePin.getElementsByTagName("Node").item(0);
+		
+		//获取Node子节点的typename属性
+		var filmindex_Node_typename = filmindex_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//根据typename确定添加节点类型
+		if(filmindex_Node_typename == "float")
+		{
+			
+			//设置sling:resourceType
+			filmindexnode.setProperty("sling:resourceType","float");
+			
+			//获取value
+			var value = filmindex_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			filmindexnode.setProperty("value",value);
+			
+			filmindexnode.save();
+			
+		}
+	}
+
+
+
+
+	//处理transmission
+	function process_transmission(matdatanode,NodePin)
+	{
+		
+		//创建matdata节点的transmission子节点
+		var transmissionnode = matdatanode.addNode("transmission", "sling:Folder");
+		matdatanode.save();
+		
+		//设置typename属性
+		transmissionnode.setProperty("typename","transmission");
+		transmissionnode.save();
+		
+		//获取diffuse属性的Node子节点
+		var transmission_Node = NodePin.getElementsByTagName("Node").item(0);
+		
+		//获取Node子节点的typename属性
+		var transmission_Node_typename = transmission_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+		
+		//根据typename确定添加节点类型
+		if(transmission_Node_typename == "RGBspectrum")
+		{
+			//设置sling:resourceType
+			transmissionnode.setProperty("sling:resourceType","RGBspectrum");
+			
+			//获取rgbvalue
+			var rgbvalue = transmission_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			transmissionnode.setProperty("rgbvalue",rgbvalue);
+			
+			transmissionnode.save();
+		}
+		
+		
+		if(transmission_Node_typename == "floattexture")
+		{
+			//设置sling:resourceType
+			transmissionnode.setProperty("sling:resourceType","floattexture");
+			
+			//获取value
+			var value = transmission_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置rgbvalue
+			transmissionnode.setProperty("value",value);
+			
+			transmissionnode.save();
+		}
+		
+		//image
+		if(transmission_Node_typename == "image")
+		{
+			//设置sling:resourceType
+			transmissionnode.setProperty("sling:resourceType","image");
+			
+			//获取linkedfilename
+			var linkedfilename = transmission_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//设置linkedfilename
+			transmissionnode.setProperty("linkedfilename",linkedfilename);
+			transmissionnode.save();
+			//
+			
+			//获取medium_Node下的所有NodePin子节点
+			var NodePins = transmission_Node.getElementsByTagName("NodePin");
+			
+			//遍历所有NodePin子节点
+			for(var i =0; i < NodePins.length; i++)
+			{
+				var NodePin = NodePins.item(i);
+				
+				//获取NodePin节点的typename
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//处理typename为power的属性
+				if(typename == "power")
+				{
+					//创建priority子节点
+					var powernode = transmissionnode.addNode("power", "sling:Folder");
+					transmissionnode.save();
+					//获取priority的Node子节点
+					var power_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置power节点的sling:resourceType
+						powernode.setProperty("sling:resourceType","floattexture");
+						
+						//获取power的value
+						var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置power节点的value
+						powernode.setProperty("value",value);
+						powernode.save();
+					}					
+				}
+				
+				//处理typename为gamma的属性
+				if(typename == "gamma")
+				{
+					//创建priority子节点
+					var gammanode = transmissionnode.addNode("gamma", "sling:Folder");
+					transmissionnode.save();
+					//获取priority的Node子节点
+					var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置gamma节点的sling:resourceType
+						gammanode.setProperty("sling:resourceType","float");
+						
+						//获取gamma的value
+						var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置gamma节点的value
+						gammanode.setProperty("value",value);
+						gammanode.save();
+					}					
+				}
+				
+				//处理typename为scale的属性
+				if(typename == "scale")
+				{
+					//创建priority子节点
+					var scalenode = transmissionnode.addNode("scale", "sling:Folder");
+					transmissionnode.save();
+					//获取priority的Node子节点
+					var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置scale节点的sling:resourceType
+						scalenode.setProperty("sling:resourceType","float");
+						
+						//获取scale的value
+						var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scale节点的value
+						scalenode.setProperty("value",value);
+						scalenode.save();
+					}					
+				}
+				
+				//处理typename为invert的属性
+				if(typename == "invert")
+				{
+					//创建invert子节点
+					var invertnode = transmissionnode.addNode("invert", "sling:Folder");
+					transmissionnode.save();
+					//获取invert的Node子节点
+					var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "bool")
+					{
+						//设置invert节点的sling:resourceType
+						invertnode.setProperty("sling:resourceType","bool");
+						
+						//获取invert的value
+						var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置invert节点的value
+						invertnode.setProperty("value",value);
+						invertnode.save();
+					}					
+				}
+			}
+		}
+	}
+
+
+//处理bump
+function process_bump(matdatanode,NodePin)
+{
+	//创建matdata节点的bump子节点
+	var bumpnode = matdatanode.addNode("bump", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	bumpnode.setProperty("typename","bump");
+	
+	//获取diffuse属性的Node子节点
+	var bump_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var bump_Node_typename = bump_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+	
+	//根据typename确定添加节点类型
+	if(bump_Node_typename == "RGBspectrum")
+	{
+		//设置sling:resourceType
+		bumpnode.setProperty("sling:resourceType","RGBspectrum");
+		
+		//获取rgbvalue
+		var rgbvalue = bump_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		bumpnode.setProperty("rgbvalue",rgbvalue);
+		
+		bumpnode.save();
+	}
+	
+	if(bump_Node_typename == "floattexture")
+	{
+		//设置sling:resourceType
+		bumpnode.setProperty("sling:resourceType","floattexture");
+		
+		//获取value
+		var value = bump_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		bumpnode.setProperty("value",value);
+		
+		bumpnode.save();
+	}
+	
+	
+	//image
+	if(bump_Node_typename == "image")
+	{
+		//设置sling:resourceType
+		bumpnode.setProperty("sling:resourceType","image");
+		
+		//获取linkedfilename
+		var linkedfilename = bump_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置linkedfilename
+		bumpnode.setProperty("linkedfilename",linkedfilename);
+		
+		//
+		
+		//获取medium_Node下的所有NodePin子节点
+		var NodePins = bump_Node.getElementsByTagName("NodePin");
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建priority子节点
+				var powernode = bumpnode.addNode("power", "sling:Folder");
+				bumpnode.save();
+				//获取priority的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "floattexture")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","floattexture");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+			//处理typename为gamma的属性
+			if(typename == "gamma")
+			{
+				//创建priority子节点
+				var gammanode = bumpnode.addNode("gamma", "sling:Folder");
+				bumpnode.save();
+				//获取priority的Node子节点
+				var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置gamma节点的sling:resourceType
+					gammanode.setProperty("sling:resourceType","float");
+					
+					//获取gamma的value
+					var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置gamma节点的value
+					gammanode.setProperty("value",value);
+					gammanode.save();
+				}					
+			}
+			
+			//处理typename为scale的属性
+			if(typename == "scale")
+			{
+				//创建priority子节点
+				var scalenode = bumpnode.addNode("scale", "sling:Folder");
+				bumpnode.save();
+				//获取priority的Node子节点
+				var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置scale节点的sling:resourceType
+					scalenode.setProperty("sling:resourceType","float");
+					
+					//获取scale的value
+					var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置scale节点的value
+					scalenode.setProperty("value",value);
+					scalenode.save();
+				}					
+			}
+			
+			//处理typename为invert的属性
+			if(typename == "invert")
+			{
+				//创建invert子节点
+				var invertnode = bumpnode.addNode("invert", "sling:Folder");
+				bumpnode.save();
+				//获取invert的Node子节点
+				var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "bool")
+				{
+					//设置invert节点的sling:resourceType
+					invertnode.setProperty("sling:resourceType","bool");
+					
+					//获取invert的value
+					var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置invert节点的value
+					invertnode.setProperty("value",value);
+					invertnode.save();
+				}					
+			}
+		}
+	}
+}
+
+
+//处理normal
+function process_normal(matdatanode,NodePin)
+{
+	//创建matdata节点的normal子节点
+	var normalnode = matdatanode.addNode("normal", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	normalnode.setProperty("typename","normal");
+	
+	//获取diffuse属性的Node子节点
+	var normal_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var normal_Node_typename = normal_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+	
+	//根据typename确定添加节点类型
+	if(normal_Node_typename == "RGBspectrum")
+	{
+		//设置sling:resourceType
+		normalnode.setProperty("sling:resourceType","RGBspectrum");
+		
+		//获取rgbvalue
+		var rgbvalue = normal_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		normalnode.setProperty("rgbvalue",rgbvalue);
+		
+		normalnode.save();
+	}
+	
+	
+	if(normal_Node_typename == "floattexture")
+	{
+		//设置sling:resourceType
+		normalnode.setProperty("sling:resourceType","floattexture");
+		
+		//获取value
+		var value = normal_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		normalnode.setProperty("value",value);
+		
+		normalnode.save();
+	}
+	
+	
+	//image
+	if(normal_Node_typename == "image")
+	{
+		//设置sling:resourceType
+		normalnode.setProperty("sling:resourceType","image");
+		
+		//获取linkedfilename
+		var linkedfilename = normal_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置linkedfilename
+		normalnode.setProperty("linkedfilename",linkedfilename);
+		
+		//
+		
+		//获取medium_Node下的所有NodePin子节点
+		var NodePins = normal_Node.getElementsByTagName("NodePin");
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建priority子节点
+				var powernode = normalnode.addNode("power", "sling:Folder");
+				normalnode.save();
+				//获取priority的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "floattexture")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","floattexture");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+			//处理typename为gamma的属性
+			if(typename == "gamma")
+			{
+				//创建priority子节点
+				var gammanode = normalnode.addNode("gamma", "sling:Folder");
+				normalnode.save();
+				//获取priority的Node子节点
+				var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置gamma节点的sling:resourceType
+					gammanode.setProperty("sling:resourceType","float");
+					
+					//获取gamma的value
+					var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置gamma节点的value
+					gammanode.setProperty("value",value);
+					gammanode.save();
+				}					
+			}
+			
+			//处理typename为scale的属性
+			if(typename == "scale")
+			{
+				//创建priority子节点
+				var scalenode = normalnode.addNode("scale", "sling:Folder");
+				normalnode.save();
+				//获取priority的Node子节点
+				var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置scale节点的sling:resourceType
+					scalenode.setProperty("sling:resourceType","float");
+					
+					//获取scale的value
+					var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置scale节点的value
+					scalenode.setProperty("value",value);
+					scalenode.save();
+				}					
+			}
+			
+			//处理typename为invert的属性
+			if(typename == "invert")
+			{
+				//创建invert子节点
+				var invertnode = normalnode.addNode("invert", "sling:Folder");
+				normalnode.save();
+				//获取invert的Node子节点
+				var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "bool")
+				{
+					//设置invert节点的sling:resourceType
+					invertnode.setProperty("sling:resourceType","bool");
+					
+					//获取invert的value
+					var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置invert节点的value
+					invertnode.setProperty("value",value);
+					invertnode.save();
+				}					
+			}
+		}
+	}
+}
+
+
+//处理opacity
+function process_opacity(matdatanode,NodePin)
+{
+	//创建matdata节点的opacity子节点
+	var opacitynode = matdatanode.addNode("opacity", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	opacitynode.setProperty("typename","opacity");
+	
+	//获取diffuse属性的Node子节点
+	var opacity_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var opacity_Node_typename = opacity_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+	
+	//根据typename确定添加节点类型
+	if(opacity_Node_typename == "RGBspectrum")
+	{
+		//设置sling:resourceType
+		opacitynode.setProperty("sling:resourceType","RGBspectrum");
+		
+		//获取rgbvalue
+		var rgbvalue = transmission_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		opacitynode.setProperty("rgbvalue",rgbvalue);
+		
+		opacitynode.save();
+	}
+	
+	
+	if(opacity_Node_typename == "floattexture")
+	{
+		//设置sling:resourceType
+		opacitynode.setProperty("sling:resourceType","floattexture");
+		
+		//获取value
+		var value = opacity_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		opacitynode.setProperty("value",value);
+		
+		opacitynode.save();
+	}
+	
+	
+	//image
+	if(opacity_Node_typename == "image")
+	{
+		//设置sling:resourceType
+		opacitynode.setProperty("sling:resourceType","image");
+		
+		//获取linkedfilename
+		var linkedfilename = opacity_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置linkedfilename
+		opacitynode.setProperty("linkedfilename",linkedfilename);
+		
+		//
+		
+		//获取medium_Node下的所有NodePin子节点
+		var NodePins = opacity_Node.getElementsByTagName("NodePin");
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建priority子节点
+				var powernode = opacitynode.addNode("power", "sling:Folder");
+				opacitynode.save();
+				//获取priority的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "floattexture")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","floattexture");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+			//处理typename为gamma的属性
+			if(typename == "gamma")
+			{
+				//创建priority子节点
+				var gammanode = opacitynode.addNode("gamma", "sling:Folder");
+				opacitynode.save();
+				//获取priority的Node子节点
+				var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置gamma节点的sling:resourceType
+					gammanode.setProperty("sling:resourceType","float");
+					
+					//获取gamma的value
+					var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置gamma节点的value
+					gammanode.setProperty("value",value);
+					gammanode.save();
+				}					
+			}
+			
+			//处理typename为scale的属性
+			if(typename == "scale")
+			{
+				//创建priority子节点
+				var scalenode = opacitynode.addNode("scale", "sling:Folder");
+				opacitynode.save();
+				//获取priority的Node子节点
+				var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置scale节点的sling:resourceType
+					scalenode.setProperty("sling:resourceType","float");
+					
+					//获取scale的value
+					var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置scale节点的value
+					scalenode.setProperty("value",value);
+					scalenode.save();
+				}					
+			}
+			
+			//处理typename为invert的属性
+			if(typename == "invert")
+			{
+				//创建invert子节点
+				var invertnode = opacitynode.addNode("invert", "sling:Folder");
+				opacitynode.save();
+				//获取invert的Node子节点
+				var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "bool")
+				{
+					//设置invert节点的sling:resourceType
+					invertnode.setProperty("sling:resourceType","bool");
+					
+					//获取invert的value
+					var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置invert节点的value
+					invertnode.setProperty("value",value);
+					invertnode.save();
+				}					
+			}
+		}
+	}
+}
+
+
+//处理smooth
+function process_smooth(matdatanode,NodePin)
+{
+	//创建matdata节点的smooth子节点
+	var smoothnode = matdatanode.addNode("smooth", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	smoothnode.setProperty("typename","smooth");
+	
+	//获取smooth属性的Node子节点
+	var smooth_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var smooth_Node_typename = smooth_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+	
+	//根据typename确定添加节点类型
+	if(smooth_Node_typename == "bool")
+	{
+		//设置sling:resourceType
+		smoothnode.setProperty("sling:resourceType","bool");
+		
+		//获取value
+		var value = smooth_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		smoothnode.setProperty("value",value);
+		
+		smoothnode.save();
+	}
+}
+
+
+
+//处理emission distribution
+function process_distribution(emissionnode,NodePin)
+{
+	//创建emission节点的distribution子节点
+	var distributionnode = emissionnode.addNode("distribution", "sling:Folder");
+	emissionnode.save();
+	
+	//设置typename属性
+	distributionnode.setProperty("typename","distribution");
+	
+	//获取diffuse属性的Node子节点
+	var distribution_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var distribution_Node_typename = distribution_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+	
+	//根据typename确定添加节点类型
+	if(distribution_Node_typename == "RGBspectrum")
+	{
+		//设置sling:resourceType
+		distributionnode.setProperty("sling:resourceType","RGBspectrum");
+		
+		//获取rgbvalue
+		var rgbvalue = distribution_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		distributionnode.setProperty("rgbvalue",rgbvalue);
+		
+		distributionnode.save();
+	}
+	
+	
+	if(distribution_Node_typename == "floattexture")
+	{
+		//设置sling:resourceType
+		distributionnode.setProperty("sling:resourceType","floattexture");
+		
+		//获取value
+		var value = distribution_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		distributionnode.setProperty("value",value);
+		
+		distributionnode.save();
+	}
+	
+	
+	//image
+	if(distribution_Node_typename == "image")
+	{
+		//设置sling:resourceType
+		distributionnode.setProperty("sling:resourceType","image");
+		
+		//获取linkedfilename
+		var linkedfilename = distribution_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置linkedfilename
+		distributionnode.setProperty("linkedfilename",linkedfilename);
+		
+		//
+		
+		//获取medium_Node下的所有NodePin子节点
+		var NodePins = distribution_Node.getElementsByTagName("NodePin");
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建priority子节点
+				var powernode = distributionnode.addNode("power", "sling:Folder");
+				distributionnode.save();
+				//获取priority的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "floattexture")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","floattexture");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+			//处理typename为gamma的属性
+			if(typename == "gamma")
+			{
+				//创建priority子节点
+				var gammanode = distributionnode.addNode("gamma", "sling:Folder");
+				distributionnode.save();
+				//获取priority的Node子节点
+				var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置gamma节点的sling:resourceType
+					gammanode.setProperty("sling:resourceType","float");
+					
+					//获取gamma的value
+					var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置gamma节点的value
+					gammanode.setProperty("value",value);
+					gammanode.save();
+				}					
+			}
+			
+			//处理typename为scale的属性
+			if(typename == "scale")
+			{
+				//创建priority子节点
+				var scalenode = distributionnode.addNode("scale", "sling:Folder");
+				distributionnode.save();
+				//获取priority的Node子节点
+				var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置scale节点的sling:resourceType
+					scalenode.setProperty("sling:resourceType","float");
+					
+					//获取scale的value
+					var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置scale节点的value
+					scalenode.setProperty("value",value);
+					scalenode.save();
+				}					
+			}
+			
+			//处理typename为invert的属性
+			if(typename == "invert")
+			{
+				//创建invert子节点
+				var invertnode = distributionnode.addNode("invert", "sling:Folder");
+				distributionnode.save();
+				//获取invert的Node子节点
+				var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "bool")
+				{
+					//设置invert节点的sling:resourceType
+					invertnode.setProperty("sling:resourceType","bool");
+					
+					//获取invert的value
+					var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置invert节点的value
+					invertnode.setProperty("value",value);
+					invertnode.save();
+				}					
+			}
+		}
+	}
+}
+
+
+//处理efficiency or texture
+function process_efficiency_or_texture(emissionnode,NodePin)
+{
+	//创建emission节点的efficiency_or_texture子节点
+	var efficiency_or_texturenode = emissionnode.addNode("efficiency_or_texture", "sling:Folder");
+	emissionnode.save();
+	
+	//设置typename属性
+	efficiency_or_texturenode.setProperty("typename","efficiency_or_texture");
+	
+	//获取diffuse属性的Node子节点
+	var efficiency_or_texture_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var efficiency_or_texture_Node_typename = efficiency_or_texture_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+	
+	//根据typename确定添加节点类型
+	if(efficiency_or_texture_Node_typename == "RGBspectrum")
+	{
+		//设置sling:resourceType
+		efficiency_or_texturenode.setProperty("sling:resourceType","RGBspectrum");
+		
+		//获取rgbvalue
+		var rgbvalue = efficiency_or_texture_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		efficiency_or_texturenode.setProperty("rgbvalue",rgbvalue);
+		
+		efficiency_or_texturenode.save();
+	}
+	
+	
+	if(efficiency_or_texture_Node_typename == "floattexture")
+	{
+		//设置sling:resourceType
+		efficiency_or_texturenode.setProperty("sling:resourceType","floattexture");
+		
+		//获取value
+		var value = efficiency_or_texture_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		efficiency_or_texturenode.setProperty("value",value);
+		
+		efficiency_or_texturenode.save();
+	}
+	
+	
+	//image
+	if(efficiency_or_texture_Node_typename == "image")
+	{
+		//设置sling:resourceType
+		efficiency_or_texturenode.setProperty("sling:resourceType","image");
+		
+		//获取linkedfilename
+		var linkedfilename = efficiency_or_texture_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置linkedfilename
+		efficiency_or_texturenode.setProperty("linkedfilename",linkedfilename);
+		
+		//
+		
+		//获取medium_Node下的所有NodePin子节点
+		var NodePins = efficiency_or_texture_Node.getElementsByTagName("NodePin");
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建priority子节点
+				var powernode = efficiency_or_texturenode.addNode("power", "sling:Folder");
+				efficiency_or_texturenode.save();
+				//获取priority的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "floattexture")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","floattexture");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+			//处理typename为gamma的属性
+			if(typename == "gamma")
+			{
+				//创建priority子节点
+				var gammanode = efficiency_or_texturenode.addNode("gamma", "sling:Folder");
+				efficiency_or_texturenode.save();
+				//获取priority的Node子节点
+				var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置gamma节点的sling:resourceType
+					gammanode.setProperty("sling:resourceType","float");
+					
+					//获取gamma的value
+					var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置gamma节点的value
+					gammanode.setProperty("value",value);
+					gammanode.save();
+				}					
+			}
+			
+			//处理typename为scale的属性
+			if(typename == "scale")
+			{
+				//创建priority子节点
+				var scalenode = efficiency_or_texturenode.addNode("scale", "sling:Folder");
+				efficiency_or_texturenode.save();
+				//获取priority的Node子节点
+				var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置scale节点的sling:resourceType
+					scalenode.setProperty("sling:resourceType","float");
+					
+					//获取scale的value
+					var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置scale节点的value
+					scalenode.setProperty("value",value);
+					scalenode.save();
+				}					
+			}
+			
+			//处理typename为invert的属性
+			if(typename == "invert")
+			{
+				//创建invert子节点
+				var invertnode = efficiency_or_texturenode.addNode("invert", "sling:Folder");
+				efficiency_or_texturenode.save();
+				//获取invert的Node子节点
+				var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "bool")
+				{
+					//设置invert节点的sling:resourceType
+					invertnode.setProperty("sling:resourceType","bool");
+					
+					//获取invert的value
+					var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置invert节点的value
+					invertnode.setProperty("value",value);
+					invertnode.save();
+				}					
+			}
+		}
+	}
+}
+
+
+
+//处理orientation
+function process_orientation(emissionnode,NodePin)
+{
+	//创建emission节点的orientation子节点
+	var orientationnode = emissionnode.addNode("orientation", "sling:Folder");
+	emissionnode.save();
+	
+	//设置typename属性
+	orientationnode.setProperty("typename","orientation");
+	
+	//获取diffuse属性的Node子节点
+	var orientation_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var orientation_Node_typename = orientation_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+	
+	//根据typename确定添加节点类型
+	if(orientation_Node_typename == "RGBspectrum")
+	{
+		//设置sling:resourceType
+		orientationnode.setProperty("sling:resourceType","RGBspectrum");
+		
+		//获取rgbvalue
+		var rgbvalue = orientation_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		orientationnode.setProperty("rgbvalue",rgbvalue);
+		
+		orientationnode.save();
+	}
+	
+	
+	if(orientation_Node_typename == "float")
+	{
+		//设置sling:resourceType
+		orientationnode.setProperty("sling:resourceType","float");
+		
+		//获取value
+		var value = orientation_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置value
+		orientationnode.setProperty("value",value);
+		
+		orientationnode.save();
+	}
+	
+	if(orientation_Node_typename == "float2")
+	{
+		//设置sling:resourceType
+		orientationnode.setProperty("sling:resourceType","float");
+		
+		//获取valuexyz
+		var valuexy = orientation_Node.getElementsByTagName("valuexy").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置valuexyz
+		orientationnode.setProperty("valuexy",valuexy);
+		
+		orientationnode.save();
+	}
+	
+	if(orientation_Node_typename == "float3")
+	{
+		//设置sling:resourceType
+		orientationnode.setProperty("sling:resourceType","float");
+		
+		//获取valuexyz
+		var valuexyz = orientation_Node.getElementsByTagName("valuexyz").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置valuexyz
+		orientationnode.setProperty("valuexyz",valuexyz);
+		
+		orientationnode.save();
+	}
+	
+}
+
+
+
+
+//处理emission
+function process_emission(matdatanode,NodePin)
+{
+	if(matdatanode["emission"] != null)
+	{
+		return ;
+	}
+	//创建matdata节点的emission子节点
+	var emissionnode = matdatanode.addNode("emission", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	emissionnode.setProperty("typename","emission");
+	
+	//获取emission属性的Node子节点
+	var emission_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var emission_Node_typename = emission_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+	
+	//根据typename确定添加节点类型
+	
+	//blackbody
+	if(emission_Node_typename == "blackbody")
+	{
+		//设置sling:resourceType
+		emissionnode.setProperty("sling:resourceType","null emission");
+				
+		emissionnode.save();
+		
+		
+		//获取emission_Node下的所有NodePin子节点
+		var NodePins = emission_Node.getElementsByTagName("NodePin");
+		
+		out.write(NodePins.length);
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//处理typename为temperature的属性
+			if(typename == "temperature")
+			{
+				//创建temperature子节点
+				var temperaturenode = emissionnode.addNode("temperature", "sling:Folder");
+				emissionnode.save();
+				//获取temperature的Node子节点
+				var temperature_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = temperature_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置temperature节点的sling:resourceType
+					temperaturenode.setProperty("sling:resourceType","float");
+					
+					//获取temperature的value
+					var value = temperature_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置temperature节点的value
+					temperaturenode.setProperty("value",value);
+					temperaturenode.save();
+				}					
+			}
+			
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建power子节点
+				var powernode = emissionnode.addNode("power", "sling:Folder");
+				emissionnode.save();
+				//获取power的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","float");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+			//处理typename为normalize的属性
+			if(typename == "normalize")
+			{
+				//创建normalize子节点
+				var normalizenode = emissionnode.addNode("normalize", "sling:Folder");
+				emissionnode.save();
+				//获取normalize的Node子节点
+				var normalize_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = normalize_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "bool")
+				{
+					//设置normalize节点的sling:resourceType
+					normalizenode.setProperty("sling:resourceType","bool");
+					
+					//获取normalize的value
+					var value = normalize_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置normalize节点的value
+					normalizenode.setProperty("value",value);
+					normalizenode.save();
+				}					
+			}
+			
+			
+			//distribution
+			if(typename == "distribution")
+			{
+				process_distribution(emissionnode,NodePin)
+			}
+			
+			
+			//efficiency or texture
+			if(typename == "efficiency or texture")
+			{
+				process_efficiency_or_texture(emissionnode,NodePin)
+			}
+			
+			//orientation
+			if(typename == "orientation")
+			{
+				process_orientation(emissionnode,NodePin)
+			}
+			
+			//处理typename为sampling_rate的属性
+			if(typename == "sampling_rate")
+			{
+				//创建sampling_rate子节点
+				var sampling_ratenode = emissionnode.addNode("sampling_rate", "sling:Folder");
+				emissionnode.save();
+				//获取sampling_rate的Node子节点
+				var sampling_rate_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = sampling_rate_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置sampling_rate节点的sling:resourceType
+					sampling_ratenode.setProperty("sling:resourceType","float");
+					
+					//获取sampling_rate的value
+					var value = sampling_rate_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置sampling_rate节点的value
+					sampling_ratenode.setProperty("value",value);
+					sampling_ratenode.save();
+				}					
+			}
+			
+		}
+	}
+	
+
+	//null emission
+	if(emission_Node_typename == "null emission")
+	{
+		//设置sling:resourceType
+		emissionnode.setProperty("sling:resourceType","blackbody");
+				
+		emissionnode.save();
+		
+		
+	}
+	
+	//texture emission
+	if(emission_Node_typename == "texture emission")
+	{
+		//设置sling:resourceType
+		emissionnode.setProperty("sling:resourceType","texture_emission");
+				
+		emissionnode.save();
+		
+		
+		//获取emission_Node下的所有NodePin子节点
+		var NodePins = emission_Node.getElementsByTagName("NodePin");
+		
+		out.write(NodePins.length);
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+		
+			//efficiency or texture
+			if(typename == "efficiency or texture")
+			{
+				process_efficiency_or_texture(emissionnode,NodePin)
+			}
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建power子节点
+				var powernode = emissionnode.addNode("power", "sling:Folder");
+				emissionnode.save();
+				//获取power的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","float");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+		
+			
+			
+			//distribution
+			if(typename == "distribution")
+			{
+				process_distribution(emissionnode,NodePin)
+			}
+			
+			
+			
+			
+			//orientation
+			if(typename == "orientation")
+			{
+				process_orientation(emissionnode,NodePin)
+			}
+			
+			//处理typename为sampling_rate的属性
+			if(typename == "sampling_rate")
+			{
+				//创建sampling_rate子节点
+				var sampling_ratenode = emissionnode.addNode("sampling_rate", "sling:Folder");
+				emissionnode.save();
+				//获取sampling_rate的Node子节点
+				var sampling_rate_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = sampling_rate_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置sampling_rate节点的sling:resourceType
+					sampling_ratenode.setProperty("sling:resourceType","float");
+					
+					//获取sampling_rate的value
+					var value = sampling_rate_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置sampling_rate节点的value
+					sampling_ratenode.setProperty("value",value);
+					sampling_ratenode.save();
+				}					
+			}
+			
+		}
+	}
+	
+	
+	
+	
+}
+
+
+	//处理medium
+	function process_medium(matdatanode,NodePin)
+	{
+		//创建matdata节点的medium子节点
+		var mediumnode = matdatanode.addNode("medium", "sling:Folder");
+		matdatanode.save();
+		
+		//设置typename属性
+		mediumnode.setProperty("typename","medium");
+		
+		//获取medium属性的Node子节点
+		var medium_Node = NodePin.getElementsByTagName("Node").item(0);
+		
+		//获取Node子节点的typename属性
+		var medium_Node_typename = medium_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//根据typename确定添加节点类型
+		if(medium_Node_typename == "absorption")
+		{
+			//设置sling:resourceType
+			mediumnode.setProperty("sling:resourceType","absorption");
+					
+			mediumnode.save();
+			
+			//获取medium_Node下的所有NodePin子节点
+			var NodePins = medium_Node.getElementsByTagName("NodePin");
+			
+			//遍历所有NodePin子节点
+			for(var i =0; i < NodePins.length; i++)
+			{
+				var NodePin = NodePins.item(i);
+				
+				//获取NodePin节点的typename
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//处理typename为priority的属性
+				if(typename == "priority")
+				{
+					//创建priority子节点
+					var prioritynode = mediumnode.addNode("priority", "sling:Folder");
+					mediumnode.save();
+					//获取priority的Node子节点
+					var priority_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = priority_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "int")
+					{
+						//设置priority节点的sling:resourceType
+						prioritynode.setProperty("sling:resourceType","int");
+						
+						//获取priority的value
+						var value = priority_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置priority节点的value
+						prioritynode.setProperty("value",value);
+						prioritynode.save();
+					}					
+				}
+				
+				
+				//处理typename为absorption的属性
+				if(typename == "absorption")
+				{
+					//创建absorption子节点
+					var absorptionnode = mediumnode.addNode("absorption", "sling:Folder");
+					mediumnode.save();
+					//获取absorption的Node子节点
+					var absorption_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = absorption_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置absorption节点的sling:resourceType
+						absorptionnode.setProperty("sling:resourceType","floattexture");
+						
+						//获取absorption的value
+						var value = absorption_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置absorption节点的value
+						absorptionnode.setProperty("value",value);
+						absorptionnode.save();
+					}					
+				}
+				
+				//处理typename为scale的属性
+				if(typename == "scale")
+				{
+					//创建scale子节点
+					var scalenode = mediumnode.addNode("scale", "sling:Folder");
+					mediumnode.save();
+					//获取scale的Node子节点
+					var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置scale节点的sling:resourceType
+						scalenode.setProperty("sling:resourceType","float");
+						
+						//获取scale的value
+						var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scale节点的value
+						scalenode.setProperty("value",value);
+						scalenode.save();
+					}					
+				}
+				
+				//处理typename为ray_step的属性
+				if(typename == "ray_step")
+				{
+					//创建ray_step子节点
+					var ray_stepnode = mediumnode.addNode("ray_step", "sling:Folder");
+					mediumnode.save();
+					//获取ray_step的Node子节点
+					var ray_step_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = ray_step_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置ray_step节点的sling:resourceType
+						ray_stepnode.setProperty("sling:resourceType","float");
+						
+						//获取ray_step的value
+						var value = ray_step_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置ray_step节点的value
+						ray_stepnode.setProperty("value",value);
+						ray_stepnode.save();
+					}					
+				}
+				
+			}
+		}
+		
+		//根据typename确定添加节点类型
+		if(medium_Node_typename == "scattering")
+		{
+			//设置sling:resourceType
+			mediumnode.setProperty("sling:resourceType","scattering");
+					
+			mediumnode.save();
+			
+			//获取medium_Node下的所有NodePin子节点
+			var NodePins = medium_Node.getElementsByTagName("NodePin");
+			
+			//遍历所有NodePin子节点
+			for(var i =0; i < NodePins.length; i++)
+			{
+				var NodePin = NodePins.item(i);
+				
+				//获取NodePin节点的typename
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//处理typename为absorption的属性
+				if(typename == "absorption")
+				{
+					//创建absorption子节点
+					var absorptionnode = mediumnode.addNode("absorption", "sling:Folder");
+					mediumnode.save();
+					//获取absorption的Node子节点
+					var absorption_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = absorption_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置absorption节点的sling:resourceType
+						absorptionnode.setProperty("sling:resourceType","floattexture");
+						
+						//获取absorption的value
+						var value = absorption_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置absorption节点的value
+						absorptionnode.setProperty("value",value);
+						absorptionnode.save();
+					}					
+				}
+				
+				
+				//处理typename为phase的属性
+				if(typename == "phase")
+				{
+					//创建phase子节点
+					var phasenode = mediumnode.addNode("phase", "sling:Folder");
+					mediumnode.save();
+					//获取phase的Node子节点
+					var phase_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = phase_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "schlick")
+					{
+						//设置phase节点的sling:resourceType
+						phasenode.setProperty("sling:resourceType","schlick");
+						
+						//创建scattering_direction子节点
+						var scattering_directionnode = phasenode.addNode("scattering_direction", "sling:Folder");
+						phasenode.save();
+						scattering_directionnode.setProperty("sling:resourceType","float");
+						
+						//获取scattering_direction的value
+						var value = phase_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置phase节点的value
+						scattering_directionnode.setProperty("value",value);
+						scattering_directionnode.save();
+					}					
+				}
+				
+				
+				//处理typename为scattering的属性
+				if(typename == "scattering")
+				{
+					//创建scattering子节点
+					var scatteringnode = mediumnode.addNode("scattering", "sling:Folder");
+					mediumnode.save();
+					//获取scattering的Node子节点
+					var scattering_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scattering_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "floattexture")
+					{
+						//设置scattering节点的sling:resourceType
+						scatteringnode.setProperty("sling:resourceType","floattexture");
+						
+						//获取scattering的value
+						var value = scattering_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scattering节点的value
+						scatteringnode.setProperty("value",value);
+						scatteringnode.save();
+					}					
+				}
+				
+				//处理typename为emission的属性
+				if(typename == "emission")
+				{
+					//创建emission子节点
+					var emissionnode = mediumnode.addNode("emission", "sling:Folder");
+					mediumnode.save();
+					//获取emission的Node子节点
+					var emission_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var emission_Node_typename = emission_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+						
+					//根据typename确定添加节点类型
+					if(emission_Node_typename == "null emission")
+					{
+						//设置sling:resourceType
+						emissionnode.setProperty("sling:resourceType","null emission");
+								
+						emissionnode.save();
+					}					
+				}
+				
+				//处理typename为scale的属性
+				if(typename == "scale")
+				{
+					//创建scale子节点
+					var scalenode = mediumnode.addNode("scale", "sling:Folder");
+					mediumnode.save();
+					//获取scale的Node子节点
+					var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置scale节点的sling:resourceType
+						scalenode.setProperty("sling:resourceType","float");
+						
+						//获取scale的value
+						var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置scale节点的value
+						scalenode.setProperty("value",value);
+						scalenode.save();
+					}					
+				}
+				
+				//处理typename为ray_step的属性
+				if(typename == "ray_step")
+				{
+					//创建ray_step子节点
+					var ray_stepnode = mediumnode.addNode("ray_step", "sling:Folder");
+					mediumnode.save();
+					//获取ray_step的Node子节点
+					var ray_step_Node = NodePin.getElementsByTagName("Node").item(0);
+					
+					//获取Node子节点的typename
+					var typename = ray_step_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//当typename为int时
+					if(typename == "float")
+					{
+						//设置ray_step节点的sling:resourceType
+						ray_stepnode.setProperty("sling:resourceType","float");
+						
+						//获取ray_step的value
+						var value = ray_step_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//设置ray_step节点的value
+						ray_stepnode.setProperty("value",value);
+						ray_stepnode.save();
+					}					
+				}
+				
+			}
+		}
+
+	}
+
+
+//处理index
+function process_index(matdatanode,NodePin)
+{
+	//创建matdata节点的medium子节点
+	var indexnode = matdatanode.addNode("index", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	indexnode.setProperty("typename","index");
+	
+	//获取medium属性的Node子节点
+	var index_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var index_Node_typename = index_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+	
+	//根据typename确定添加节点类型
+	if(index_Node_typename == "float")
+	{
+		
+		//设置sling:resourceType
+		indexnode.setProperty("sling:resourceType","float");
+		
+		//获取value
+		var value = index_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		indexnode.setProperty("value",value);
+		
+		indexnode.save();
+		
+	}
+}
+
+
+//处理dispersion_coefficient_B
+function process_dispersion_coefficient_B(matdatanode,NodePin)
+{
+	//创建matdata节点的medium子节点
+	var dispersion_coefficient_Bnode = matdatanode.addNode("dispersion_coefficient_B", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	dispersion_coefficient_Bnode.setProperty("typename","dispersion_coefficient_B");
+	
+	//获取medium属性的Node子节点
+	var dispersion_coefficient_B_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var dispersion_coefficient_B_Node_typename = dispersion_coefficient_B_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+	
+	//根据typename确定添加节点类型
+	if(dispersion_coefficient_B_Node_typename == "float")
+	{
+		
+		//设置sling:resourceType
+		dispersion_coefficient_Bnode.setProperty("sling:resourceType","float");
+		
+		//获取value
+		var value = dispersion_coefficient_B_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		dispersion_coefficient_Bnode.setProperty("value",value);
+		
+		dispersion_coefficient_Bnode.save();
+		
+	}
+}
+
+
+//处理reflection
+function process_reflection(matdatanode,NodePin)
+{
+	//创建matdata节点的reflection子节点
+	var reflectionnode = matdatanode.addNode("reflection", "sling:Folder");
+	matdatanode.save();
+	
+	//设置typename属性
+	reflectionnode.setProperty("typename","reflection");
+	
+	//获取reflection属性的Node子节点
+	var reflection_Node = NodePin.getElementsByTagName("Node").item(0);
+	
+	//获取Node子节点的typename属性
+	var reflection_Node_typename = reflection_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();;
+	
+	//根据typename确定添加节点类型
+	if(reflection_Node_typename == "RGBspectrum")
+	{
+		//设置sling:resourceType
+		reflectionnode.setProperty("sling:resourceType","RGBspectrum");
+		
+		//获取rgbvalue
+		var rgbvalue = reflection_Node.getElementsByTagName("rgbvalue").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		reflectionnode.setProperty("rgbvalue",rgbvalue);
+		
+		reflectionnode.save();
+	}
+	
+	
+	if(reflection_Node_typename == "floattexture")
+	{
+		//设置sling:resourceType
+		reflectionnode.setProperty("sling:resourceType","floattexture");
+		
+		//获取value
+		var value = reflection_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//设置rgbvalue
+		reflectionnode.setProperty("value",value);
+		
+		reflectionnode.save();
+	}
+	
+	//image
+	if(reflection_Node_typename == "image")
+	{
+		//设置sling:resourceType
+		reflectionnode.setProperty("sling:resourceType","image");
+		
+		//获取linkedfilename
+		var linkedfilename = reflection_Node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+
+		//设置linkedfilename
+		reflectionnode.setProperty("linkedfilename",linkedfilename);
+		reflectionnode.save();
+		//
+		
+		//获取medium_Node下的所有NodePin子节点
+		var NodePins = reflection_Node.getElementsByTagName("NodePin");
+		
+		//遍历所有NodePin子节点
+		for(var i =0; i < NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			
+			//获取NodePin节点的typename
+			var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//处理typename为power的属性
+			if(typename == "power")
+			{
+				//创建priority子节点
+				var powernode = reflectionnode.addNode("power", "sling:Folder");
+				reflectionnode.save();
+				//获取priority的Node子节点
+				var power_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = power_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "floattexture")
+				{
+					//设置power节点的sling:resourceType
+					powernode.setProperty("sling:resourceType","floattexture");
+					
+					//获取power的value
+					var value = power_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置power节点的value
+					powernode.setProperty("value",value);
+					powernode.save();
+				}					
+			}
+			
+			//处理typename为gamma的属性
+			if(typename == "gamma")
+			{
+				//创建priority子节点
+				var gammanode = reflectionnode.addNode("gamma", "sling:Folder");
+				reflectionnode.save();
+				//获取priority的Node子节点
+				var gamma_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = gamma_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置gamma节点的sling:resourceType
+					gammanode.setProperty("sling:resourceType","float");
+					
+					//获取gamma的value
+					var value = gamma_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置gamma节点的value
+					gammanode.setProperty("value",value);
+					gammanode.save();
+				}					
+			}
+			
+			//处理typename为scale的属性
+			if(typename == "scale")
+			{
+				//创建priority子节点
+				var scalenode = reflectionnode.addNode("scale", "sling:Folder");
+				reflectionnode.save();
+				//获取priority的Node子节点
+				var scale_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = scale_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "float")
+				{
+					//设置scale节点的sling:resourceType
+					scalenode.setProperty("sling:resourceType","float");
+					
+					//获取scale的value
+					var value = scale_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置scale节点的value
+					scalenode.setProperty("value",value);
+					scalenode.save();
+				}					
+			}
+			
+			//处理typename为invert的属性
+			if(typename == "invert")
+			{
+				//创建invert子节点
+				var invertnode = reflectionnode.addNode("invert", "sling:Folder");
+				reflectionnode.save();
+				//获取invert的Node子节点
+				var invert_Node = NodePin.getElementsByTagName("Node").item(0);
+				
+				//获取Node子节点的typename
+				var typename = invert_Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//当typename为int时
+				if(typename == "bool")
+				{
+					//设置invert节点的sling:resourceType
+					invertnode.setProperty("sling:resourceType","bool");
+					
+					//获取invert的value
+					var value = invert_Node.getElementsByTagName("value").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//设置invert节点的value
+					invertnode.setProperty("value",value);
+					invertnode.save();
+				}					
+			}
+		}
+	}
+}
+
+
+
+//获取octane子节点
+var octanenode = currentNode["octane"];
+
+if(octanenode != null)
+{
+	out.write("octanenode\n");
+}
+
+//获取ocm文件节点
+var ocmfile = octanenode.getNodes()[0];
+
+out.write(ocmfile);
+
+//获取ocm文件的数据
+var ocmdata = ocmfile["jcr:content"]["jcr:data"];
+
+//解析ocm文件
+var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+var builder = factory.newDocumentBuilder();
+var ocmxml = builder.parse(ocmdata);
+
+//获取根节点OCS_1_0_23_Macro
+var rootnode = ocmxml.getChildNodes().item(0);
+
+//获取Node子节点
+var Node = rootnode.getElementsByTagName("Node").item(0);
+
+//创建matdata节点
+//先判断matdata节点是否存在，如果存在则删除
+if(currentNode["matdata"] != null)
+{
+	currentNode["matdata"].remove();
+	currentNode.save();
+}
+
+//添加matdata子节点
+var matdatanode = currentNode.addNode("matdata", "sling:Folder");
+currentNode.save();
+
+//获取材质名称
+var matname = Node.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+
+//获取材质的类型属性
+var typename = Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+
+//设置材质名称属性
+matdatanode.setProperty("matname",matname);
+
+//设置材质类型属性
+matdatanode.setProperty("typename",typename);
+matdatanode.save();
+
+//判断材质类型
+if(typename == "diffuse")
+{
+	//解析diffuse材质内部数据
+	//获取inputnodepins子节点
+	var inputnodepins = Node.getElementsByTagName("inputnodepins").item(0);
+
+	//获取所有的NodePin子节点
+	var NodePins = inputnodepins.getElementsByTagName("NodePin");
+	
+	//遍历所有的NodePin子节点
+	for(var i = 0; i < NodePins.length; i++)
+	{
+		//获取当前NodePin子节点
+		var NodePin = NodePins.item(i);
+		
+		
+		//获取NodePin节点的typename属性
+		var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//获取hasinternalnodegraph属性
+		//新版octane此节点为hasinternalnode，而旧版为hasinternalnodegraph
+		var hasinternalnode =  NodePin.getElementsByTagName("hasinternalnode");
+		if(hasinternalnode.item(0) == null)
+		{
+			hasinternalnode =  NodePin.getElementsByTagName("hasinternalnodegraph");
+		}
+		hasinternalnode = hasinternalnode.item(0).getChildNodes().item(0).getNodeValue();
+		
+		//如果hasinternalnodegraph为false则只创建节点，并设置sling:resourceType为null
+		if(hasinternalnode == "false")
+		{
+			var tmpnode = matdatanode.addNode(typename, "sling:Folder");
+			tmpnode.setProperty("sling:resourceType","null");
+			matdatanode.save();
+			continue;
+		}
+		
+		//处理typename为diffuse的情况
+		if(typename == "diffuse")
+		{
+			process_diffuse(matdatanode,NodePin);
+		}
+		
+		//处理typename为transmission的情况
+		if(typename == "transmission")
+		{
+			process_transmission(matdatanode,NodePin);
+		}
+		
+		//处理typename为bump的情况
+		if(typename == "bump")
+		{
+			process_bump(matdatanode,NodePin);
+			
+		}
+		
+		//处理typename为normal的情况
+		if(typename == "normal")
+		{
+			process_normal(matdatanode,NodePin);
+		}
+		
+		//处理typename为opacity的情况
+		if(typename == "opacity")
+		{
+			process_opacity(matdatanode,NodePin);
+		}
+		
+		//处理typename为smooth的情况
+		if(typename == "smooth")
+		{
+			process_smooth(matdatanode,NodePin);
+			
+		}
+		
+		//处理typename为emission的情况
+		if(typename == "emission")
+		{
+			
+			process_emission(matdatanode,NodePin)
+		}
+		
+		//处理typename为medium的情况
+		if(typename == "medium")
+		{
+			 process_medium(matdatanode,NodePin)
+			
+		}
+	}
+}
+
+
+if(typename == "glossy")
+{
+	//解析glossy材质内部数据
+	//获取inputnodepins子节点
+	var inputnodepins = Node.getElementsByTagName("inputnodepins").item(0);
+
+	//获取所有的NodePin子节点
+	var NodePins = inputnodepins.getElementsByTagName("NodePin");
+	
+	//遍历所有的NodePin子节点
+	for(var i = 0; i < NodePins.length; i++)
+	{
+		//获取当前NodePin子节点
+		var NodePin = NodePins.item(i);
+		
+		
+		//获取NodePin节点的typename属性
+		var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//获取hasinternalnodegraph属性
+		//新版octane此节点为hasinternalnode，而旧版为hasinternalnodegraph
+		var hasinternalnode =  NodePin.getElementsByTagName("hasinternalnode");
+		if(hasinternalnode.item(0) == null)
+		{
+			hasinternalnode =  NodePin.getElementsByTagName("hasinternalnodegraph");
+		}
+		hasinternalnode = hasinternalnode.item(0).getChildNodes().item(0).getNodeValue();
+		
+		//如果hasinternalnodegraph为false则只创建节点，并设置sling:resourceType为null
+		if(hasinternalnode == "false")
+		{
+			var tmpnode = matdatanode.addNode(typename, "sling:Folder");
+			tmpnode.setProperty("sling:resourceType","null");
+			matdatanode.save();
+			continue;
+		}
+		
+		//处理typename为glossy的情况
+		if(typename == "diffuse")
+		{
+			process_diffuse(matdatanode,NodePin);
+		}
+		
+		
+		//处理typename为specular的情况
+		if(typename == "specular")
+		{
+			process_specular(matdatanode,NodePin)
+		}
+		
+		
+		//处理typename为roughness的情况
+		if(typename == "roughness")
+		{
+			process_roughness(matdatanode,NodePin)
+		}
+		
+		
+		//处理typename为filmwidth的情况
+		if(typename == "filmwidth")
+		{
+			process_filmwidth(matdatanode,NodePin)
+		}
+		
+		//处理typename为filmindex的情况
+		if(typename == "filmindex")
+		{
+			process_filmindex(matdatanode,NodePin)
+		}
+		
+		
+		
+		//处理typename为bump的情况
+		if(typename == "bump")
+		{
+			process_bump(matdatanode,NodePin);
+			
+		}
+		
+		//处理typename为normal的情况
+		if(typename == "normal")
+		{
+			process_normal(matdatanode,NodePin);
+		}
+		
+		//处理typename为opacity的情况
+		if(typename == "opacity")
+		{
+			process_opacity(matdatanode,NodePin);
+		}
+		
+		//处理typename为smooth的情况
+		if(typename == "smooth")
+		{
+			process_smooth(matdatanode,NodePin);
+			
+		}
+		
+		
+		//处理typename为index的情况
+		if(typename == "index")
+		{
+			process_index(matdatanode,NodePin);
+			
+		}
+	}
+}
+
+
+
+
+if(typename == "specular")
+{
+	//解析glossy材质内部数据
+	//获取inputnodepins子节点
+	var inputnodepins = Node.getElementsByTagName("inputnodepins").item(0);
+
+	//获取所有的NodePin子节点
+	var NodePins = inputnodepins.getElementsByTagName("NodePin");
+	
+	//遍历所有的NodePin子节点
+	for(var i = 0; i < NodePins.length; i++)
+	{
+		//获取当前NodePin子节点
+		var NodePin = NodePins.item(i);
+		
+		
+		//获取NodePin节点的typename属性
+		var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+		
+		//获取hasinternalnodegraph属性
+		//新版octane此节点为hasinternalnode，而旧版为hasinternalnodegraph
+		var hasinternalnode =  NodePin.getElementsByTagName("hasinternalnode");
+		if(hasinternalnode.item(0) == null)
+		{
+			hasinternalnode =  NodePin.getElementsByTagName("hasinternalnodegraph");
+		}
+		hasinternalnode = hasinternalnode.item(0).getChildNodes().item(0).getNodeValue();
+		
+		//如果hasinternalnodegraph为false则只创建节点，并设置sling:resourceType为null
+		if(hasinternalnode == "false")
+		{
+			var tmpnode = matdatanode.addNode(typename, "sling:Folder");
+			tmpnode.setProperty("sling:resourceType","null");
+			matdatanode.save();
+			continue;
+		}
+		
+		//处理typename为glossy的情况
+		if(typename == "reflection")
+		{
+			process_reflection(matdatanode,NodePin);
+		}
+		
+		
+		//处理typename为transmission的情况
+		if(typename == "transmission")
+		{
+			process_transmission(matdatanode,NodePin);
+		}
+		
+		//处理typename为index的情况
+		if(typename == "index")
+		{
+			process_index(matdatanode,NodePin);
+			
+		}
+		
+		
+		
+		//处理typename为filmwidth的情况
+		if(typename == "filmwidth")
+		{
+			process_filmwidth(matdatanode,NodePin)
+		}
+		
+		//处理typename为filmindex的情况
+		if(typename == "filmindex")
+		{
+			process_filmindex(matdatanode,NodePin)
+		}
+		
+		
+		
+		//处理typename为bump的情况
+		if(typename == "bump")
+		{
+			process_bump(matdatanode,NodePin);
+			
+		}
+		
+		//处理typename为normal的情况
+		if(typename == "normal")
+		{
+			process_normal(matdatanode,NodePin);
+		}
+		
+		//处理typename为opacity的情况
+		if(typename == "opacity")
+		{
+			process_opacity(matdatanode,NodePin);
+		}
+		
+		//处理typename为smooth的情况
+		if(typename == "smooth")
+		{
+			process_smooth(matdatanode,NodePin);
+			
+		}
+		
+		
+		
+		//处理typename为roughness的情况
+		if(typename == "roughness")
+		{
+			process_roughness(matdatanode,NodePin)
+		}
+		
+		
+		//处理typename为roughness的情况
+		if(typename == "dispersion_coefficient_B")
+		{
+			process_dispersion_coefficient_B(matdatanode,NodePin)
+		}
+		
+		
+		//处理typename为medium的情况
+		if(typename == "medium")
+		{
+			 process_medium(matdatanode,NodePin)
+			
+		}
+		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+

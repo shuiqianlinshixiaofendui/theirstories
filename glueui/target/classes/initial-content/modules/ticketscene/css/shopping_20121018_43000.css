@@ -1,0 +1,562 @@
+.indexOuter{margin: 0 auto;padding: 0;width: 990px;}
+/*=================================================购物流程 购物车中转页 样式=================================================*/
+.shoppingInitOuter{width:100%; margin-top:20px; }
+.shoppingInitLeft{float:left; width:760px; height:auto; }
+.shoppingInitRight{float:right; width:210px; height:auto; }
+
+/*-----------购物车中转页 左侧加入购物车样式-----------*/
+.shoppingInitSuccess{width:338px; height:auto; padding:35px 0px 25px 420px; border:1px #ccc solid; background:#f0f6fa url("../../../image/front/shoppingCart_initSuccess.gif") 50px 20px no-repeat; }
+.shoppingInitSuccess a{height:41px; margin-right:5px; }
+
+/*-----------购物车中转页 左侧收藏夹&推荐商品样式-----------*/
+.shoppingInitRecommend{border:1px #ccc solid; margin-top:20px; padding-bottom:20px; }
+.shoppingInitRecommend .title{background:#f0f6fa; padding:10px 0px 7px 20px; }
+.shoppingInitRecommend .title span{float:left; font-size:14px; font-weight:bold; }
+.shoppingInitRecommend .title a{float:right; font-size:12px; margin-right:10px; }
+.shoppingInitRecommend .title ul{float:right; display:inline; width:auto; margin-right:10px; }
+.shoppingInitRecommend .title ul li{float:left; display:inline; width:20px; height:20px; margin:0px 1px; border:1px #ccc solid; background:#fff; line-height:20px; text-align:center; font-family:Arial; cursor:pointer; }
+.shoppingInitRecommend .title ul li.tab_on{border:1px #e16200 solid; color:#e16200; font-weight:bold; }
+
+.shoppingInitRecommend .body{width:718px; margin:20px 20px 0px 20px; }
+.shoppingInitRecommend .body .goods{float:left; display:inline; width:150px; margin:5px 8px 0px 8px; padding:5px; }
+.shoppingInitRecommend .body .goods .goodsPic{width:120px; height:120px; margin:0px 15px 5px 15px; }
+.shoppingInitRecommend .body .goods .goodsPic a{width:120px; height:120px; display:block; text-align:center; overflow:hidden;}
+.shoppingInitRecommend .body .goods .goodsPic a img{width:auto; height:120px; }
+.shoppingInitRecommend .body .goods .goodsName{width:100%; height:32px; overflow:hidden; text-align:center; margin:5px 0px; }
+.shoppingInitRecommend .body .goods .goodsName a{line-height:16px; }
+.shoppingInitRecommend .body .goods .goodsPrice{font-size:12px; color:#959595; text-align:center; }
+.shoppingInitRecommend .body .goods .goodsPrice span.price01{text-decoration:line-through; margin-right:10px; }
+.shoppingInitRecommend .body .goods .goodsPrice span.price02{font-size:12px; font-weight:bold; font-family:"Arial"; letter-spacing:-1px; }
+.shoppingInitRecommend .body .goods .goodsButton a{display:block; width:70px; height:16px; margin:10px auto 0px auto; padding:4px 0px 2px 25px; background:url("../../../image/front/shoppingCart_initButton01.gif") no-repeat; line-height:16px; }
+.shoppingInitRecommend .body .goods .goodsButton a:hover{text-decoration:none; color:#333; }
+
+.shoppingInitRecommend .body .goods01{float:left; display:inline; width:225px; margin:5px 0 20px 10px; }
+.shoppingInitRecommend .body .goods01 .goodsPic{float:left; width:80px; height:80px; margin:0px 5px 0 0; display:inline;}
+.shoppingInitRecommend .body .goods01 .goodsPic a{width:80px; height:80px; display:block; text-align:center; overflow:hidden;}
+.shoppingInitRecommend .body .goods01 .goodsPic a img{width:auto; height:80px; }
+.shoppingInitRecommend .body .goods01 .goodsName{float:left; width:140px; height:32px; overflow:hidden; text-align:left; margin:0px 0px 5px 0px; display:inline;}
+.shoppingInitRecommend .body .goods01 .goodsName a{line-height:16px; }
+.shoppingInitRecommend .body .goods01 .goodsPrice{float:left; width:140px; font-size:12px; text-align:left; }
+.shoppingInitRecommend .body .goods01 .goodsPrice span.price02{font-size:12px; font-weight:bold; font-family:"Arial"; letter-spacing:-1px; }
+.shoppingInitRecommend .body .goods01 .goodsButton a{float:left; display:block; width:70px; height:16px; margin:5px auto 0px auto; padding:4px 0px 2px 25px; background:url("../../../image/front/shoppingCart_initButton01.gif") no-repeat; line-height:16px; }
+.shoppingInitRecommend .body .goods01 .goodsButton a:hover{text-decoration:none; color:#333; }
+
+/*-----------购物车中转页 右侧购物车列表样式-----------*/
+.shoppingInitCart{width:100%; height:auto; padding-bottom:10px; background:url("../../../image/front/shoppingCart_initCart.gif") left bottom no-repeat; }
+.shoppingInitCart .title{height:16px; padding:9px 0px 9px 40px; background:url("../../../image/front/shoppingCart_initCart.gif") left top no-repeat; font-size:14px; font-weight:bold; color:#fff; line-height:16px; }
+.shoppingInitCart .body{margin:10px 5px 0px 5px; }
+.shoppingInitCart .body .goods{width:100%; padding-bottom:10px; margin-bottom:10px; border-bottom:1px #ccc solid; }
+.shoppingInitCart .body .goods .goodsPic{float:left; display:inline; margin:0px 5px; width:50px; height:50px; }
+.shoppingInitCart .body .goods .goodsPic a{width:50px; height:50px; display:block; text-align:center; overflow:hidden;}
+.shoppingInitCart .body .goods .goodsPic a img{width:auto; height:50px; }
+.shoppingInitCart .body .goods .goodsName{float:left; width:110px; padding:2px 0px; height: 26px; overflow: hidden}
+.shoppingInitCart .body .goods .goodsName a{line-height:14px; }
+.shoppingInitCart .body .goods .goodsPrice{float:left; width:110px; padding:5px 0px 0px 0px; font-weight:bold; }
+.shoppingInitCart .body .goods .goodsClose{float:right; display:inline; width:14px; height:14px; overflow:hidden; margin-right:5px; }
+.shoppingInitCart .body .goods .goodsClose a{display:block; float:right; width:14px; height:14px; overflow:hidden; background:url("../../../image/front/public_headShoppingCartClose.gif") left top no-repeat; }
+.shoppingInitCart .body .goods .goodsClose a:hover{background:url("../../../image/front/public_headShoppingCartClose.gif") left bottom no-repeat; }
+.shoppingInitCart .body .total{padding:0px 5px; line-height:20px; }
+.shoppingInitCart .body .total span{font-weight:bold; }
+.shoppingInitCart .body .button{margin:20px auto 0px auto; width:174px; }
+
+/*=================================================购物流程 公用 样式=================================================*/
+.shoppingOuter{width:1000px; height:auto; margin:0px auto; }
+.shoppingTitle{width:1000px; height:16px; padding:5px 0px; margin-top:20px; font-weight:bold; font-size:16px; color:#333; }
+.shoppingBox{width:964px; height:auto; padding:15px; border:3px #ccc solid; }
+
+/*=================================================购物流程 头部 样式=================================================*/
+.shoppingHead{width:1000px; height:auto; margin:10px auto 10px auto; }
+.shoppingHeadLogo{float:left; width:170px; height:70px; }
+.shoppingHeadNav{float:left; display:inline; width:auto; height:30px; margin:25px 0px 0px 30px; }
+.shoppingHeadNav02{ background:url(../../../image/front/shoppingCart_nav02.gif) no-repeat; width:541px; height:21px; padding:9px 0 0 75px; font-size:14px}
+/*-----------购物车 温馨提示样式-----------*/
+.shoppingTip{width:928px; border:1px #ffd225 solid; background:#fff; padding:15px 20px 10px 50px; margin-bottom:15px; background:#fff url("../../../image/front/shoppingCart_tipsIcon.gif") 10px 12px no-repeat; line-height:20px; }
+
+/*=================================================订单流程 购物车 样式=================================================*/
+/*-----------购物车 外层结构样式-----------*/
+.shoppingListOuter{width:1000px; }
+.shoppingListTag{width:100%; }
+.shoppingListTag ul{float:right; }
+.shoppingListTag ul .tip{float:left;display:block;width:240px; height:18px; overflow:hidden; padding:0px; font-size:14px; font-weight:bold; line-height:18px; margin:8px 0px 0px 0px; }
+.shoppingListTag ul .tip .help{float:left; display:block; width:16px; height:18px; margin-right:10px; background:url("../../../image/front/shoppingCart_helpIcon02.gif") no-repeat; cursor:pointer; }
+.shoppingListTag ul li{float:left; display:inline; width:auto; margin-right:5px; padding-left:20px; background:url("../../../image/front/shoppingCart_tag.gif") left bottom no-repeat; cursor:pointer; }
+.shoppingListTag ul li span{float:left; width:auto; height:18px; padding:8px 20px 5px 0px; background:url("../../../image/front/shoppingCart_tag.gif") right bottom no-repeat; font-weight:bold; font-size:14px; }
+.shoppingListTag ul li.tab_on{background:url("../../../image/front/shoppingCart_tag.gif") left top no-repeat; cursor:pointer; }
+.shoppingListTag ul li.tab_on span{background:url("../../../image/front/shoppingCart_tag.gif") right top no-repeat; }
+.shoppingListTag .helpFloat{position:absolute; width:500px; height:55px; padding:10px 10px 0px 10px; margin:-80px 0px 0px -135px; background:#fff9e0; border:1px #ffd225 solid; font-size:12px; line-height:16px; font-weight:normal; visibility:hidden; }
+.shoppingListTag .helpFloat .floatArrow{position:absolute; width:9px; height:9px; overflow:hidden; margin:55px 0px 0px 127px; margin:54px\9 0px 0px 127px; background:url("../../../image/front/shoppingCart_tagArrow.gif") no-repeat; }
+
+.shoppingListTitle{width:980px; height:auto; padding:5px 0px 0px 20px; line-height:30px; background:#ffe9b3; }
+.shoppingListTitle .helpFloat{position:absolute; width:500px; height:55px; padding:10px 10px 0px 10px; margin:-70px 0px 0px 154px; background:#fff9e0; border:1px #ffd225 solid; font-size:12px; line-height:16px; font-weight:normal; visibility:hidden; }
+.shoppingListTitle .helpFloat .floatArrow{position:absolute; width:500px; height:9px; overflow:hidden; margin:55px 0px 0px 0px; margin:54px\9 0px 0px 0px; background:url("../../../image/front/shoppingCart_tagArrow.gif") 148px 0px no-repeat; }
+.shoppingListTitle span.name{font-weight:bold; font-size:14px; }
+.shoppingListTitle font{margin-left:30px; padding: 5px 0px 0px 20px; background:url("../../../image/front/shoppingCart_helpIcon.gif") left top no-repeat; font-weight:normal; font-size:12px; line-height:18px; cursor:pointer; }
+.shoppingListBody{width:956px; border:3px #ffe9b3 solid; padding:19px; }
+
+/*-----------购物车 内层列表样式-----------*/
+.shoppingTabOuter{width:954px; border:1px #d9dada solid; padding:0px; }
+/*商品列表 表头样式*/
+.shoppingTabTitle{background:#f4faff; border-bottom:1px #ccc solid; }
+.shoppingTabTitle td{text-align:center; padding:8px 0px; }
+.shoppingTabTitle td.logo{width:80px; }
+.shoppingTabTitle td.pic{width:90px; }
+.shoppingTabTitle td.name{width:404px; }
+.shoppingTabTitle td.price{width:100px; }
+.shoppingTabTitle td.amount{width:100px; }
+.shoppingTabTitle td.subtotal{width:110px; }
+.shoppingTabTitle td.operation{width:70px; }
+
+/*商品列表 正文样式*/
+.shoppingTabBody{}
+.shoppingTabBody td{padding:5px 0px; border-bottom:1px #ccc solid; }
+.shoppingTabBody td.logo{width:80px; text-align:center; }
+
+.shoppingTabBody td.pic{width:90px; }
+.shoppingTabBody td.pic a{display:block; width:50px; height:50px; text-align:center; margin:0px auto 0px auto; padding:0px; overflow:hidden;}
+.shoppingTabBody td.pic a img{width:auto; height:50px; }
+.shoppingTabBody td.pic span{display:block; text-align:center; }
+.shoppingTabBody td.pic .coupon{position:absolute; margin:-36px 0px 0px 62px; padding:0px 2px; display:block; width:13px; height:36px; overflow:hidden; background:#ff9d18; color:#fff; line-height:16px; }
+.shoppingTabBody td.pic .coupon input{margin-left:0px; margin-left:-4px\9; }
+
+.shoppingTabBody td.info{width:384px; overflow:hidden; padding-right:20px; }
+.shoppingTabBody td.info .name{width:100%; line-height:16px; }
+.shoppingTabBody td.info .name span{margin-right:10px; }
+.shoppingTabBody td.info .name img{position:relative; top:1px; margin-right:5px; cursor:pointer; }
+.shoppingTabBody td.info .gifts{width:100%; margin:5px 0px; }
+.shoppingTabBody td.info .gifts span{margin-right:10px; }
+.shoppingTabBody td.info .color{width:250px; border:1px #fff solid; background:#fff; padding:2px 5px 3px 5px; }
+.shoppingTabBody td.info .color img{width:12px; height:12px; padding:1px; border:1px #333 solid; margin:3px 20px -3px 0px; }
+.shoppingTabBody td.info .color span{display:none; }
+.shoppingTabBody td.info .colorHover{width:250px; border:1px #ddd solid; background:#f5f5f5; padding:2px 5px 3px 5px; }
+.shoppingTabBody td.info .colorHover img{width:12px; height:12px; padding:1px; border:1px #333 solid; margin:3px 20px -3px 0px; }
+.shoppingTabBody td.info .colorHover span{position:absolute; z-index:1; margin:4px 0px 0px 210px; display:; cursor:pointer; }
+
+/*颜色&尺码下拉选择 start*/
+.shoppingTabBody td.info .downlist{position:absolute; z-index:2; width:262px; height:auto; padding:2px; margin:-2px 0px 0px -2px; background:#999; visibility:hidden; }
+.shoppingTabBody td.info .downlistTop{width:250px !important; width:252px; padding:2px 5px 3px 5px; border:1px #000 solid; background:#fff; }
+.shoppingTabBody td.info .downlistTop img{width:12px; height:12px; padding:1px; border:1px #333 solid; margin:3px 20px -3px 0px; }
+.shoppingTabBody td.info .downlistTop span{position:absolute; margin:4px 0px 0px 210px; display:; cursor:pointer; }
+.shoppingTabBody td.info .downlistBottom{width:250px; padding:2px 5px 3px 5px; border:1px #000 solid; border-top:0px; background:#fff; }
+.shoppingTabBody td.info .downlistBottom span{width:250px; height:auto; margin-top:5px; padding:7px 0px 5px 0px; font-size:12px; color:#333; line-height:16px; }
+.shoppingTabBody td.info .downlistBottom ul.color{list-style:none; display:block; width:250px; height:auto; margin:5px 0px 5px 0px; padding:0px; }
+.shoppingTabBody td.info .downlistBottom ul.color li{float:left; display:inline; width:30px; height:30px; margin:0px 3px 3px 3px; }
+.shoppingTabBody td.info .downlistBottom ul.color li a{float:left; display:inline; width:20px; height:20px; border:1px #333 solid; margin:2px; padding:2px; cursor:pointer; }
+.shoppingTabBody td.info .downlistBottom ul.color li a:hover{border:3px #f60 solid; margin:0px; }
+.shoppingTabBody td.info .downlistBottom ul.color li a img{width:20px; height:20px; padding:0px; border:0px; margin:0px; }
+.shoppingTabBody td.info .downlistBottom ul.color li a.choose{border:3px #f60 solid; margin:0px; }
+.shoppingTabBody td.info .downlistBottom ul.color li a.choose img.icon{position:absolute; margin:15px 0px 0px -5px; width:10px; height:10px; }
+.shoppingTabBody td.info .downlistBottom ul.size{list-style:none; display:block; width:250px; height:auto; margin:5px 0px 5px 0px; padding:0px; }
+.shoppingTabBody td.info .downlistBottom ul.size li{float:left; display:inline; height:28px; margin:0px 3px 0px 3px; position:relative; top:0px; font-size:12px; color:#333; line-height:16px; white-space:nowrap; }
+.shoppingTabBody td.info .downlistBottom ul.size li a{display:inline; float:left; height:16px; border:1px #999 solid; margin:2px; padding:4px 7px 2px 7px; color:#333; text-decoration:none; line-height:16px; cursor:pointer; }
+.shoppingTabBody td.info .downlistBottom ul.size li a:hover{float:left; border:3px #f60 solid; margin:0px; }
+.shoppingTabBody td.info .downlistBottom ul.size li a.choose{border:3px #f60 solid; margin:0px; }
+.shoppingTabBody td.info .downlistBottom ul.size li a.choose img{position:absolute; margin:10px 0px 0px 0px; }
+.shoppingTabBody td.info .downlistBottom .ok{position:absolute; width:32px; height:32px; margin:-30px 0px 0px 222px !important; margin:-30px 0px 0px 224px; cursor:pointer; }
+
+.shoppingTabBody td.price{width:80px; text-align:right; padding-right:20px; font-weight:bold; }
+.shoppingTabBody td.amount{width:100px; text-align:center; }
+.shoppingTabBody td.amount span{width:11px; height:11px; cursor:pointer; }
+.shoppingTabBody td.amount input{width:35px; height:16px; border:1px #c8c8c8 solid; margin:0px 5px; }
+.shoppingTabBody td.subtotal{width:80px; text-align:right; }
+.shoppingTabBody td.icon{width:25px; padding-left:5px; }
+.shoppingTabBody td.operation{width:70px; text-align:center; }
+.shoppingTabBody td.suit{padding:0px 0px; background:#f4faff; }
+.shoppingTabBody tr.last td{border-bottom:0px; }
+
+/*商品列表 套装样式*/
+.shoppingTabSuit{}
+.shoppingTabSuit tr{background:url("../../../image/front/shoppingCart_line01.gif") center bottom repeat-x; }
+.shoppingTabSuit td{padding:5px 0px 6px 0px; border-bottom:0px; }
+
+/*商品列表 结尾样式*/
+.shoppingTabBottom{width:944px; height:auto; padding:0px 5px; background:#f4faff; border-top:1px #ccc solid; }
+.shoppingTabBottom .back{float:left; display:inline; width:78px; height:16px; margin:5px 0px 5px 30px; padding:11px 0px 10px 25px; background:url("../images/shoppingCart_button.gif") 0px 0px no-repeat; color:#333; }
+.shoppingTabBottom .back span{display:none; }
+.shoppingTabBottom .split{float:left; display:inline; width:78px; height:16px; margin:5px 0px 5px 30px; padding:11px 0px 10px 25px; background:url("../../../image/front/shoppingCart_button05.gif") 0px 0px no-repeat; color:#333; }
+.shoppingTabBottom .split span{display:none; }
+.shoppingTabBottom .cancle{float:left; display:inline; width:78px; height:16px; margin:5px 0px 5px 30px; padding:11px 0px 10px 25px; background:url("../../../image/front/shoppingCart_button06.gif") 0px 0px no-repeat; color:#333; }
+.shoppingTabBottom .cancle span{display:none; }
+.shoppingTabBottom .statistics{float:right; width:450px; height:auto; text-align:right; line-height:25px; color:#333; margin:12px 12px 0px 0px ; }
+.shoppingTabBottom .statistics span{font-weight:bold; margin:0px 3px; }
+
+.shoppingTabBottom .textCoding{display:inline; width:400px; margin:5px 0px 5px 30px; padding:11px 0px 10px 25px; height:16px; float:left;}
+.shoppingTabBottom .textCoding span{ float:left; display:block; width:100px; text-align:right; line-height:20px;}
+.shoppingTabBottom .textCoding p{ float:left; display:block; margin-left:10px;}
+.shoppingTabBottom .textCoding .addtext{ border:1px solid #feb254; width:80px; height:16x;}
+.shoppingTabBottom .textCoding .addicon{ background:url(../../../image/front/shoppingaddicon.gif) no-repeat; width:61px; height:20px; border:0; cursor:pointer;}
+/*-----------购物车使用赠券样式-----------*/
+.shoppingCouponOuter{float:left; width:620px; background:url("../../../image/front/shoppingCart_couponBody.gif") left 85px repeat-y; padding:0px; margin-top:10px; }
+.shoppingCoupon{float:left; width:620px; background:url("../../../image/front/shoppingCart_couponTitle.gif") left top no-repeat; border-bottom:1px #d9dada solid; padding:0px; margin:0px; }
+.shoppingCoupon .arrow{position:absolute; width:55px; height:52px; margin:80px 0px 0px 617px\9; margin:80px 0px 0px 619px; background:url("../../../image/front/shoppingCart_couponArrow.gif"); }
+.shoppingCoupon .title{padding:15px 0px 5px 0px; margin-bottom:5px; font-weight:bold; font-size:14px; }
+.shoppingCoupon .title span{font-size:12px; font-weight:normal; margin-left:10px; }
+.shoppingCoupon .top{margin:2px; overflow:auto; }
+.shoppingCoupon .top ul{list-style:none; background:url("../../../image/front/shoppingCart_line01.gif") left bottom repeat-x; padding:8px 40px 8px 0px; }
+.shoppingCoupon .top ul li{padding:5px 0px 5px 15px; }
+.shoppingCoupon .top ul li input{margin-right:10px; }
+.shoppingCoupon .bottom{padding:7px 0px 5px 20px; height:35px; overflow:hidden; }
+.shoppingCoupon .bottom a{float:left; display:block; width:62px; height:16px; padding:7px 0px 7px 0px; color:#fff; font-weight:bold; text-align:center; background:url("../../../image/front/shoppingCart_couponButton.gif") 0px 0px no-repeat; }
+.shoppingCoupon .bottom a:hover{text-decoration:none; }
+.shoppingCoupon .bottom span.ok{float:left; display:block; width:62px; height:16px; padding:7px 0px 7px 0px; color:#fff; font-weight:bold; text-align:center; cursor:pointer; background:url("../../../image/front/shoppingCart_couponButton.gif") 0px 0px no-repeat; }
+.shoppingCoupon .bottom span.error{float:left; display:inline; width:350px; height:16px; margin:9px 0px 0px 10px; }
+.shoppingCoupon .bottom span.more{float:right; display:inline; width:100px; height:16px; margin:9px 20px 0px 0px; padding-right:15px; line-height:16px; text-align:right; background:url("../../../image/front/shoppingCart_add.gif") right 1px no-repeat; cursor:pointer; }
+.shoppingCoupon .bottom span.less{float:right; display:inline; width:100px; height:16px; margin:9px 20px 0px 0px; padding-right:15px; line-height:16px; text-align:right; background:url("../../../image/front/shoppingCart_less.gif") right 1px no-repeat; cursor:pointer; }
+
+.shoppingCoupon .bottom .mobile{position:absolute; width:408px; height:auto; padding:10px; margin:45px 0px 0px 0px; background:#fff9e0; border:1px #ffd225 solid; z-index:2; visibility:hidden; }
+.shoppingCoupon .bottom .mobile .mobileArrow{position:absolute; width:13px; height:12px; margin:-22px 0px 0px 10px; background:url("../../../image/front/shoppingCart_mobileArrow.gif") no-repeat; z-index:2; }
+.shoppingCoupon .bottom .mobile .mobileClose{position:absolute; width:14px; height:13px; margin:-5px 0px 0px 400px; background:url("../../../image/front/shoppingCart_mobileClose.gif") no-repeat; cursor:pointer; }
+.shoppingCoupon .bottom .mobile .mobileInner{padding:5px 0px; }
+.shoppingCoupon .bottom .mobile .text{float:left; width:200px; height:21px; border:1px #ccc solid; margin-right:10px; }
+.shoppingCoupon .bottom .mobile .button{float:left; width:80px; height:25px; border:0px; background:url("../../../image/front/shoppingCart_mobileButton03.gif") 0px 0px no-repeat; color:#fff; font-weight:bold; font-size:14px; line-height:25px; cursor:pointer; }
+.shoppingCoupon .bottom .mobile .info{float:left; display:block; width:100%; height:18px; line-height:18px; }
+
+
+/*-----------购物车禁止使用赠券样式-----------*/
+.shoppingCouponBan{float:left; width:620px; background:url("../../../image/front/shoppingCart_couponTitle.gif") left top no-repeat; border-bottom:1px #d9dada solid; padding:0px; margin:0px; }
+.shoppingCouponBan .arrow{position:absolute; width:55px; height:52px; margin:80px 0px 0px 617px\9; margin:80px 0px 0px 619px; background:url("../../../image/front/shoppingCart_couponArrow.gif"); z-index:1; }
+
+.shoppingCouponBan .mobile{position:absolute; width:578px; height:auto; padding:20px; margin:50px 0px 0px 0px; background:#fff9e0; border:1px #ffd225 solid; z-index:2; visibility:hidden; }
+.shoppingCouponBan .mobile .mobileArrow{position:absolute; width:13px; height:12px; margin:-32px 0px 0px 330px; background:url("../../../image/front/shoppingCart_mobileArrow.gif") no-repeat; z-index:2; }
+.shoppingCouponBan .mobile .mobileClose{position:absolute; width:14px; height:13px; margin:-15px 0px 0px 580px; background:url("../../../image/front/shoppingCart_mobileClose.gif") no-repeat; cursor:pointer; }
+.shoppingCouponBan .mobile .mobileInner{padding:5px 0px; }
+.shoppingCouponBan .mobile .mobileInner .no1Yellow{background:url("../../../image/front/shoppingCart_mobileNo1Yellow.gif") 5px center no-repeat; }
+.shoppingCouponBan .mobile .mobileInner .no2Yellow{background:url("../../../image/front/shoppingCart_mobileNo2Yellow.gif") 5px center no-repeat; }
+.shoppingCouponBan .mobile .mobileInner .no2Gray{background:url("../../../image/front/shoppingCart_mobileNo2Gray.gif") 5px center no-repeat; }
+.shoppingCouponBan .mobile .mobileInnerLeft{float:left; width:150px; height:16px; padding:8px 0px 5px 0px; text-align:right; }
+.shoppingCouponBan .mobile .mobileInnerRight{float:left; width:400px; height:auto; padding:2px; }
+.shoppingCouponBan .mobile .mobileInnerRight .text01{float:left; width:200px; height:21px; border:1px #ccc solid; margin-right:10px; }
+.shoppingCouponBan .mobile .mobileInnerRight .text02{float:left; width:200px; height:21px; border:1px #ddd solid; background:#f0f0f0; margin-right:10px; }
+.shoppingCouponBan .mobile .mobileInnerRight .button01{float:left; width:136px; height:25px; border:0px; padding-left:26px; background:url("../../../image/front/shoppingCart_mobileButton01.gif") 0px 0px no-repeat; color:#fff; font-weight:bold; font-size:14px; text-align:left; line-height:25px; cursor:pointer; }
+.shoppingCouponBan .mobile .mobileInnerRight .button02{float:left; width:80px; height:25px; border:0px; background:url("../../../image/front/shoppingCart_mobileButton02.gif") 0px 0px no-repeat; color:#999; font-weight:bold; font-size:14px; line-height:25px; cursor:not-allowed; }
+.shoppingCouponBan .mobile .mobileInnerRight .button03{float:left; width:80px; height:25px; border:0px; background:url("../../../image/front/shoppingCart_mobileButton03.gif") 0px 0px no-repeat; color:#fff; font-weight:bold; font-size:14px; line-height:25px; cursor:pointer; }
+.shoppingCouponBan .mobile .mobileInnerRight .clock{float:left; display:block; width:154px; height:25px; padding-left:26px; line-height:25px; color:#ccc; background:url("../../../image/front/shoppingCart_mobileButton05.gif") 0px 0px no-repeat; cursor:not-allowed; }
+.shoppingCouponBan .mobile .mobileInnerRight .info{float:left; display:block; width:100%; height:18px; line-height:18px; }
+
+.shoppingCouponBan .title .text{float:left; padding:15px 0px 5px 0px; margin-bottom:5px; font-weight:bold; font-size:14px; }
+.shoppingCouponBan .title .button{float:left; display:inline; width:81px; height:16px; margin:10px 0px 0px 20px; padding:5px 0px 4px 0px; background:url("../../../image/front/shoppingCart_couponMobileButton.gif") no-repeat; line-height:16px; color:#fff; font-size:12px; text-align:center; cursor:pointer; }
+
+.shoppingCouponBan .top{margin:2px; overflow:auto; }
+.shoppingCouponBan .top ul{list-style:none; background:url("../../../image/front/shoppingCart_line01.gif") left bottom repeat-x; padding:8px 40px 8px 0px; }
+.shoppingCouponBan .top ul li{padding:5px 0px 5px 15px; color:#bfbfbf; }
+.shoppingCouponBan .top ul li input{margin-right:10px; }
+
+.shoppingCouponBan .bottom{padding:7px 0px 5px 20px; height:35px; overflow:hidden; }
+.shoppingCouponBan .bottom a{float:left; display:block; width:62px; height:16px; padding:7px 0px 7px 0px; color:#bfbfbf; text-align:center; font-weight:bold; background:url("../../../image/front/shoppingCart_couponButtonBan.gif") 0px 0px no-repeat; cursor:not-allowed; }
+.shoppingCouponBan .bottom a:hover{text-decoration:none; }
+.shoppingCouponBan .bottom span.error{float:left; display:inline; width:350px; height:16px; margin:9px 0px 0px 10px; }
+.shoppingCouponBan .bottom span.more{float:right; display:inline; width:100px; height:16px; margin:9px 20px 0px 0px; padding-right:15px; line-height:16px; text-align:right; color:#bfbfbf; background:url("../../../image/front/shoppingCart_addBan.gif") right 1px no-repeat; cursor:pointer; }
+
+/*-----------购物车商品小计样式-----------*/
+.shoppingSubTotal{float:right; width:280px; border:3px #ffb605 solid; border-bottom:6px #ffb605 solid; padding:15px 20px; margin-top:20px; }
+.shoppingSubTotalTop{width:100%; border-bottom:1px #dad9d9 solid; padding-bottom:10px; margin-bottom:15px; }
+.shoppingSubTotalTop ul{list-style:none; }
+.shoppingSubTotalTop ul li{float:left; display:block; width:100%; height:auto; padding:5px 0px; }
+.shoppingSubTotalTop ul li h6{float:left; display:block; width:130px; font-size:12px; text-align:right; font-weight:normal; font-family:宋体; }
+.shoppingSubTotalTop ul li span{float:left; display:block; width:120px; text-align:right; font-weight:normal; }
+.shoppingSubTotalTop ul li a{float:left; display:block; width:40px; text-align:right; font-weight:normal; }
+
+.shoppingSubTotalBottom{width:100%; }
+.shoppingSubTotalBottom .total{width:100%; font-size:14px; font-weight:bold; text-align:right; }
+.shoppingSubTotalBottom .total h6{float:left; display:block; width:130px; font-size:14px; font-weight:bold; }
+.shoppingSubTotalBottom .total span{float:left; display:inline; margin-left:30px; width:90px; font-size:14px; font-weight:bold; text-align:right; }
+.shoppingSubTotalBottom .pay{ width:139px; height:40px; background:url("../images/shoppingCart_totalButton.gif") 0px 0px no-repeat; margin:20px auto 0px 70px; border:0px; cursor:pointer; }
+
+/*-----------购物车凑单商品样式-----------*/
+.shoppingTogether{width:934px; height:36px; padding:0px 10px; margin:20px 0px; border:1px #d9dada solid; font-weight:bold; overflow:hidden; background:#fff url("../../../image/front/shoppingCart_togetherIcon.gif") 20px 11px no-repeat; }
+.shoppingTogether span{float:left; display:block; width:800px; margin-top:10px; padding:0px 0px 0px 30px; line-height:19px; }
+.shoppingTogether a.more{float:right; display:block; width:100px; text-align:right; font-weight:normal; margin-top:13px; }
+.shoppingTogether li{height:20px; margin-bottom:15px; }
+
+/*-----------购物车优惠样式-----------*/
+.shoppingTabPreferential{width:954px; height:auto; margin:3px 0px; background:#fff; border:1px #d9dada solid; }
+.shoppingTabPreferential .title{width:904px; height:auto; padding:11px 10px 9px 40px; font-size:14px; font-weight:bold; background:url("../../../image/front/shoppingCart_preferentialTitle02.gif") 20px center no-repeat; cursor:pointer; }
+.shoppingTabPreferential .info{height:auto; padding:7px 10px 7px 0px; margin-left:15px; }
+.shoppingTabPreferential .info span.icon{float:left; display:inline; background:#e78a26; color:#fff; margin:0px 15px 0px 15px; padding:2px 5px; }
+.shoppingTabPreferential .info span.name{float:left; display:inline; width:830px; margin:0px 15px 0px 0px; padding:2px 5px; line-height:18px; }
+
+/*-----------购物车加钱换购商品样式-----------*/
+.shoppingListChangeBuy{margin-top:20px;}
+.shoppingListChangeBuy .title{background:#dc0000; padding:6px 0px 4px 20px; color:#ffffff; font-size:14px; font-weight:bold;}
+.shoppingListChangeBuy .body{width:934px; padding:10px 10px 0 10px; border:1px solid #dc0000; border-top:0;}
+.shoppingListChangeBuy .body .goods{float:left; display:inline; width:210px; margin:0 10px 10px 10px; }
+.shoppingListChangeBuy .body .goodsPic{float:left; width:100px; height:100px; border:1px solid #ddd; overflow:hidden; margin-right:5px;}
+.shoppingListChangeBuy .body .goodsPic a{width:100px; height:100px; display:block; text-align:center; overflow:hidden;}
+.shoppingListChangeBuy .body .goodsPic img{width:auto; height:100px;}
+.shoppingListChangeBuy .body .goodsName{float:left; width:100px; height:32px; overflow:hidden; color:#666; line-height:16px; margin:5px 0 10px 0;}
+.shoppingListChangeBuy .body .goodsInfor{float:left; width:100px; overflow:hidden; color:#666; line-height:16px;}
+.shoppingListChangeBuy .body .goodsInfor span{font-weight:bold; color:#dc0000; margin:0 2px;}
+.shoppingListChangeBuy .body .goods .goodsButton a{display:block; float:left; width:70px; height:16px; margin:15px auto 0px auto; padding:4px 0px 2px 25px; background:url("../../../image/front/shoppingCart_initButton01.gif") no-repeat; line-height:16px; }
+.shoppingListChangeBuy .body .goods .goodsButton a:hover{text-decoration:none; color:#333; }
+
+/*-----------购物车已删除商品样式-----------*/
+.shoppingDeleteTitle{width:1000px; height:16px; padding:5px 0px; margin-top:20px; font-weight:bold; font-size:12px; color:#333; }
+.shoppingDeleteBox{width:992px; height:auto; border:1px #ccc solid; padding:0px 3px; }
+
+.shoppingDeleteTab{}
+.shoppingDeleteTab td{padding:6px 0px 5px 0px; border-bottom:1px #ccc solid; }
+.shoppingDeleteTab td.name{width:380px; padding-left:12px; }
+.shoppingDeleteTab td.name a{color:#666; text-decoration:none; }
+.shoppingDeleteTab td.name a:hover{text-decoration:underline; }
+.shoppingDeleteTab td.price{width:170px; padding-right:30px; text-align:right; }
+.shoppingDeleteTab td.amount{width:200px; text-align:center; }
+.shoppingDeleteTab td.operation{width:200px; text-align:center; font-family:"宋体"; }
+.shoppingDeleteTab td.operation a{color:#666; text-decoration:none; }
+.shoppingDeleteTab td.operation a:hover{text-decoration:underline; }
+
+/*=================================================订单流程 结算清单 样式=================================================*/
+/*-----------结算清单 折叠样式-----------*/
+.shoppingListFoldOuter{border-bottom:1px #dbdbdb dashed; background:#fff; padding:10px 0px; }
+/*清单标题 样式*/
+.shoppingListFoldOuter .title{font-weight:bold; font-size:14px; color:#333; padding-bottom:10px; }
+.shoppingListFoldOuter .title a{font-weight:normal; font-size:12px; margin-left:10px; }
+/*清单内容 样式*/
+.shoppingListFoldOuter .info{padding:5px 0px 5px 20px; }
+.shoppingListFoldOuter .info span{float:left; display:block; width:90px; }
+
+/*-----------结算清单 展开样式-----------*/
+.shoppingListOnOuter{border-bottom:1px #bbe0f0 dashed; background:#f4faff; padding:10px; }
+.shoppingListOnOuter input.text145{float:left; width:145px; height:17px; border:1px #abadb3 solid; margin-right:10px; }
+.shoppingListOnOuter input.text300{float:left; width:300px; height:17px; border:1px #abadb3 solid; margin-right:10px; }
+.shoppingListOnOuter input.radio{position:relative; bottom:-2px; margin:0px 5px 0px 0px; margin:0px 5px 0px 0px; }
+.shoppingListOnOuter input.checkbox{}
+.shoppingListOnOuter input.button{width:200px; height:35px; background:url("../../../image/front/shoppingCart_button03.gif") right top no-repeat; margin:10px 0px 0px 0px; border:0px; color:#fff; font-size:14px; font-weight:bold; cursor:pointer; }
+.shoppingListOnOuter select{float:left; margin-right:10px; margin-top:3px; margin-top:0px\9; }
+/*清单标题 样式*/
+.shoppingListOnOuter .title{font-weight:bold; font-size:14px; color:#333; padding-bottom:10px; width:100%;}
+.shoppingListOnOuter .title a{font-weight:normal; font-size:12px; margin-left:10px; }
+/*收货人信息&发票信息 样式*/
+.shoppingListOnStyle01{margin:10px 0px; padding:0px; }
+.shoppingListOnStyle01 .smallTitle{float:left; display:block; padding:3px 0px 2px 0px; width:90px; text-align:right; font-family:宋体; }
+.shoppingListOnStyle01 .smallTitle span{color:#d00; margin-right:5px; font-family:宋体; }
+.shoppingListOnStyle01 .body{float:right; width:844px; }
+.shoppingListOnStyle01 .body span{float:left; display:block; padding:4px 0px 3px 0px; margin-right:10px; line-height:16px; }
+.shoppingListOnStyle01 .body span.note{color:#999; margint:0px 0px 0px 10px; }
+.shoppingListOnStyle01 .body span a{line-height:16px; }
+.shoppingListOnStyle01 .body ul{list-style:none; }
+.shoppingListOnStyle01 .body ul li{margin:-3px 0px 5px 0px; padding:3px 0px 2px 0px; }
+.shoppingListOnStyle01 .body ul li a{margin:0px 0px 0px 10px; }
+.shoppingListOnStyle01 .body label{float:left; display:block; padding:4px 0px 3px 0px; margin-right:10px; line-height:16px; }
+.shoppingListOnStyle01 .body label.error{background:#fffaee 5px center no-repeat; border:1px solid #ffdc98; height:17px; width:auto; padding:2px 10px 1px 10px; margin_top:2px; color:#a46e30; font-size:12px; }
+.shoppingListOnLine{background:url("../../../image/front/shoppingCart_line02.gif") top left repeat-x; padding:10px 0px 0px 0px; }
+
+/*配送方式&支付方式 样式*/
+.shoppingListOnStyle02{margin:0px 10px; padding:0px; }
+.shoppingListOnStyle02 .deliveryChoose{margin-top:10px; width:100%;height:20px; overflow:hidden;}
+.shoppingListOnStyle02 .deliveryChoose span{margin-right:20px; }
+.shoppingListOnStyle02 .deliveryChoose span.smallTitle{font-weight:bold; }
+.shoppingListOnStyle02 .deliveryChoose span.note{color:#999; }
+.shoppingListOnStyle02 .deliveryChoose span.red{color:#d00; }
+.shoppingListOnStyle02 .downlist{border:1px #bae1f0 solid; background:#fff; margin-top:10px; padding:0px 10px 5px 10px; }
+.shoppingListOnStyle02 .downlist .line{border-top:1px dashed #ddd; border-bottom:1px dashed #ddd; padding:5px 0 5px 60px; margin-top:15px; background:#fff8ee;}
+.shoppingListOnStyle02 .downlist .line .icon{position:absolute; margin:-10px 0 0 -15px;}
+.shoppingListOnStyle02 .downlist .line td{padding-right:7px;}
+.shoppingListOnStyle02 .downlist .bankTitle{width:100%; padding:10px 0; font-size:12px; color:#666; font-weight:bold;}
+.shoppingListOnStyle02 .downlist .arrow{width:11px; height:6px; position:relative; top:-6px; left:-6px; left:-7px\9; background:url("../../../image/front/shoppingCart_arrow.gif") no-repeat; }
+.shoppingListOnStyle02 .downlist .statement{color:#333; margin-top:5px; }
+.shoppingListOnStyle02 .downlist .pay{float:left; display:inline; margin:5px 20px 5px 15px; line-height:20px; }
+.shoppingListOnStyle02 .downlist .pay span{margin:0px 0px 0px 0px; padding:10px 0px 0px 0px; }
+.shoppingListOnStyle02 .downlist .pay img.bankimg{float:left; margin:0px 5px; }
+.shoppingListOnStyle02 .downlist .pay img.icon{position:absolute; margin-left:-34px; }
+.shoppingListOnStyle02 .downlist .pay .activities{margin-left:10px; }
+.shoppingListOnStyle02 .downlist .pay .check{margin-left:10px; cursor:pointer; }
+.shoppingListOnStyle02 .downlist .pay .bank{background:#fff; border:2px #fda736 solid; width:450px; height:auto; padding:10px; margin-top:22px; position:absolute; z-index:20; visibility:hidden; }
+.shoppingListOnStyle02 .downlist .pay .bank ul{list-style:none; }
+.shoppingListOnStyle02 .downlist .pay .bank ul li{float:left; display:inline; width:80px; margin:5px; }
+.shoppingListOnStyle02 .downlist .pay .bank ul li img{width:80px; margin:0px; }
+
+.shoppingListOnStyle02 .downlist span{float:left; display:inline; padding:4px 0px 3px 0px; margin-right:10px; line-height:16px; }
+
+/*新加样式 提示信息*/
+.shoppingListOnOuter .jump{ border:1px solid #ffdc98; position:absolute; margin-left:560px; padding:6px 10px 4px 30px; background:#fffaee url("../../../image/front/shoppingCart_jumpIcon.gif") 5px center no-repeat; font-weight:normal; color:#a46e30; font-size:12px; }
+.shoppingListOnOuterButtonTips{ width: 160px; border:1px solid #ffdc98; margin-top:10px; padding:6px 10px 4px 30px; background:#fffaee url("../../../image/front/shoppingCart_jumpIcon.gif") 5px center no-repeat; font-weight:normal; color:#a46e30; font-size:12px;  }
+
+/*-----------清单表格 样式-----------*/
+.shoppingListTabOuter{background:#fff; padding:10px 0px; }
+.shoppingListTabOuter .title{font-weight:bold; padding-bottom:10px; }
+.shoppingListTabOuter .title span{float:left; font-size:14px; color:#333; }
+.shoppingListTabOuter .title a{float:right; width:100px; text-align:right; font-weight:normal; margin-left:10px; padding-top:1px; line-height:16px; height:16px;}
+.shoppingListTabOuter .title a img{position:absolute; width:23px; height:11px; margin:-9px 0px 0px -5px;}
+.shoppingListTabOuter .splitTitle{font-weight:bold; padding:10px 0px 10px 0px; }
+.shoppingListTab{width:950px; border:2px #ffd775 solid; padding:1px 1px 0px 1px; margin-bottom:10px; }
+/*清单表格 表头样式*/
+.shoppingListTabTitle{background:#fffaee; border-bottom:1px #fee9b4 solid; }
+.shoppingListTabTitle td{text-align:center; padding:5px 0px; }
+.shoppingListTabTitle td.logo{width:80px; }
+.shoppingListTabTitle td.number{width:80px; }
+.shoppingListTabTitle td.name{width:460px; }
+.shoppingListTabTitle td.price{width:100px; }
+.shoppingListTabTitle td.amount{width:60px; }
+.shoppingListTabTitle td.subtotal{width:170px; }
+/*清单表格 正文样式*/
+.shoppingListTabBody td{padding:10px 0px; background:url("../../../image/front/shoppingCart_line01.gif") center bottom repeat-x; }
+.shoppingListTabBody td.logo{width:80px; text-align:center; }
+.shoppingListTabBody td.number{width:80px; text-align:center; }
+.shoppingListTabBody td.name{width:440px; overflow:hidden; padding-right:20px; }
+.shoppingListTabBody td.name img{margin-right:10px; cursor:pointer; }
+.shoppingListTabBody td.name font{background:#8e3601; color:#fff; padding:0px 3px; }
+.shoppingListTabBody td.price{width:80px; text-align:right; padding-right:20px; color:#d00; }
+.shoppingListTabBody td.amount{width:60px; text-align:center; }
+.shoppingListTabBody td.subtotal{width:120px; padding-right:10px; text-align:right; }
+.shoppingListTabBody td.icon{width:35px; padding-left:5px; }
+.shoppingListTabBody td.suit{padding:0px 0px; background:#f4faff; }
+/*清单表格 套装样式*/
+.shoppingListTabSuit{}
+.shoppingListTabSuit tr{background:url("../../../image/front/shoppingCart_line01.gif") center bottom repeat-x; }
+.shoppingListTabSuit td{padding:10px 0px 6px 0px; border-bottom:0px; }
+/*清单表格 提示样式*/
+.shoppingListTabTip{width:900px; color:#dd0000; padding:5px 0px 5px 20px; }
+.orderPointsInfoTabTip .shoppingListTabTip{width:900px; color:#dd0000; padding:5px 0px 5px 0px; }
+/*清单表格 小计样式*/
+.shoppingListTabSubtotal{float:right; width:165px; margin-right:45px; }
+.shoppingListTabSubtotal dl{float:right; display:inline; line-height:24px; padding:10px 0px; font-family:"Arial"; }
+.shoppingListTabSubtotal dl.line{border-top:1px #ccc solid; }
+.shoppingListTabSubtotal dl dt{float:left; width:70px; display:inline; padding:0px; }
+.shoppingListTabSubtotal dl dd{float:right; width:90px; display:inline; padding:0px; text-align:right; }
+.shoppingListTabSubtotal dl dd.subNum{font-size:14px; font-weight:bold; color:#d00; }
+
+/*-----------购物车使用余额样式-----------*/
+.shoppingListTabBalance{float:left; width:650px; height:auto; margin:3px 0px; }
+.shoppingListTabBalance .title{width:100%; height:auto; padding:0px 0px 9px 0px; font-size:14px; font-weight:bold; }
+.shoppingListTabBalance .title span{padding:0px 0px 9px 20px; font-size:12px; font-weight:normal; }
+.shoppingListTabBalance .info{border:1px #bbe0f0 solid; background:#f4faff; padding:6px 10px 10px 10px; height:16px; }
+.shoppingListTabBalance .info span{background:#e78a26; color:#fff; margin:15px 15px 15px 0px; padding:2px 5px; }
+.shoppingListTabBalance .info .balanceButton{border:0px; width:43px; height:19px; line-height:19px; margin-left:20px; background:url("../../../image/front/shoppingCart_button04.gif") no-repeat; cursor:pointer; }
+
+/*清单表格 促销样式*/
+.shoppingListTabPreferential{float:left; display:inline; width:650px; height:auto; margin:20px 0px 3px 20px; }
+.shoppingListTabPreferential .title{width:100%; height:auto; padding:0px 0px 9px 0px; font-size:14px; font-weight:bold; }
+.shoppingListTabPreferential .info{height:16px; padding:7px 0px 7px 0px; }
+/*
+.shoppingListTabPreferential .info span{background:#e78a26; color:#fff; margin:15px 15px 15px 0px; padding:2px 5px; }
+*/
+.shoppingListTabPreferential .info span.icon{float:left; display:inline; background:#e78a26; color:#fff; margin:0px 15px 0px 0px; padding:2px 5px; }
+.shoppingListTabPreferential .info span.name{float:left; display:inline; width:590px; margin:0px; padding:2px 5px; line-height:18px; }
+.shoppingListTabPreferential .info label.shoppingListTabTip{width:900px; color:#dd0000; padding:5px 0px 5px 5px; }
+.shoppingListTabPreferential .info label.error{background:#fffaee 5px center no-repeat; border:1px solid #ffdc98; height:17px; width:auto; padding:2px 10px 1px 10px; margin_top:2px; color:#a46e30; font-size:12px; }
+
+/*-----------购物车商品小计样式-----------*/
+.shoppingListSubTotal{float:right; display:inline; width:230px; padding:15px 0px 0px 0px; }
+.shoppingListSubTotalTips{float:right; border:1px solid #ffdc98; margin-top:10px; padding:6px 10px 4px 30px; background:#fffaee url("../../../image/front/shoppingCart_jumpIcon.gif") 5px center no-repeat; font-weight:normal; color:#a46e30; font-size:12px; }
+.shoppingListSubTotalTop{width:100%; border-bottom:1px #dad9d9 solid; padding-bottom:10px; margin-bottom:15px; }
+.shoppingListSubTotalTop ul{list-style:none; }
+.shoppingListSubTotalTop ul li{float:left; display:block; width:100%; height:auto; padding:5px 0px; }
+.shoppingListSubTotalTop ul li h6{float:left; display:block; width:100px; font-size:12px; text-align:right; font-weight:normal; font-family:宋体; }
+.shoppingListSubTotalTop ul li span{float:left; display:inline; width:110px; text-align:right; font-weight:normal; }
+.shoppingListSubTotalTop ul li a{float:left; display:block; width:40px; text-align:right; font-weight:normal; }
+
+.shoppingListSubTotalBottom{width:100%; }
+.shoppingListSubTotalBottom .total{width:100%; font-size:14px; font-weight:bold; text-align:right; }
+.shoppingListSubTotalBottom .total h6{float:left; display:block; width:100px; font-size:14px; font-weight:bold; }
+.shoppingListSubTotalBottom .total span{float:left; display:inline; margin-left:20px; width:90px; font-size:14px; font-weight:bold; text-align:right; }
+.shoppingListSubTotalBottom .pay{ width:157px; height:46px; background:url("../../../image/front/shoppingCart_button02.gif") 0px 0px no-repeat; margin:20px auto 0px 38px; border:0px; cursor:pointer; }
+
+/*=================================================订单流程 下单成功 样式=================================================*/
+.shoppingSuccessMain{background:url("../../../image/front/shoppingCart_successIcon.gif") 100px 30px no-repeat; padding:30px 100px 50px 170px; }
+.shoppingSuccessMain .successTitle{font-size:14px; font-weight:bold; }
+.shoppingSuccessMain .successTitle span{font-weight:bold; }
+.shoppingSuccessMain .successPay{padding:1px; margin:10px 0px 15px 0px; background:#fffbf2; border:1px #ffdc88 solid; font-size:14px; }
+.shoppingSuccessMain .successPay span{font-weight:bold; }
+
+/*订单表格 表头样式*/
+.shoppingSuccessMain .successTabTitle{background:#fffaee; border-bottom:1px #fee9b4 solid; }
+.shoppingSuccessMain .successTabTitle td{text-align:center; font-size:12px; padding:5px 0px; }
+.shoppingSuccessMain .successTabTitle td.choose{width:26px; }
+.shoppingSuccessMain .successTabTitle td.number{width:80px; }
+.shoppingSuccessMain .successTabTitle td.area{width:110px; }
+.shoppingSuccessMain .successTabTitle td.date{width:120px; }
+.shoppingSuccessMain .successTabTitle td.subtotal{width:120px; }
+.shoppingSuccessMain .successTabTitle td.pay{width:120px; }
+/*清单表格 正文样式*/
+.shoppingSuccessMain .successTabBody td{padding:10px 0px; font-size:12px; text-align:center; border-top:1px #fee9b4 solid; }
+.shoppingSuccessMain .successTabBody td.first{border-top:0px; }
+.shoppingSuccessMain .successTabBody td.choose{width:26px; }
+.shoppingSuccessMain .successTabBody td.choose input{margin-top:-2px; }
+.shoppingSuccessMain .successTabBody td.number{width:80px; text-align:left; }
+.shoppingSuccessMain .successTabBody td.area{width:110px; }
+.shoppingSuccessMain .successTabBody td.date{width:120px; }
+.shoppingSuccessMain .successTabBody td.subtotal{width:120px; }
+.shoppingSuccessMain .successTabBody td.pay{width:120px ; }
+.shoppingSuccessMain .successTabBody td.tips{text-align:left; padding-left:30px; border-top:0px; background:url("../../../image/front/shoppingCart_line01.gif") center top repeat-x; color:#999; line-height:20px; }
+.shoppingSuccessMain .successTabBody td.tips b{color:#dc0000; margin:0px 2px;  }
+.shoppingSuccessMain .successTabBody td.last{border-bottom:0px; }
+
+.shoppingSuccessMain .successOnline{}
+.shoppingSuccessMain .successOnline .payButtom{width:139px; height:40px; margin-top:20px; background:url("../../../image/front/shoppingCart_payButton.gif") no-repeat; cursor:pointer;}
+.shoppingSuccessMain .successOnline span{float:left; display:block; height:46px; padding-left:18px; background:url("../../../image/front/shoppingCart_successOnlineButton.gif") left top no-repeat; }
+.shoppingSuccessMain .successOnline span a{float:left; position:relative; top:-4px; display:block; height:46px; padding:0px 20px 4px 0px; background:url("../../../image/front/shoppingCart_successOnlineButton.gif") right 4px no-repeat; font-size:14px; font-weight:bold; color:#fff; cursor:pointer; }
+.shoppingSuccessMain .successOnline span a:hover{text-decoration:none; }
+.shoppingSuccessMain .successOnline span a img{position:relative; top:10px; padding:0px 5px; }
+
+.shoppingSuccessMain .successBank{display:block; padding-bottom:10px; margin-top:30px; border:1px #bbe1f1 solid; background:#eefaff; }
+.shoppingSuccessMain .successBank .bankTitle{padding-left:10px; font-size:14px; font-weight:bold; }
+.shoppingSuccessMain .successBank .bankTitle span{display:block; height:16px; padding:15px 30px 7px 0px;}
+.shoppingSuccessMain .successBank ul{display:block; width:100%; }
+.shoppingSuccessMain .successBank ul li{float:left; display:inline; margin:5px 2px 5px 5px; line-height:20px; }
+.shoppingSuccessMain .successBank ul li img{margin:0 1px; float:left;}
+.shoppingSuccessMain .successBank ul li span{float:left; margin-top:10px;}
+.shoppingSuccessMain .successBank ul li a{color:#333px; text-decoration:none;}
+.shoppingSuccessMain .successBank ul li a:hover{color:#333; text-decoration:none;}
+
+.shoppingSuccessMain .successRemit{display:block; padding:20px; border:1px #bbe1f1 solid; background:#eefaff; }
+.shoppingSuccessMain .successRemit .remitTitle{font-size:14px; font-weight:bold; }
+.shoppingSuccessMain .successRemit .remitBody{padding:20px 0px; line-height:24px; }
+.shoppingSuccessMain .successRemit .remitNote{font-weight:bold; }
+
+.shoppingSuccessMain .successTip{border: 1px solid #FFDC88; padding:15px 0px 15px 20px; margin-top:15px; font-size:16px; background:#FFFAEE; font-weight:bold; }
+.shoppingSuccessMain .successTip a{text-decoration:none; }
+
+.shoppingSuccessBottom{border-top:1px #fee9b4 solid; padding:20px 100px 0px 100px; line-height:20px; }
+.shoppingSuccessBottom a{text-decoration:none; }
+.shoppingSuccessAdv{width:998px; margin:20px auto; border:1px #ccc solid; }
+
+/*=================================================订单流程 购物完成 样式=================================================*/
+.shoppingFinishTitle{width:980px; height:auto; padding:5px 0px 0px 20px; line-height:30px; background:#bbe1f1; }
+.shoppingFinishTitle span{font-weight:bold; font-size:14px; }
+.shoppingFinishBody{border:3px #bbe1f1 solid; padding:80px 0px 30px 410px; background:#eefaff url("../../../image/front/shoppingCart_finishTitle.gif") center 30px no-repeat; line-height:24px; }
+.shoppingFinishBody a{font-weight:bold; }
+
+/*================================================= 订单流程 遮罩层样式 =================================================*/
+#shoppingFloatBg{background:#666; filter:alpha(opacity=20); opacity:0.2; width:100%; position:absolute; left:0px; top:0px; display:none; z-index:100; }
+#shoppingFloatShopping{position:absolute; z-index:101; }
+#shoppingFloatLogin{position:absolute; z-index:101; }
+.hidden{display:none; }
+
+.shoppingFloatOuter{width:490px; height:auto; border:1px #c80002 solid; }
+.shoppingFloatTitle{width:100%; height:28px; background:#c80002; margin:0px; }
+.shoppingFloatTitle span.floatTitle{float:left;display:inline; width:200px; height:16px; margin:6px 0px 6px 10px; font-size:12px; font-weight:bold; line-height:16px; color:#fff; }
+.shoppingFloatTitle span.floatClose{float:right; display:inline; margin:6px 6px 0px 0px; width:13px; height:13px; overflow:hidden; background:#fff url("../../../image/front/shoppingCart_floatClose.gif") center center no-repeat; cursor:pointer; }
+
+.shoppingFloatTag{width:100%; height:34px; background:url("../../../image/front/shoppingCart_floatTag.gif") center center repeat-x; }
+.shoppingFloatTag ul{display:block; width:100%; height:34px; background:url("../../../image/front/shoppingCart_floatTagLine.gif") 244px top repeat-y; overflow:hidden; }
+.shoppingFloatTag ul li{float:left; display:inline; width:244px; height:16px; padding:9px 0px 9px 0px; margin-right:1px; text-align:center; cursor:pointer; }
+.shoppingFloatTag ul li.tab_on{background:#fff; }
+
+.shoppingFloatBody{float:left; width:100%; height:auto; background:#fff; margin:0px; }
+.shoppingFloatBodyBg{width:430px; padding:25px 0px 15px 60px; background:#fff url("../../../image/front/shoppingCart_tipsIcon.gif") 15px 20px no-repeat; font-size:14px; font-weight:bold; color:#666; }
+.shoppingFloatBodyBg a{margin:0px 5px; }
+.shoppingFloatBodyMessage{float:left; color:#666; line-height:20px; font-size:12px; font-weight:normal; width:400px; }
+.shoppingFloatBodyMessage span.style01{display:block; font-weight:bold; font-size:14px; }
+.shoppingFloatBodyMessage span.style02{display:block; margin-top:10px; color:#dc0000; }
+.shoppingFloatBodyMessage h3{font-size:14px; color:#dc0000; }
+.shoppingFloatBodyOk{margin:20px 0px 0px -20px; width:400px; height:31px; text-align:center; }
+.shoppingFloatBodyOk .button{width:81px; height:31px; margin-right:10px; background:url("../../../image/front/shoppingCart_floatButton.gif") no-repeat; border:0px; color:#fff; font-weight:bold; font-size:14px; line-height:31px; cursor:pointer; }
+.shoppingFloatBodyOk .longButton{width:150px; height:31px; margin-right:10px; background:url("../../../image/front/shoppingCart_longButton.gif") no-repeat; border:0px; color:#fff; font-weight:bold; font-size:14px; line-height:31px; cursor:pointer; }
+.shoppingFloatBodyTips{margin-top: 20px; }
+.shoppingFloatBodyTips span{display:block; padding: 2px 50px 2px 0; font-size:12px; line-height: 16px; font-weight:normal; }
+.shoppingFloatLogin{float:left; display:inline; width:450px; height:auto; margin:20px 20px 20px 20px; }
+.shoppingFloatLoginLeft,.shoppingFloatLoginRight,.shoppingFloatLoginCenter02,.shoppingFloatLoginRight02{float:left; height:auto; margin:5px 0px; overflow:hidden; }
+.shoppingFloatLoginLeft{width:170px; font-size:12px; line-height:22px; color:#333; text-align:right; }
+.shoppingFloatLoginRight{width:280px; }
+.shoppingFloatLoginRight .text{float:left; width:190px; height:18px; border:1px #ccc solid; }
+.shoppingFloatLoginRight .button{width:81px; height:31px; background:url("../../../image/front/shoppingCart_floatButton.gif") no-repeat; border:0px; color:#fff; font-weight:bold; font-size:14px; cursor:pointer; }
+.shoppingFloatLoginRight .forget{position:relative; left:10px; top:-6px; }
+
+.shoppingFloatLoginCenter02{width:170px; }
+.shoppingFloatLoginCenter02 .text{float:left; width:80px; height:18px; border:1px #ccc solid; margin-right:10px; }
+.shoppingFloatLoginCenter02 img{height:22px; }
+.shoppingFloatLoginRight02{width:100px; }
+.shoppingFloatLoginRight02 a{font-size:12px; line-height:22px; text-decoration:none; }
+.shoppingFloatLoginBottom{float:left; width:480px; height:auto; background:#ededed; padding:8px 0px 8px 10px; }
+
+/*================================================= 海外订购提示样式 =================================================*/
+.shoppingListtipOuter{ background:#FFFBF2; padding:10px 10px; border:1px solid #FFDC88; margin-bottom:10px;}

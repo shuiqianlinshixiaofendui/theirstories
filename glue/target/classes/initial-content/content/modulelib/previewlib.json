@@ -1,0 +1,8 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"resourceName":"云端效果图",
+		"description":"公共效果图预览",
+		"isActive":true,
+		"isTopMenu":true
+}

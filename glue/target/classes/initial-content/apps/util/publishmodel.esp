@@ -1,0 +1,165 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+function proc_mat(targetnode)
+{
+	var GVAR_LoadLibrary = true;
+	load("/apps/util/sysconfig.esp");
+	load("/apps/util/blendercgi.esp");
+
+	var modelnode = targetnode;
+	var targetpath = "/content/materiallib/modelpublish";
+	if(!GVAR_RootNode.hasNode(targetpath.substring(1,targetpath.length)))
+	{
+		//切换到管理员身份
+		var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+		var adminSession = slingRepos.loginAdministrative(null);
+		GVAR_Session = adminSession;
+		GVAR_WorkSpace = GVAR_Session.getWorkspace();
+		GVAR_RootNode = GVAR_Session.getRootNode();
+		
+		GVAR_RootNode.addNode(targetpath.substring(1,targetpath.length));
+		
+		GVAR_Session.save();
+	}
+	var publishmat = GVAR_bcgi.forward({cgi : "model/publish.py",node : modelnode, useEmptyBlend : false, env : {tarnode : targetpath}});
+}
+
+function publishmodel(srcPath,tarPath)
+{
+
+
+	response.setCharacterEncoding("UTF-8");
+	var GVAR_LoadLibrary = true;
+	load("/apps/util/sysconfig.esp");
+	load("/apps/util/git.esp");
+	load("/apps/util/history.esp");
+	
+	// out.println("test publish!!!");
+	
+	
+	//设置git参数
+    var option = {};
+	//获取并设置所需全局变量
+	var GVAR_CurrentNode;
+	var GVAR_Session;
+	var GVAR_WorkSpace;
+	var GVAR_RootNode;
+
+
+	GVAR_CurrentNode = currentNode;
+	GVAR_Session = currentNode.getSession();
+
+	var tarpatharr = tarPath.split("/");
+	//var  publishAuthor = GVAR_Session.getUserID();
+
+
+	//判断发布位置，确定是否切换到管理员身份
+	if(String(tarpatharr[1]) == String("content") && String(tarpatharr[2]) == String("modellib"))
+	{
+		//切换到管理员身份
+		var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+		var adminSession = slingRepos.loginAdministrative(null);
+		GVAR_Session = adminSession;
+	}
+
+	GVAR_WorkSpace = GVAR_Session.getWorkspace();
+	GVAR_RootNode = GVAR_Session.getRootNode();
+
+	var srcNode = GVAR_RootNode.getNode(srcPath.substring(1,srcPath.length));
+
+	var targetnode;
+	if(GVAR_RootNode.hasNode(tarPath.substring(1,tarPath.length)))
+	{
+		//提示节点已经存在
+		out.println("target node is exists!!!");
+	}
+	else
+	{
+
+		//复制节点
+		GVAR_WorkSpace.copy(srcPath,tarPath);
+		GVAR_Session.save();
+		
+		targetnode = GVAR_RootNode.getNode(tarPath.substring(1,tarPath.length));
+		
+		var tarnodePath = GVAR_system.getNodePath(targetnode,true);
+		var srcnodePath = GVAR_system.getNodePath(srcNode,true);
+		
+		var srcfile = new Packages.java.io.File(srcnodePath);
+		
+		var tarfile = new Packages.java.io.File(tarnodePath);
+		
+		Packages.org.apache.commons.io.FileUtils.copyDirectory(srcfile,tarfile);
+		
+		Packages.java.lang.System.out.println("copy files from " + srcnodePath + " to " + tarfile);
+		
+		
+		
+		
+		//设置preview对已发布模型的引用
+		//var model_previewlib = targetnode["previewlib"];
+		
+		//out.println(targetnode["jcr:created"]);
+		
+		var publishdate = new Date();
+		var year = publishdate.getFullYear();
+		var month = publishdate.getMonth();
+		var date = publishdate.getDate();
+		var hours = publishdate.getHours();
+		var minutes = publishdate.getMinutes();
+		var seconds = publishdate.getSeconds();
+		var calendar = new Packages.java.util.Calendar.getInstance();
+		calendar.set(year,month,date,hours,minutes,seconds);
+		
+		targetnode.setProperty("publishdate", calendar);
+		
+		// out.println(publishAuthor);
+		//获取用户名
+		targetnode.setProperty("publishAuthor", publishAuthor);
+		//用户名转义
+		option.name =  new Packages.org.spolo.utils.EncodeUname().decode(publishAuthor);
+		
+		//设置提交信息
+		var publishMSG = "Publish!";
+		targetnode.setProperty("publishMSG",publishMSG);
+		option.msg = publishMSG;
+		
+		//配合git接口修改currentNode
+		currentNode = targetnode;
+		//初始化git仓库
+		GVAR_Git.preCommit();
+		//版本提交到git
+		GVAR_Git.postCommit(option);
+		
+		//获取版本号作为最新版本号
+		var VersionID = GVAR_Git_History.showNewestVersion();
+		targetnode.setProperty("NewestVersion",VersionID);
+		targetnode.setProperty("CurrentVersion",VersionID);
+		targetnode.save();
+		
+		//改回currentNode
+		currentNode = GVAR_CurrentNode;
+		
+		
+		proc_mat(targetnode);
+		
+
+		
+		
+		
+	}
+}
+

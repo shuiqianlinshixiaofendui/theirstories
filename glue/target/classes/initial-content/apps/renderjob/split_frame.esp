@@ -1,0 +1,111 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ //创建frame节点设置相关属性，并调用frame节点的spilt_region方法
+ 
+ 
+ 
+load("/apps/util/node.esp");
+
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_WorkSpace;
+var GVAR_RootNode;
+var GVAR_COUNT;
+
+GVAR_CurrentNode = currentNode;
+GVAR_Session = currentNode.getSession();
+GVAR_WorkSpace = GVAR_Session.getWorkspace();
+GVAR_RootNode = GVAR_Session.getRootNode();
+GVAR_COUNT = 0;
+ 
+ //节点递归复制
+function copyNodes(srcAbsPath, desAbsPath)
+{   //copy every subnodes of srcNode to desNode
+	srcNode = GVAR_RootNode.getNode(srcAbsPath.substring(1,srcAbsPath.length));
+	childList = srcNode.getNodes();
+	for(var i in childList)
+	{
+		child = childList[i];
+		childName = child.getName();
+		childPath = child.getPath();
+		GVAR_WorkSpace.copy(childPath, desAbsPath + '/' + childName);
+	}
+}
+ 
+ 
+if(currentNode != null)
+{
+	var framenode = currentNode.addNode("frame1","slingevent:Job");
+	framenode.setProperty("sling:resourceType","renderjob/frame");
+	framenode.setProperty("blocks_per_frame",1);
+	var tddatanode = framenode.addNode("tddata","slingevent:Job");
+	//tddatanode.setProperty("sling:resourceType","x3d");
+	currentNode.save();
+	var rendernode = currentNode.getParent();
+	var scenenode = rendernode.getParent();
+	copyNodes(scenenode.getPath() + "/tddata" , tddatanode.getPath());
+	tddatanode.setProperty("sling:resourceType","scene"); 
+	GVAR_Session.save();
+	
+	
+	var renderdatanode = framenode.addNode("renderdata","slingevent:Job");
+	renderdatanode.setProperty("sling:resourceType","renderdata");
+	
+	framenode.save();
+	
+	
+	//调用x3d节点的elminline方法消除inline
+	try{
+			var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+			var path = tddatanode.getPath() + ".elminline";
+			var disp = request.getRequestDispatcher(path,dispOption);
+			var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+			disp.forward(request,cache_response);
+	}catch(e)
+	{
+		
+	}
+	
+	
+	
+	//调用x3d节点的x3d_dumper方法产生x3d文件
+	try{
+			var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+			var path = tddatanode.getPath() + ".x3d_dumper";
+			var disp = request.getRequestDispatcher(path,dispOption);
+			var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+			disp.forward(request,cache_response);
+	}catch(e)
+	{
+		
+	}
+	
+	
+	currentNode.save();
+	//sling.forward(framenode.getPath() + ".split_region");
+	
+	//调用frame节点的split_region方法产生各region所需数据
+	var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+	var path = framenode.getPath() + ".split_region";
+	var disp = request.getRequestDispatcher(path,dispOption);
+	var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+	disp.forward(request,cache_response);
+
+}
+//out.write(childnode +"\n");
+//childnode["sling:resourceType"] = "jobproperties";
+currentNode.save(); 
+out.write("ok!" +"\n"); 
+%>()

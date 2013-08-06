@@ -1,0 +1,2378 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+ 
+//加载node处理库
+	load("/apps/util/node.esp");
+
+
+//获取并设置所需全局变量
+	var GVAR_CurrentNode;
+	var GVAR_Session;
+	var GVAR_WorkSpace;
+	var GVAR_RootNode;
+	var GVAR_COUNT;
+
+	GVAR_CurrentNode = currentNode;
+	GVAR_Session = currentNode.getSession();
+	GVAR_WorkSpace = GVAR_Session.getWorkspace();
+	GVAR_RootNode = GVAR_Session.getRootNode();
+	GVAR_COUNT = 0;
+	GVAR_Path = "C:/tmp";
+	out.write("test ocm!\n");
+	//image节点模板
+	var image_str = 
+	"<Node>\
+	  <name>1x1.jpg</name>\
+	  <typename>image</typename>\
+	  <id>1</id>\
+	  <position>0.305 0.2475</position>\
+	  <linkedfilename>ocs:1x1.jpg</linkedfilename>\
+	  <parameters>\
+	  </parameters>\
+	  <inputnodepins>\
+	   <NodePin>\
+		<typename>power</typename>\
+		<id>0</id>\
+		<pintype>20000</pintype>\
+		<hasinternalnodegraph>true</hasinternalnodegraph>\
+		<basenodeid>1</basenodeid>\
+		<basenodepinid>0</basenodepinid>\
+		<internalnodegraph>\
+		 <NodeGraph>\
+		  <name>power</name>\
+		  <currentnewnodeid>2</currentnewnodeid>\
+		  <currentnewnodepinconnectionid>1</currentnewnodepinconnectionid>\
+		  <nodes>\
+		   <Node>\
+			<name>power</name>\
+			<typename>floattexture</typename>\
+			<id>1</id>\
+			<position>0 0</position>\
+			<parameters>\
+			 <value>0.9</value>\
+			 <minvalue>0</minvalue>\
+			 <maxvalue>1</maxvalue>\
+			 <usetexturealphaui>false</usetexturealphaui>\
+			 <isloglincapable>false</isloglincapable>\
+			 <uselogscale>false</uselogscale>\
+			 <resolution>0.001</resolution>\
+			 <modified>true</modified>\
+			</parameters>\
+			<inputnodepins>\
+			</inputnodepins>\
+		   </Node>\
+		  </nodes>\
+		  <nodepinconnections>\
+		  </nodepinconnections>\
+		 </NodeGraph>\
+		</internalnodegraph>\
+	   </NodePin>\
+	   <NodePin>\
+		<typename>gamma</typename>\
+		<id>1</id>\
+		<pintype>20001</pintype>\
+		<hasinternalnodegraph>true</hasinternalnodegraph>\
+		<basenodeid>1</basenodeid>\
+		<basenodepinid>0</basenodepinid>\
+		<internalnodegraph>\
+		 <NodeGraph>\
+		  <name>gamma</name>\
+		  <currentnewnodeid>2</currentnewnodeid>\
+		  <currentnewnodepinconnectionid>1</currentnewnodepinconnectionid>\
+		  <nodes>\
+		   <Node>\
+			<name>gamma</name>\
+			<typename>float</typename>\
+			<id>1</id>\
+			<position>0 0</position>\
+			<parameters>\
+			 <value>2.2</value>\
+			 <minvalue>0.1</minvalue>\
+			 <maxvalue>8</maxvalue>\
+			 <usetextureui>false</usetextureui>\
+			 <usetexturealphaui>false</usetexturealphaui>\
+			 <isloglincapable>true</isloglincapable>\
+			 <uselogscale>true</uselogscale>\
+			 <modified>true</modified>\
+			</parameters>\
+			<inputnodepins>\
+			</inputnodepins>\
+		   </Node>\
+		  </nodes>\
+		  <nodepinconnections>\
+		  </nodepinconnections>\
+		 </NodeGraph>\
+		</internalnodegraph>\
+	   </NodePin>\
+	   <NodePin>\
+		<typename>scale</typename>\
+		<id>2</id>\
+		<pintype>20001</pintype>\
+		<hasinternalnodegraph>true</hasinternalnodegraph>\
+		<basenodeid>1</basenodeid>\
+		<basenodepinid>0</basenodepinid>\
+		<internalnodegraph>\
+		 <NodeGraph>\
+		  <name>scale</name>\
+		  <currentnewnodeid>2</currentnewnodeid>\
+		  <currentnewnodepinconnectionid>1</currentnewnodepinconnectionid>\
+		  <nodes>\
+		   <Node>\
+			<name>scale</name>\
+			<typename>float</typename>\
+			<id>1</id>\
+			<position>0 0</position>\
+			<parameters>\
+			 <value>1</value>\
+			 <minvalue>0.001</minvalue>\
+			 <maxvalue>1000</maxvalue>\
+			 <usetextureui>false</usetextureui>\
+			 <usetexturealphaui>false</usetexturealphaui>\
+			 <isloglincapable>true</isloglincapable>\
+			 <uselogscale>true</uselogscale>\
+			 <modified>true</modified>\
+			</parameters>\
+			<inputnodepins>\
+			</inputnodepins>\
+		   </Node>\
+		  </nodes>\
+		  <nodepinconnections>\
+		  </nodepinconnections>\
+		 </NodeGraph>\
+		</internalnodegraph>\
+	   </NodePin>\
+	   <NodePin>\
+		<typename>invert</typename>\
+		<id>3</id>\
+		<pintype>20003</pintype>\
+		<hasinternalnodegraph>true</hasinternalnodegraph>\
+		<basenodeid>1</basenodeid>\
+		<basenodepinid>0</basenodepinid>\
+		<internalnodegraph>\
+		 <NodeGraph>\
+		  <name>invert</name>\
+		  <currentnewnodeid>2</currentnewnodeid>\
+		  <currentnewnodepinconnectionid>1</currentnewnodepinconnectionid>\
+		  <nodes>\
+		   <Node>\
+			<name>invert</name>\
+			<typename>bool</typename>\
+			<id>1</id>\
+			<position>0 0</position>\
+			<parameters>\
+			 <value>false</value>\
+			 <modified>true</modified>\
+			</parameters>\
+			<inputnodepins>\
+			</inputnodepins>\
+		   </Node>\
+		  </nodes>\
+		  <nodepinconnections>\
+		  </nodepinconnections>\
+		 </NodeGraph>\
+		</internalnodegraph>\
+	   </NodePin>\
+	  </inputnodepins>\
+	 </Node>";
+	
+	
+//关于文件操作
+	function getContent(node) //获得文件内容
+	{
+		try
+		{
+			var contentNode = node.getNode("jcr:content");
+			var content = contentNode.getProperty("jcr:data").getStream();
+			return content;
+		}catch(e){
+			response.getWriter().println(e);
+			return false;
+		}
+	}
+
+	function dumpFile(path, name, content) //dump文件到指定路径
+	{
+		try{
+			var file = new Packages.java.io.File(path + '/' + name);
+			if(!file.exists())
+			{
+				file.createNewFile();
+			}
+			var buffer = new Packages.java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE,1024);
+			var os = new Packages.java.io.FileOutputStream(file);
+			var count;
+			while((count = content.read(buffer)) != -1)
+			{
+				os.write(buffer, 0, count)
+			}
+			
+			content.close()
+			os.flush();
+			os.close; //将content内容写入文件
+			
+			return file
+		}catch(e){
+			response.getWriter().println(e);
+			return false;
+		}
+	}
+	
+	//根据diffuse图名称找到其相应材质
+	function getmat_by_diffuse(diffusename,cnode)
+	{
+		//根据当前节点获取其model节点
+		var modelnode = cnode;
+		while(1)
+		{
+			modelnode = modelnode.getParent();
+			if(modelnode["sling:resourceType"] == "model")
+			{
+				break;
+			}
+		}
+		
+		//遍历model节点下所有节点获取其材质节点
+		var matmap = [];
+		
+		//需要返回的结果数组
+		var retmats = [];
+		
+		//获取所有mat节点
+		getmatnode(modelnode,matmap);
+		
+		for(var i in matmap)
+		{
+			var imat = matmap[i];
+			
+			//获得当前材质节点父节点
+			var parmat = imat.getParent();
+			
+			//遍历父级节点下所有子节点获取其texture节点
+			for(var ip in parmat.getNodes())
+			{
+				var ipnode = parmat.getNodes()[ip];
+				if(ipnode["sp:Tag"] == "ImageTexture")
+				{
+					var diffurl = ipnode["url"];
+					var diffname = diffurl.substr(diffurl.lastIndexOf("/") + 1,diffurl.length - 1);
+					if(diffname == diffusename)
+					{
+						retmats[ipnode.name] = imat;
+					}
+				}
+			}
+		}		
+		
+		return retmats;
+	}
+	
+	function getmatnode(modelnode,matmap)
+	{
+		if(modelnode.hasNodes())
+		{
+			for(var nodeindex in modelnode.getNodes())
+			{
+				var inode = modelnode.getNodes()[nodeindex];
+				if((inode["sp:Tag"] == "Material") && (inode["USE"] == null))
+				{
+					matmap[inode.name] = inode;
+				}
+				if(inode.hasNodes())
+				{
+					getmatnode(inode,matmap);
+				}
+			}
+		}
+		
+	}
+	
+	
+	//处理没有diffuse贴图的mask
+	function without_diffuse(diffnode)
+	{
+		for(var im in diffnode)
+		{
+			if(diffnode[im]["sling:resourceType"] == "mask")
+			{
+				var masknode = diffnode[im];
+				
+				if(masknode["sp:isauto"] == "true")
+				{
+					var matpath = masknode["matpath"];
+					
+					if(matpath != null || matpath != undefined)
+					{
+						if(matpath[0] == "/")
+						{
+							matpath = matpath.substr(1);
+						}
+						
+						var matnode = GVAR_RootNode.getNode(matpath);
+						var l2matlibnodepath = masknode["L2material"];
+						if(l2matlibnodepath[0] == "/")
+						{
+							l2matlibnodepath = l2matlibnodepath.substr(1);
+						}
+						
+						var l2matlibnode = GVAR_RootNode.getNode(l2matlibnodepath);
+						var l2matref = l2matlibnode["ref"];
+						if(l2matref[0] == "/")
+						{
+							l2matref = l2matref.substr(1);
+						}
+						
+						var l2matfilenode = GVAR_RootNode.getNode(l2matref);
+						
+						var l2matpath = l2matfilenode["ocm"].getNodes()[0].getPath();
+						
+						matnode.setProperty("sp:refL1Material", l2matpath);
+						matnode.setProperty("sp:hasdiffuse", "false");
+						matnode.save();
+					}
+					
+				}
+			}
+		}
+	}
+	
+	//处理有diffuse贴图的auto mask
+	function auto_diffuse(diffnode)
+	{
+		
+		//打开ocm模板文件
+		var l1mat_str = 
+			"<?xml version='1.0' encoding='utf-8'?>\
+			<OCS_1_0_23_Macro>\
+			<embeddedimages>\
+			</embeddedimages>\
+			 <Node>\
+			  <name>Material Macro</name>\
+			  <typename>material macro</typename>\
+			  <id>1</id>\
+			  <position>0.177 0.2125</position>\
+			  <parameters>\
+			   <pintype>30010</pintype>\
+			  </parameters>\
+			  <inputnodepins>\
+			  </inputnodepins>\
+			  <childgraph>\
+			   <NodeGraph>\
+				<name>Material Macro</name>\
+				<currentnewnodeid>2</currentnewnodeid>\
+				<currentnewnodepinconnectionid>1</currentnewnodepinconnectionid>\
+				<nodes>\
+				 <Node>\
+				  <name>Material Macro (out)</name>\
+				  <typename>terminator</typename>\
+				  <id>1</id>\
+				  <position>0.5 0.9</position>\
+				  <parameters>\
+				   <pintype>30010</pintype>\
+				  </parameters>\
+				  <inputnodepins>\
+				   <NodePin>\
+					<typename>input</typename>\
+					<id>0</id>\
+					<pintype>20005</pintype>\
+					<hasinternalnodegraph>false</hasinternalnodegraph>\
+				   </NodePin>\
+				  </inputnodepins>\
+				 </Node>\
+				</nodes>\
+				<nodepinconnections>\
+				</nodepinconnections>\
+			   </NodeGraph>\
+			  </childgraph>\
+			 </Node>\
+			</OCS_1_0_23_Macro>";
+		var l1mat_instr = new Packages.org.xml.sax.InputSource();
+		l1mat_instr.setCharacterStream(new Packages.java.io.StringReader(l1mat_str));
+								
+		var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+		var builder = factory.newDocumentBuilder();
+		var ocmxml = builder.parse(l1mat_instr);
+		
+		//获取OCS_1_0_23_Scene节点，即ocs的根节点
+		var scenert = ocmxml.getElementsByTagName("OCS_1_0_23_Macro");
+		
+		
+		//out.write(scenert);
+		
+		if(scenert.item(0).getNodeName() == "OCS_1_0_23_Macro" )
+		{
+			out.write("OCS_1_0_23_Macro\n");
+			
+			//获取embeddedimages子节点
+			var embeddedimagesnode = scenert.item(0).getElementsByTagName("embeddedimages").item(0);
+			
+			//embeddedimages中已有image
+			var em_images = [];
+			
+			
+			var em_floatimages = [];
+			
+			
+			
+			//获取childgraph子节点
+			var  childgraph = scenert.item(0).getElementsByTagName("childgraph").item(0);
+			if(childgraph != null)
+			{
+				out.write("childgraph\n");
+				
+				//获取NodeGraph子节点
+				var NodeGraph = childgraph.getElementsByTagName("NodeGraph").item(0);
+				
+				//获取name节点
+				var matname = NodeGraph.getElementsByTagName("name").item(0);
+				
+				out.write(matname.getChildNodes().item(0).getNodeValue() + "\n");
+				
+				//设置name属性
+				matname.getChildNodes().item(0).setNodeValue("test mat");
+				
+				//获取currentnewnodeid子节点
+				var currentnewnodeid = NodeGraph.getElementsByTagName("currentnewnodeid").item(0);
+				
+				//获取nodes子节点
+				var nodes = NodeGraph.getElementsByTagName("nodes").item(0);
+				
+				
+
+				
+				out.write("diffnode : " + diffnode + "\n");
+				
+				//一级材质最外层diffuse贴图添加标志
+				var adddiffuseflag = 0;
+				
+				var l2matindex = 5;
+				//遍历diffuse节点下的mask节点
+				for(var im in diffnode)
+				{
+					//out.write(diffnode.getNodes().length + "\n");
+					var masknode = diffnode[im];
+					if(masknode["sling:resourceType"] == "mask")
+					{
+						//获取diffuseName
+						diffusename =masknode["diffuseName"];
+					}
+					else
+					{
+						continue;
+					}
+					
+					
+					
+					
+					
+					
+
+					
+					
+					//获取二级材质文件test/materiallib/m1.ocm
+					var l2matlibref = masknode["L2material"];
+					if(l2matlibref[0] == "/")
+					{
+						l2matlibref = l2matlibref.substr(1);
+					}
+					
+					var l2matlibnode = GVAR_RootNode.getNode(l2matlibref);
+					
+					var l2matref = l2matlibnode["ref"];
+					if(l2matref[0] == "/")
+					{
+						l2matref = l2matref.substr(1);
+					}
+					
+					var l2matfilenode = GVAR_RootNode.getNode(l2matref);
+					
+					var l2matfile = l2matfilenode["ocm"].getNodes()[0]["jcr:content"]["jcr:data"];
+					
+					var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+					var builder = factory.newDocumentBuilder();
+					var l2matxml = builder.parse(l2matfile);
+			
+					//获取OCS_1_0_23_Macro节点，即ocm的根节点
+					var l2matrt = l2matxml.getDocumentElement();
+					
+					//获取embeddedimages子节点
+					var tembeddedimagelist = l2matrt.getElementsByTagName("embeddedimages");
+					
+					if(tembeddedimagelist != null)
+					{
+						var tembeddedimages = tembeddedimagelist.item(0);
+						
+						if(tembeddedimages != null)
+						{
+							var timagenodelist = tembeddedimages.getElementsByTagName("image");
+							
+							for(var img = 0; img < timagenodelist.length; img++)
+							{
+								var timgnode = timagenodelist.item(img);
+								
+								//当前image name
+								var imagename = timgnode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+								var imagename = new String(imagename);
+									
+									
+								if(em_images.indexOf(imagename.toString()) == -1)
+								{
+									em_images.push(imagename.toString());
+									var tmpnode = ocmxml.importNode(timgnode,true);
+									embeddedimagesnode.appendChild(tmpnode);
+								}
+							}
+							
+							
+							
+							var timagenodelist = tembeddedimages.getElementsByTagName("floatimage");
+							
+							for(var img = 0; img < timagenodelist.length; img++)
+							{
+								var timgnode = timagenodelist.item(img);
+								
+								//当前image name
+								var imagename = timgnode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+								var imagename = new String(imagename);
+									
+									
+								if(em_floatimages.indexOf(imagename.toString()) == -1)
+								{
+									em_floatimages.push(imagename.toString());
+									var tmpnode = ocmxml.importNode(timgnode,true);
+									embeddedimagesnode.appendChild(tmpnode);
+								}
+							}
+						}
+					}
+					
+					
+					//获取其node子节点
+					var l2matNode = l2matrt.getElementsByTagName("Node").item(0);
+					
+					//获取二级材质类型
+					var l2mattypename = l2matNode.getElementsByTagName("typename").item(0);
+					var l2mattypenametext = l2mattypename.getChildNodes().item(0).getNodeValue();
+					
+				//按照二级材质类型判断是否需要添加diffuse贴图节点
+					
+					//如果材质类型是
+					if(l2mattypenametext == "material macro")
+					{
+						//获取当前节点的nodes子节点
+						var childnodes = l2matNode.getElementsByTagName("nodes").item(0);
+						
+						//添加diffuse image节点标志
+						var adddiffuseflag = 0;
+						//找到nodes下子节点的最大id,以便设置image节点的id
+						var maxid = 0;
+						var idnodes = l2matNode.getElementsByTagName("id");
+						for(var ni =0 ; ni < idnodes.length; ni++)
+						{
+							var idnode = idnodes.item(ni);
+							var idtext = idnode.getChildNodes().item(0).getNodeValue();
+							var idnum = new Number(idtext);
+							if(idnum > maxid)
+							{
+								maxid = idnum;
+							}
+						}
+						
+						
+						//遍历nodes节点下的所有node子节点
+						for(var ni =0 ; ni< childnodes.getElementsByTagName("Node").length; ni++)
+						{
+							//获取当前node节点
+							var inode = childnodes.getElementsByTagName("Node").item(ni);
+							
+							//获取当前node节点的typename
+							var inodetypename = inode.getElementsByTagName("typename").item(0);
+							
+							if(inodetypename.getChildNodes().item(0).getNodeValue() == "glossy")
+							{
+								//获取当前节点id
+								var inodeid = inode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+									
+									
+								if(adddiffuseflag == 0)
+								{
+									
+									//添加diffuse iamge节点,并设置id
+										//打开image节点模板
+										var image_instr = new Packages.org.xml.sax.InputSource();
+										image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+										
+										//解析image模板xml
+										var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+										var builder = factory.newDocumentBuilder();
+										var tm_imagexml = builder.parse(image_instr);
+															
+										//获取image节点的Node节点
+										var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+										
+										//获取image节点的name节点
+										var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+										
+										//获取name节点的text子节点,并设置属性
+										var timagenametext = timagenameNode.getChildNodes().item(0);
+										timagenametext.setNodeValue(masknode["diffuseName"]);
+										
+										//获取image节点的id子节点
+										var timageidNode = timageNode.getElementsByTagName("id").item(0);
+										
+										//获取id节点的text子节点,并设置属性
+										var timageidtext = timageidNode.getChildNodes().item(0);
+										timageidtext.setNodeValue(maxid + 1);
+										
+										//获取linkedfilename子节点
+										var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+										
+										//获取linkedfilename节点的text子节点,并设置属性
+										var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+										timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" + masknode[" diffuseName"]);
+										
+										
+										//将image node节点添加到ocs中
+										var tmpnode = l2matxml.importNode(timageNode,true);
+										childnodes.appendChild(tmpnode);
+									
+									
+										
+										
+										
+									//将已经添加diffuse的标识设置为1
+									adddiffuseflag = 1;
+								}
+								
+								//连接当前节点的diffuse节点与diffuse image节点
+								
+								//创建diffuse节点与material节点的链接
+									//获取nodepinconnections子节点
+									var nodepinconnections =  l2matNode.getElementsByTagName("nodepinconnections").item(l2matNode.getElementsByTagName("nodepinconnections").length - 1);
+									
+									
+									//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+									var nodepinconnection = l2matxml.createElement("nodepinconnection");
+									
+									
+									//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+									var sourceid = l2matxml.createElement("sourceid");
+									sourceid.appendChild(l2matxml.createTextNode(maxid + 1));
+									nodepinconnection.appendChild(sourceid);
+									
+									//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+									var sourcepinid = l2matxml.createElement("sourcepinid");
+									sourcepinid.appendChild(l2matxml.createTextNode("0"));
+									nodepinconnection.appendChild(sourcepinid);
+									
+									
+									//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+									var destid = l2matxml.createElement("destid");
+									destid.appendChild(l2matxml.createTextNode(inodeid));
+									nodepinconnection.appendChild(destid);
+									
+									//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+									destpinid = l2matxml.createElement("destpinid")
+									destpinid.appendChild(l2matxml.createTextNode("0"));
+									nodepinconnection.appendChild(destpinid);
+									
+									
+									//将nodepinconnection节点添加到nodepinconnections节点之下
+									nodepinconnections.appendChild(nodepinconnection);
+							}
+							
+							
+							
+							if(inodetypename.getChildNodes().item(0).getNodeValue() == "diffuse")
+							{
+							
+								//获取当前节点id
+								var inodeid = inode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+									
+								
+								if(adddiffuseflag == 0)
+								{
+									
+									
+									//添加diffuse iamge节点,并设置id
+										//打开image节点模板
+										var image_instr = new Packages.org.xml.sax.InputSource();
+										image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+										
+										//解析image模板xml
+										var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+										var builder = factory.newDocumentBuilder();
+										var tm_imagexml = builder.parse(image_instr);
+										
+										//获取image节点的Node节点
+										var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+										
+										//获取image节点的name节点
+										var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+										
+										//获取name节点的text子节点,并设置属性
+										var timagenametext = timagenameNode.getChildNodes().item(0);
+										timagenametext.setNodeValue(masknode["diffuseName"]);
+										
+										//获取image节点的id子节点
+										var timageidNode = timageNode.getElementsByTagName("id").item(0);
+										
+										//获取id节点的text子节点,并设置属性
+										var timageidtext = timageidNode.getChildNodes().item(0);
+										timageidtext.setNodeValue(maxid + 1);
+										
+										//获取linkedfilename子节点
+										var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+										
+										//获取linkedfilename节点的text子节点,并设置属性
+										var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+										timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" + masknode["diffuseName"]);
+										
+										
+										//将image node节点添加到ocs中
+										var tmpnode = l2matxml.importNode(timageNode,true);
+										childnodes.appendChild(tmpnode);
+
+									//将已经添加diffuse的标识设置为1
+									adddiffuseflag = 1;
+								}
+								
+								//连接当前节点的diffuse节点与diffuse image节点
+								
+								//创建diffuse节点与material节点的链接
+									//获取nodepinconnections子节点
+									var nodepinconnections =  l2matNode.getElementsByTagName("nodepinconnections").item(l2matNode.getElementsByTagName("nodepinconnections").length - 1);
+									
+									
+									//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+									var nodepinconnection = l2matxml.createElement("nodepinconnection");
+									
+									
+									//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+									var sourceid = l2matxml.createElement("sourceid");
+									sourceid.appendChild(l2matxml.createTextNode(maxid + 1));
+									nodepinconnection.appendChild(sourceid);
+									
+									//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+									var sourcepinid = l2matxml.createElement("sourcepinid");
+									sourcepinid.appendChild(l2matxml.createTextNode("0"));
+									nodepinconnection.appendChild(sourcepinid);
+									
+									
+									//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+									var destid = l2matxml.createElement("destid");
+									destid.appendChild(l2matxml.createTextNode(inodeid));
+									nodepinconnection.appendChild(destid);
+									
+									//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+									destpinid = l2matxml.createElement("destpinid")
+									destpinid.appendChild(l2matxml.createTextNode("0"));
+									nodepinconnection.appendChild(destpinid);
+									
+									
+									//将nodepinconnection节点添加到nodepinconnections节点之下
+									nodepinconnections.appendChild(nodepinconnection);
+							}
+							
+						}
+					}
+					
+					
+					
+					
+					
+					
+					
+					
+					//获取其id子节点
+					var l2matid = l2matNode.getElementsByTagName("id").item(0);
+					
+					//设置二级材质id号
+					l2matid.getChildNodes().item(0).setNodeValue(l2matindex);
+					
+					//获取当前节点id
+					var l2matidtext = l2matid.getChildNodes().item(0).getNodeValue();
+					
+					
+					
+					if(l2mattypenametext == "diffuse")
+					{
+						//添加diffuse图节点
+							if(adddiffuseflag == 0)
+							{
+							
+								//打开image节点模板
+								var image_instr = new Packages.org.xml.sax.InputSource();
+								image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+								
+								//解析image模板xml
+								var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+								var builder = factory.newDocumentBuilder();
+								var tm_imagexml = builder.parse(image_instr);
+								
+								//获取image节点的Node节点
+								var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+								
+								//获取image节点的name节点
+								var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+								
+								//获取name节点的text子节点,并设置属性
+								var timagenametext = timagenameNode.getChildNodes().item(0);
+								timagenametext.setNodeValue(masknode["diffuseName"]);
+								
+								//获取image节点的id子节点
+								var timageidNode = timageNode.getElementsByTagName("id").item(0);
+								
+								//获取id节点的text子节点,并设置属性
+								var timageidtext = timageidNode.getChildNodes().item(0);
+								timageidtext.setNodeValue(2);
+								
+								//获取linkedfilename子节点
+								var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+								
+								//获取linkedfilename节点的text子节点,并设置属性
+								var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+								timagelinkedfilenametext.setNodeValue(".\\" +masknode["modelName"] + "_" + masknode["diffuseName"]);
+								
+								
+								//将image node节点添加到ocs中
+								var tmpnode = ocmxml.importNode(timageNode,true);
+								nodes.appendChild(tmpnode);
+							}
+						//创建diffuse节点与material节点的链接
+							//获取nodepinconnections子节点
+							var nodepinconnections =  NodeGraph.getElementsByTagName("nodepinconnections").item(NodeGraph.getElementsByTagName("nodepinconnections").length - 1);
+							
+							
+							//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+							var nodepinconnection = ocmxml.createElement("nodepinconnection");
+							
+							
+							//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+							var sourceid = ocmxml.createElement("sourceid");
+							sourceid.appendChild(ocmxml.createTextNode(2));
+							nodepinconnection.appendChild(sourceid);
+							
+							//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+							var sourcepinid = ocmxml.createElement("sourcepinid");
+							sourcepinid.appendChild(ocmxml.createTextNode("0"));
+							nodepinconnection.appendChild(sourcepinid);
+							
+							
+							//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+							var destid = ocmxml.createElement("destid");
+							destid.appendChild(ocmxml.createTextNode(l2matidtext));
+							nodepinconnection.appendChild(destid);
+							
+							//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+							destpinid = ocmxml.createElement("destpinid")
+							destpinid.appendChild(ocmxml.createTextNode("0"));
+							nodepinconnection.appendChild(destpinid);
+							
+							
+							//将nodepinconnection节点添加到nodepinconnections节点之下
+							nodepinconnections.appendChild(nodepinconnection);
+								
+					}
+					
+					
+					if(l2mattypenametext == "glossy")
+					{
+						//添加diffuse图节点
+							if(adddiffuseflag == 0)
+							{
+							
+								//打开image节点模板
+								var image_instr = new Packages.org.xml.sax.InputSource();
+								image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+								
+								//解析image模板xml
+								var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+								var builder = factory.newDocumentBuilder();
+								var tm_imagexml = builder.parse(image_instr);
+								
+								//获取image节点的Node节点
+								var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+								
+								//获取image节点的name节点
+								var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+								
+								//获取name节点的text子节点,并设置属性
+								var timagenametext = timagenameNode.getChildNodes().item(0);
+								timagenametext.setNodeValue(masknode["diffuseName"]);
+								
+								//获取image节点的id子节点
+								var timageidNode = timageNode.getElementsByTagName("id").item(0);
+								
+								//获取id节点的text子节点,并设置属性
+								var timageidtext = timageidNode.getChildNodes().item(0);
+								timageidtext.setNodeValue(2);
+								
+								//获取linkedfilename子节点
+								var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+								
+								//获取linkedfilename节点的text子节点,并设置属性
+								var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+								timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" + masknode["diffuseName"]);
+								
+								
+								//将image node节点添加到ocs中
+								var tmpnode = ocmxml.importNode(timageNode,true);
+								nodes.appendChild(tmpnode);
+							}
+							
+							//打开image节点模板
+							var image_instr = new Packages.org.xml.sax.InputSource();
+							image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+							
+							//解析image模板xml
+							var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+							var builder = factory.newDocumentBuilder();
+							var tm_imagexml = builder.parse(image_instr);
+							
+							//获取image节点的Node节点
+							var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+							
+							//获取image节点的name节点
+							var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+							
+							//获取name节点的text子节点,并设置属性
+							var timagenametext = timagenameNode.getChildNodes().item(0);
+							timagenametext.setNodeValue(masknode["diffuseName"]);
+							
+							//获取image节点的id子节点
+							var timageidNode = timageNode.getElementsByTagName("id").item(0);
+							
+							//获取id节点的text子节点,并设置属性
+							var timageidtext = timageidNode.getChildNodes().item(0);
+							timageidtext.setNodeValue(2);
+							
+							//获取linkedfilename子节点
+							var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+							
+							//获取linkedfilename节点的text子节点,并设置属性
+							var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+							timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" +  masknode["diffuseName"]);
+							
+							
+							//将image node节点添加到ocs中
+							var tmpnode = ocmxml.importNode(timageNode,true);
+							
+					
+						
+						//创建diffuse节点与material节点的链接
+							//获取nodepinconnections子节点
+							var nodepinconnections =  NodeGraph.getElementsByTagName("nodepinconnections").item(NodeGraph.getElementsByTagName("nodepinconnections").length - 1);
+							
+							
+							//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+							var nodepinconnection = ocmxml.createElement("nodepinconnection");
+							
+							
+							//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+							var sourceid = ocmxml.createElement("sourceid");
+							sourceid.appendChild(ocmxml.createTextNode(2));
+							nodepinconnection.appendChild(sourceid);
+							
+							//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+							var sourcepinid = ocmxml.createElement("sourcepinid");
+							sourcepinid.appendChild(ocmxml.createTextNode("0"));
+							nodepinconnection.appendChild(sourcepinid);
+							
+							
+							//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+							var destid = ocmxml.createElement("destid");
+							destid.appendChild(ocmxml.createTextNode(l2matidtext));
+							nodepinconnection.appendChild(destid);
+							
+							//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+							destpinid = ocmxml.createElement("destpinid")
+							destpinid.appendChild(ocmxml.createTextNode("0"));
+							nodepinconnection.appendChild(destpinid);
+							
+							
+							//将nodepinconnection节点添加到nodepinconnections节点之下
+							nodepinconnections.appendChild(nodepinconnection);
+								
+					}
+					
+					
+					//将二级材质节点添加到一级材质中
+					var tmpnode = ocmxml.importNode(l2matNode,true);
+					nodes.appendChild(tmpnode);
+							
+					
+					//out.write(l2matrt);
+					//获取nodepinconnections子节点
+					var nodepinconnections =  NodeGraph.getElementsByTagName("nodepinconnections").item(NodeGraph.getElementsByTagName("nodepinconnections").length - 1);
+					
+					//如果是第一次添加材质节点
+					if(l2matindex == 5)
+					{
+						//将第一级mix节点与输出节点相连
+							//创建一个nodepinconnection节点，即可以存储模型中材质输入与材质节点中输出节点的一组对应关系
+							var nodepinconnection = ocmxml.createElement("nodepinconnection");
+							
+							
+							//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+							var sourceid = ocmxml.createElement("sourceid");
+							sourceid.appendChild(ocmxml.createTextNode(l2matindex));
+							nodepinconnection.appendChild(sourceid);
+							
+							//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+							var sourcepinid = ocmxml.createElement("sourcepinid");
+							sourcepinid.appendChild(ocmxml.createTextNode("0"));
+							nodepinconnection.appendChild(sourcepinid);
+							
+							
+							//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+							var destid = ocmxml.createElement("destid");
+							destid.appendChild(ocmxml.createTextNode("1"));
+							nodepinconnection.appendChild(destid);
+							
+							//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+							destpinid = ocmxml.createElement("destpinid")
+							destpinid.appendChild(ocmxml.createTextNode("0"));
+							nodepinconnection.appendChild(destpinid);
+							
+							
+							//将nodepinconnection节点添加到nodepinconnections节点之下
+							nodepinconnections.appendChild(nodepinconnection);
+							
+																		
+						
+						
+					}
+
+					l2matindex = l2matindex + 1;
+				}
+				
+
+				
+			}
+		}
+		//将ocm文件直接存入jcr中
+			//创建xml transformer
+			var transfactory = new Packages.javax.xml.transform.TransformerFactory.newInstance();
+			var transformer = transfactory.newTransformer();
+			
+			//创建stringWriter与xml StreamResult
+			var stringWriter = new Packages.java.io.StringWriter();
+			var result = new Packages.javax.xml.transform.stream.StreamResult(stringWriter);
+			
+			//将xml数据写入result中
+			transformer.transform(new Packages.javax.xml.transform.dom.DOMSource(ocmxml), result);
+
+			//如果已经存在ocm节点则删除
+			if(diffnode["l1mat.ocm"] != null)
+			{
+				diffnode["l1mat.ocm"].remove();
+				diffnode.save();
+			}
+			
+			//添加ocm节点
+			var fileNode = diffnode.addNode("l1mat.ocm", "nt:file");
+			var resNode = fileNode.addNode("jcr:content", "nt:resource");
+			
+			//将数据写入ocm节点之下
+			resNode.setProperty("jcr:data", stringWriter.getBuffer());
+				
+			currentNode.save();	
+		
+		//将一级材质引用添加到相应material节点
+			var matnode = getmat_by_diffuse(diffusename,currentNode);
+			//out.write(matnode);
+			if(matnode != null)
+			{
+				var tnode;
+				for(var i in matnode)
+				{
+					matnode[i].setProperty("sp:refL1Material",fileNode.getPath());
+					tnode = matnode[i];
+					matnode[i].save();
+				}
+				
+				
+				//寻找材质引用diffuse图数据，将数据写入到l1mat中
+				//获取材质节点父节点
+				var matpnode = tnode.getParent();
+				//texturepath
+				var texpath = "";
+				//查找父级节点下的ImageTexture子节点
+				for(var i in matpnode)
+				{
+					var imnode = matpnode[i];
+					if(imnode["sp:Tag"] == "ImageTexture")
+					{
+						texpath = imnode["url"];
+					}
+				}
+				//处理texpath
+				texpath = texpath.substr(texpath.indexOf("/"));
+				//根据当前节点获取其model节点
+				var modelnode = currentNode;
+				while(1)
+				{
+					modelnode = modelnode.getParent();
+					if(modelnode["sling:resourceType"] == "model")
+					{
+						break;
+					}
+				}
+				//获取texture数据节点路径
+				texpath = modelnode.getPath() + "/diffuse" + texpath;
+				if(texpath[0] == "/")
+				{
+					texpath = texpath.substr(1);
+				}
+				var texdatanode = GVAR_RootNode.getNode(texpath);
+				//将texture数据写入jcr中
+				if(texdatanode != null)
+				{
+					if(diffnode["diffusefile"] != null)
+					{
+						diffnode["diffusefile"].remove();
+						diffnode.save();
+					}
+					var diff_file = diffnode.addNode("diffusefile", "nt:file");
+					var diffContent = diff_file.addNode("jcr:content", "nt:resource");
+					diffContent.setProperty("jcr:data",texdatanode["jcr:content"]["jcr:data"]);
+					diffnode.save();
+				}
+				//matnode.save();
+			}
+	}
+	
+	//处理有diffuse贴图的mask
+	function pro_diffuse(diffnode)
+	{
+		var diffusename = "";
+		
+
+		//打开ocm模板文件
+			var l1mat_str = 
+				"<?xml version='1.0' encoding='utf-8'?>\
+				<OCS_1_0_23_Macro>\
+				<embeddedimages>\
+				</embeddedimages>\
+				 <Node>\
+				  <name>Material Macro</name>\
+				  <typename>material macro</typename>\
+				  <id>1</id>\
+				  <position>0.177 0.2125</position>\
+				  <parameters>\
+				   <pintype>30010</pintype>\
+				  </parameters>\
+				  <inputnodepins>\
+				  </inputnodepins>\
+				  <childgraph>\
+				   <NodeGraph>\
+					<name>Material Macro</name>\
+					<currentnewnodeid>2</currentnewnodeid>\
+					<currentnewnodepinconnectionid>1</currentnewnodepinconnectionid>\
+					<nodes>\
+					 <Node>\
+					  <name>Material Macro (out)</name>\
+					  <typename>terminator</typename>\
+					  <id>1</id>\
+					  <position>0.5 0.9</position>\
+					  <parameters>\
+					   <pintype>30010</pintype>\
+					  </parameters>\
+					  <inputnodepins>\
+					   <NodePin>\
+						<typename>input</typename>\
+						<id>0</id>\
+						<pintype>20005</pintype>\
+						<hasinternalnodegraph>false</hasinternalnodegraph>\
+					   </NodePin>\
+					  </inputnodepins>\
+					 </Node>\
+					</nodes>\
+					<nodepinconnections>\
+					</nodepinconnections>\
+				   </NodeGraph>\
+				  </childgraph>\
+				 </Node>\
+				</OCS_1_0_23_Macro>";
+			var l1mat_instr = new Packages.org.xml.sax.InputSource();
+			l1mat_instr.setCharacterStream(new Packages.java.io.StringReader(l1mat_str));
+									
+			var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+			var builder = factory.newDocumentBuilder();
+			var ocmxml = builder.parse(l1mat_instr);
+			
+			//获取OCS_1_0_23_Scene节点，即ocs的根节点
+			var scenert = ocmxml.getElementsByTagName("OCS_1_0_23_Macro");
+			
+			
+			//out.write(scenert);
+			
+			if(scenert.item(0).getNodeName() == "OCS_1_0_23_Macro" )
+			{
+				out.write("OCS_1_0_23_Macro\n");
+				
+				//获取embeddedimages子节点
+				var embeddedimagesnode = scenert.item(0).getElementsByTagName("embeddedimages").item(0);
+				
+				//embeddedimages中已有image
+				var em_images = [];
+				
+				var em_floatimages = [];
+				
+				//获取childgraph子节点
+				var  childgraph = scenert.item(0).getElementsByTagName("childgraph").item(0);
+				if(childgraph != null)
+				{
+					out.write("childgraph\n");
+					
+					//获取NodeGraph子节点
+					var NodeGraph = childgraph.getElementsByTagName("NodeGraph").item(0);
+					
+					//获取name节点
+					var matname = NodeGraph.getElementsByTagName("name").item(0);
+					
+					out.write(matname.getChildNodes().item(0).getNodeValue() + "\n");
+					
+					//设置name属性
+					matname.getChildNodes().item(0).setNodeValue("test mat");
+					
+					//获取currentnewnodeid子节点
+					var currentnewnodeid = NodeGraph.getElementsByTagName("currentnewnodeid").item(0);
+					
+					//获取nodes子节点
+					var nodes = NodeGraph.getElementsByTagName("nodes").item(0);
+					
+					
+
+					
+					out.write("diffnode : " + diffnode + "\n");
+					
+					//一级材质最外层diffuse贴图添加标志
+					var adddiffuseflag = 0;
+					
+					var l2matindex = 5;
+					//遍历diffuse节点下的mask节点
+					for(var im in diffnode)
+					{
+						//out.write(diffnode.getNodes().length + "\n");
+						var masknode = diffnode[im];
+						if(masknode["sling:resourceType"] == "mask")
+						{
+							//获取mask贴图
+							var maskfilefiledata = masknode["maskfile"];
+							var filedata = maskfilefiledata.getNode("jcr:content").getProperty("jcr:data").getStream();
+							//获取diffuseName
+							diffusename =masknode["diffuseName"];
+							out.write(masknode + "\n");
+							/*while(1)
+							{
+								var buf = new String();
+								buf = filedata.read();
+								if(buf == null)
+								{
+									break;
+								}
+								out.write(String.fromCharCode(buf));
+							}*/
+							out.write("\n");
+							
+							//dumpFile("c:/tmp/", masknode["name"], filedata);
+							
+						}
+						else
+						{
+							continue;
+						}
+						
+						//打开image节点模板
+						var image_instr = new Packages.org.xml.sax.InputSource();
+						image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+						
+						//解析image模板xml
+						var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+						var builder = factory.newDocumentBuilder();
+						var tm_imagexml = builder.parse(image_instr);
+						
+						//获取image节点的Node节点
+						var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+						
+						//获取image节点的name节点
+						var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+						
+						//获取name节点的text子节点,并设置属性
+						var timagenametext = timagenameNode.getChildNodes().item(0);
+						timagenametext.setNodeValue(masknode["name"]);
+						
+						//获取image节点的id子节点
+						var timageidNode = timageNode.getElementsByTagName("id").item(0);
+						
+						//获取id节点的text子节点,并设置属性
+						var timageidtext = timageidNode.getChildNodes().item(0);
+						timageidtext.setNodeValue(diffnode.getNodes().length*2 + l2matindex);
+						
+						//获取linkedfilename子节点
+						var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+						
+						//获取linkedfilename节点的text子节点,并设置属性
+						var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+						timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" + masknode["diffuseName"] + "_" + masknode["name"]);
+						
+						//获取image节点的invert NodePin节点并设置属性
+						//获取NodePin
+						var nodepins = timageNode.getElementsByTagName("NodePin");
+						
+						if(nodepins != null)
+						{
+							var invertNode = nodepins.item(nodepins.length - 1);
+							if(invertNode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue() == "invert")
+							{
+								//获取invert的value节点
+								var invertvaluenode = invertNode.getElementsByTagName("value").item(0);
+								
+								//获取其text属性节点
+								var invertvaluetext = invertvaluenode.getChildNodes().item(0);
+								
+								//设置其属性值
+								invertvaluetext.setNodeValue("true");
+								
+							}
+						}
+						
+						//将image node节点添加到ocs中
+						var tmpnode = ocmxml.importNode(timageNode,true);
+						nodes.appendChild(tmpnode);
+						
+						
+						
+						
+
+						
+						
+						//获取二级材质文件test/materiallib/m1.ocm
+						var l2matlibref = masknode["L2material"];
+						if(l2matlibref[0] == "/")
+						{
+							l2matlibref = l2matlibref.substr(1);
+						}
+						
+						var l2matlibnode = GVAR_RootNode.getNode(l2matlibref);
+						
+						var l2matref = l2matlibnode["ref"];
+						if(l2matref[0] == "/")
+						{
+							l2matref = l2matref.substr(1);
+						}
+						
+						var l2matfilenode = GVAR_RootNode.getNode(l2matref);
+						
+						var l2matfile = l2matfilenode["ocm"].getNodes()[0]["jcr:content"]["jcr:data"];
+						
+						var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+						var builder = factory.newDocumentBuilder();
+						var l2matxml = builder.parse(l2matfile);
+				
+						//获取OCS_1_0_23_Macro节点，即ocm的根节点
+						var l2matrt = l2matxml.getDocumentElement();
+						
+						//获取embeddedimages子节点
+						var tembeddedimagelist = l2matrt.getElementsByTagName("embeddedimages");
+						
+						if(tembeddedimagelist != null)
+						{
+							var tembeddedimages = tembeddedimagelist.item(0);
+							
+							if(tembeddedimages != null)
+							{
+								var timagenodelist = tembeddedimages.getElementsByTagName("image");
+								
+								for(var img = 0; img < timagenodelist.length; img++)
+								{
+									var timgnode = timagenodelist.item(img);
+									
+									//当前image name
+									var imagename = timgnode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+									var imagename = new String(imagename);
+										
+										
+									if(em_images.indexOf(imagename.toString()) == -1)
+									{
+										em_images.push(imagename.toString());
+										var tmpnode = ocmxml.importNode(timgnode,true);
+										embeddedimagesnode.appendChild(tmpnode);
+									}
+								}
+								
+								
+								
+								var timagenodelist = tembeddedimages.getElementsByTagName("floatimage");
+								
+								for(var img = 0; img < timagenodelist.length; img++)
+								{
+									var timgnode = timagenodelist.item(img);
+									
+									//当前image name
+									var imagename = timgnode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+									var imagename = new String(imagename);
+										
+										
+									if(em_floatimages.indexOf(imagename.toString()) == -1)
+									{
+										em_floatimages.push(imagename.toString());
+										var tmpnode = ocmxml.importNode(timgnode,true);
+										embeddedimagesnode.appendChild(tmpnode);
+									}
+								}
+							}
+						}
+						
+						
+						//获取其node子节点
+						var l2matNode = l2matrt.getElementsByTagName("Node").item(0);
+						
+						//获取二级材质类型
+						var l2mattypename = l2matNode.getElementsByTagName("typename").item(0);
+						var l2mattypenametext = l2mattypename.getChildNodes().item(0).getNodeValue();
+						
+					//按照二级材质类型判断是否需要添加diffuse贴图节点
+						
+						//如果材质类型是
+						if(l2mattypenametext == "material macro")
+						{
+							//获取当前节点的nodes子节点
+							var childnodes = l2matNode.getElementsByTagName("nodes").item(0);
+							
+							//添加diffuse image节点标志
+							var adddiffuseflag = 0;
+							//找到nodes下子节点的最大id,以便设置image节点的id
+							var maxid = 0;
+							var idnodes = l2matNode.getElementsByTagName("id");
+							for(var ni =0 ; ni < idnodes.length; ni++)
+							{
+								var idnode = idnodes.item(ni);
+								var idtext = idnode.getChildNodes().item(0).getNodeValue();
+								var idnum = new Number(idtext);
+								if(idnum > maxid)
+								{
+									maxid = idnum;
+								}
+							}
+							
+							
+							//遍历nodes节点下的所有node子节点
+							for(var ni =0 ; ni< childnodes.getElementsByTagName("Node").length; ni++)
+							{
+								//获取当前node节点
+								var inode = childnodes.getElementsByTagName("Node").item(ni);
+								
+								//获取当前node节点的typename
+								var inodetypename = inode.getElementsByTagName("typename").item(0);
+								
+								if(inodetypename.getChildNodes().item(0).getNodeValue() == "glossy")
+								{
+									//获取当前节点id
+									var inodeid = inode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+										
+									if(adddiffuseflag == 0)
+									{
+										
+										
+										//添加diffuse iamge节点,并设置id
+											//打开image节点模板
+											var image_instr = new Packages.org.xml.sax.InputSource();
+											image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+											
+											//解析image模板xml
+											var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+											var builder = factory.newDocumentBuilder();
+											var tm_imagexml = builder.parse(image_instr);
+																
+											//获取image节点的Node节点
+											var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+											
+											//获取image节点的name节点
+											var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+											
+											//获取name节点的text子节点,并设置属性
+											var timagenametext = timagenameNode.getChildNodes().item(0);
+											timagenametext.setNodeValue(masknode["diffuseName"]);
+											
+											//获取image节点的id子节点
+											var timageidNode = timageNode.getElementsByTagName("id").item(0);
+											
+											//获取id节点的text子节点,并设置属性
+											var timageidtext = timageidNode.getChildNodes().item(0);
+											timageidtext.setNodeValue(maxid + 1);
+											
+											//获取linkedfilename子节点
+											var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+											
+											//获取linkedfilename节点的text子节点,并设置属性
+											var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+											timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" + masknode[" diffuseName"]);
+											
+											
+											//将image node节点添加到ocs中
+											var tmpnode = l2matxml.importNode(timageNode,true);
+											childnodes.appendChild(tmpnode);
+										
+										
+											
+											
+											
+										//将已经添加diffuse的标识设置为1
+										adddiffuseflag = 1;
+									}
+									
+									//连接当前节点的diffuse节点与diffuse image节点
+									//创建diffuse节点与material节点的链接
+										//获取nodepinconnections子节点
+										var nodepinconnections =  l2matNode.getElementsByTagName("nodepinconnections").item(l2matNode.getElementsByTagName("nodepinconnections").length - 1);
+										
+										
+										//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+										var nodepinconnection = l2matxml.createElement("nodepinconnection");
+										
+										
+										//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+										var sourceid = l2matxml.createElement("sourceid");
+										sourceid.appendChild(l2matxml.createTextNode(maxid + 1));
+										nodepinconnection.appendChild(sourceid);
+										
+										//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+										var sourcepinid = l2matxml.createElement("sourcepinid");
+										sourcepinid.appendChild(l2matxml.createTextNode("0"));
+										nodepinconnection.appendChild(sourcepinid);
+										
+										
+										//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+										var destid = l2matxml.createElement("destid");
+										destid.appendChild(l2matxml.createTextNode(inodeid));
+										nodepinconnection.appendChild(destid);
+										
+										//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+										destpinid = l2matxml.createElement("destpinid")
+										destpinid.appendChild(l2matxml.createTextNode("0"));
+										nodepinconnection.appendChild(destpinid);
+										
+										
+										//将nodepinconnection节点添加到nodepinconnections节点之下
+										nodepinconnections.appendChild(nodepinconnection);
+								}
+								
+								
+								
+								if(inodetypename.getChildNodes().item(0).getNodeValue() == "diffuse")
+								{
+									//获取当前节点id
+									var inodeid = inode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+										
+									if(adddiffuseflag == 0)
+									{
+										
+										
+										//添加diffuse iamge节点,并设置id
+											//打开image节点模板
+											var image_instr = new Packages.org.xml.sax.InputSource();
+											image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+											
+											//解析image模板xml
+											var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+											var builder = factory.newDocumentBuilder();
+											var tm_imagexml = builder.parse(image_instr);
+											
+											//获取image节点的Node节点
+											var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+											
+											//获取image节点的name节点
+											var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+											
+											//获取name节点的text子节点,并设置属性
+											var timagenametext = timagenameNode.getChildNodes().item(0);
+											timagenametext.setNodeValue(masknode["diffuseName"]);
+											
+											//获取image节点的id子节点
+											var timageidNode = timageNode.getElementsByTagName("id").item(0);
+											
+											//获取id节点的text子节点,并设置属性
+											var timageidtext = timageidNode.getChildNodes().item(0);
+											timageidtext.setNodeValue(maxid + 1);
+											
+											//获取linkedfilename子节点
+											var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+											
+											//获取linkedfilename节点的text子节点,并设置属性
+											var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+											timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" + masknode["diffuseName"]);
+											
+											
+											//将image node节点添加到ocs中
+											var tmpnode = l2matxml.importNode(timageNode,true);
+											childnodes.appendChild(tmpnode);
+										
+											
+											
+											
+										//将已经添加diffuse的标识设置为1
+										adddiffuseflag = 1;
+									}
+									
+									//连接当前节点的diffuse节点与diffuse image节点
+									
+									//创建diffuse节点与material节点的链接
+										//获取nodepinconnections子节点
+										var nodepinconnections =  l2matNode.getElementsByTagName("nodepinconnections").item(l2matNode.getElementsByTagName("nodepinconnections").length - 1);
+										
+										
+										//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+										var nodepinconnection = l2matxml.createElement("nodepinconnection");
+										
+										
+										//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+										var sourceid = l2matxml.createElement("sourceid");
+										sourceid.appendChild(l2matxml.createTextNode(maxid + 1));
+										nodepinconnection.appendChild(sourceid);
+										
+										//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+										var sourcepinid = l2matxml.createElement("sourcepinid");
+										sourcepinid.appendChild(l2matxml.createTextNode("0"));
+										nodepinconnection.appendChild(sourcepinid);
+										
+										
+										//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+										var destid = l2matxml.createElement("destid");
+										destid.appendChild(l2matxml.createTextNode(inodeid));
+										nodepinconnection.appendChild(destid);
+										
+										//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+										destpinid = l2matxml.createElement("destpinid")
+										destpinid.appendChild(l2matxml.createTextNode("0"));
+										nodepinconnection.appendChild(destpinid);
+										
+										
+										//将nodepinconnection节点添加到nodepinconnections节点之下
+										nodepinconnections.appendChild(nodepinconnection);
+									
+								}
+								
+							}
+						}
+						
+						
+						
+						
+						
+						
+						
+						
+						//获取其id子节点
+						var l2matid = l2matNode.getElementsByTagName("id").item(0);
+						
+						//设置二级材质id号
+						l2matid.getChildNodes().item(0).setNodeValue(l2matindex);
+						
+						//获取当前节点id
+						var l2matidtext = l2matid.getChildNodes().item(0).getNodeValue();
+						
+						
+						
+						if(l2mattypenametext == "diffuse")
+						{
+							//添加diffuse图节点
+								if(adddiffuseflag == 0)
+								{
+								
+									//打开image节点模板
+									var image_instr = new Packages.org.xml.sax.InputSource();
+									image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+									
+									//解析image模板xml
+									var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+									var builder = factory.newDocumentBuilder();
+									var tm_imagexml = builder.parse(image_instr);
+									
+									//获取image节点的Node节点
+									var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+									
+									//获取image节点的name节点
+									var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+									
+									//获取name节点的text子节点,并设置属性
+									var timagenametext = timagenameNode.getChildNodes().item(0);
+									timagenametext.setNodeValue(masknode["diffuseName"]);
+									
+									//获取image节点的id子节点
+									var timageidNode = timageNode.getElementsByTagName("id").item(0);
+									
+									//获取id节点的text子节点,并设置属性
+									var timageidtext = timageidNode.getChildNodes().item(0);
+									timageidtext.setNodeValue(2);
+									
+									//获取linkedfilename子节点
+									var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+									
+									//获取linkedfilename节点的text子节点,并设置属性
+									var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+									timagelinkedfilenametext.setNodeValue(".\\" +masknode["modelName"] + "_" + masknode["diffuseName"]);
+									
+									
+									//将image node节点添加到ocs中
+									var tmpnode = ocmxml.importNode(timageNode,true);
+									nodes.appendChild(tmpnode);
+								}
+							//创建diffuse节点与material节点的链接
+								//获取nodepinconnections子节点
+								var nodepinconnections =  NodeGraph.getElementsByTagName("nodepinconnections").item(NodeGraph.getElementsByTagName("nodepinconnections").length - 1);
+								
+								
+								//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+								var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+								//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+								var sourceid = ocmxml.createElement("sourceid");
+								sourceid.appendChild(ocmxml.createTextNode(2));
+								nodepinconnection.appendChild(sourceid);
+								
+								//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+								var sourcepinid = ocmxml.createElement("sourcepinid");
+								sourcepinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(sourcepinid);
+								
+								
+								//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+								var destid = ocmxml.createElement("destid");
+								destid.appendChild(ocmxml.createTextNode(l2matidtext));
+								nodepinconnection.appendChild(destid);
+								
+								//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+								destpinid = ocmxml.createElement("destpinid")
+								destpinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(destpinid);
+								
+								
+								//将nodepinconnection节点添加到nodepinconnections节点之下
+								nodepinconnections.appendChild(nodepinconnection);
+									
+						}
+						
+						
+						if(l2mattypenametext == "glossy")
+						{
+							//添加diffuse图节点
+								if(adddiffuseflag == 0)
+								{
+								
+									//打开image节点模板
+									var image_instr = new Packages.org.xml.sax.InputSource();
+									image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+									
+									//解析image模板xml
+									var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+									var builder = factory.newDocumentBuilder();
+									var tm_imagexml = builder.parse(image_instr);
+									
+									//获取image节点的Node节点
+									var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+									
+									//获取image节点的name节点
+									var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+									
+									//获取name节点的text子节点,并设置属性
+									var timagenametext = timagenameNode.getChildNodes().item(0);
+									timagenametext.setNodeValue(masknode["diffuseName"]);
+									
+									//获取image节点的id子节点
+									var timageidNode = timageNode.getElementsByTagName("id").item(0);
+									
+									//获取id节点的text子节点,并设置属性
+									var timageidtext = timageidNode.getChildNodes().item(0);
+									timageidtext.setNodeValue(2);
+									
+									//获取linkedfilename子节点
+									var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+									
+									//获取linkedfilename节点的text子节点,并设置属性
+									var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+									timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" + masknode["diffuseName"]);
+									
+									
+									//将image node节点添加到ocs中
+									var tmpnode = ocmxml.importNode(timageNode,true);
+									nodes.appendChild(tmpnode);
+								}
+								
+								//打开image节点模板
+								var image_instr = new Packages.org.xml.sax.InputSource();
+								image_instr.setCharacterStream(new Packages.java.io.StringReader(image_str));
+								
+								//解析image模板xml
+								var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+								var builder = factory.newDocumentBuilder();
+								var tm_imagexml = builder.parse(image_instr);
+								
+								//获取image节点的Node节点
+								var timageNode = tm_imagexml.getElementsByTagName("Node").item(0);
+								
+								//获取image节点的name节点
+								var timagenameNode = timageNode.getElementsByTagName("name").item(0);
+								
+								//获取name节点的text子节点,并设置属性
+								var timagenametext = timagenameNode.getChildNodes().item(0);
+								timagenametext.setNodeValue(masknode["diffuseName"]);
+								
+								//获取image节点的id子节点
+								var timageidNode = timageNode.getElementsByTagName("id").item(0);
+								
+								//获取id节点的text子节点,并设置属性
+								var timageidtext = timageidNode.getChildNodes().item(0);
+								timageidtext.setNodeValue(2);
+								
+								//获取linkedfilename子节点
+								var timagelinkedfilenameNode = timageNode.getElementsByTagName("linkedfilename").item(0);
+								
+								//获取linkedfilename节点的text子节点,并设置属性
+								var timagelinkedfilenametext = timagelinkedfilenameNode.getChildNodes().item(0);
+								timagelinkedfilenametext.setNodeValue(".\\" + masknode["modelName"] + "_" +  masknode["diffuseName"]);
+								
+								
+								//将image node节点添加到ocs中
+								var tmpnode = ocmxml.importNode(timageNode,true);
+								
+						
+							
+							//创建diffuse节点与material节点的链接
+								//获取nodepinconnections子节点
+								var nodepinconnections =  NodeGraph.getElementsByTagName("nodepinconnections").item(NodeGraph.getElementsByTagName("nodepinconnections").length - 1);
+								
+								
+								//创建一个nodepinconnection节点，即可以存材质中图片输入与图片节点中输出节点的一组对应关系
+								var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+								//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+								var sourceid = ocmxml.createElement("sourceid");
+								sourceid.appendChild(ocmxml.createTextNode(2));
+								nodepinconnection.appendChild(sourceid);
+								
+								//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+								var sourcepinid = ocmxml.createElement("sourcepinid");
+								sourcepinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(sourcepinid);
+								
+								
+								//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+								var destid = ocmxml.createElement("destid");
+								destid.appendChild(ocmxml.createTextNode(l2matidtext));
+								nodepinconnection.appendChild(destid);
+								
+								//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+								destpinid = ocmxml.createElement("destpinid")
+								destpinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(destpinid);
+								
+								
+								//将nodepinconnection节点添加到nodepinconnections节点之下
+								nodepinconnections.appendChild(nodepinconnection);
+									
+						}
+						
+						
+						//将二级材质节点添加到一级材质中
+						var tmpnode = ocmxml.importNode(l2matNode,true);
+						nodes.appendChild(tmpnode);
+								
+						//创建mix node
+						var mixnode = ocmxml.createElement("Node");
+						
+						//添加mix node中的name节点
+						var mixnamenode = ocmxml.createElement("name");
+						mixnamenode.appendChild(ocmxml.createTextNode("mix_" + (diffnode.getNodes().length + l2matindex)));
+						mixnode.appendChild(mixnamenode);
+						
+						//添加mix node中的typename节点
+						var mixtypenamenode = ocmxml.createElement("typename");
+						mixtypenamenode.appendChild(ocmxml.createTextNode("material mix"));
+						mixnode.appendChild(mixtypenamenode);
+						
+						
+						//添加mix node中的id节点
+						var mixidnode = ocmxml.createElement("id");
+						mixidnode.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+						mixnode.appendChild(mixidnode);
+						
+						//添加mix node中的position节点
+						var mixpositionnode = ocmxml.createElement("position");
+						mixpositionnode.appendChild(ocmxml.createTextNode("0.642 1.155"));
+						mixnode.appendChild(mixpositionnode);
+						
+						
+						//添加mix node中的inputnodepins节点
+						var mixinputnodepinsnode = ocmxml.createElement("inputnodepins");
+						
+						//添加inputnodepins中的amountNodePin 节点
+			
+							//创建amount nodepin
+							var mixamountNodePinnode = ocmxml.createElement("NodePin");
+							
+							//添加amount typename节点
+							var mixamounttypenamenode = ocmxml.createElement("typename");
+							mixamounttypenamenode.appendChild(ocmxml.createTextNode("amount"));
+							mixamountNodePinnode.appendChild(mixamounttypenamenode);
+							
+							//添加amount id节点
+							var mixamountidnode = ocmxml.createElement("id");
+							mixamountidnode.appendChild(ocmxml.createTextNode(0));
+							mixamountNodePinnode.appendChild(mixamountidnode);
+							
+							//添加amount pintype节点
+							var mixamountpintypenode = ocmxml.createElement("pintype");
+							mixamountpintypenode.appendChild(ocmxml.createTextNode(20000));
+							mixamountNodePinnode.appendChild(mixamountpintypenode);
+							
+							//添加amount hasinternalnodegraph节点
+							var mixamounthasinternalnodegraphnode = ocmxml.createElement("hasinternalnodegraph");
+							mixamounthasinternalnodegraphnode.appendChild(ocmxml.createTextNode("false"));
+							mixamountNodePinnode.appendChild(mixamounthasinternalnodegraphnode);
+							
+							mixinputnodepinsnode.appendChild(mixamountNodePinnode);
+							
+						
+						//添加inputnodepins中的material1 NodePin 节点
+			
+							//material1 nodepin
+							var mixmaterial1NodePinnode = ocmxml.createElement("NodePin");
+							
+							//添加material1 typename节点
+							var mixmaterial1typenamenode = ocmxml.createElement("typename");
+							mixmaterial1typenamenode.appendChild(ocmxml.createTextNode("material1"));
+							mixmaterial1NodePinnode.appendChild(mixmaterial1typenamenode);
+							
+							//添加material1 id节点
+							var mixmaterial1idnode = ocmxml.createElement("id");
+							mixmaterial1idnode.appendChild(ocmxml.createTextNode(1));
+							mixmaterial1NodePinnode.appendChild(mixmaterial1idnode);
+							
+							//添加material1 pintype节点
+							var mixmaterial1pintypenode = ocmxml.createElement("pintype");
+							mixmaterial1pintypenode.appendChild(ocmxml.createTextNode(20005));
+							mixmaterial1NodePinnode.appendChild(mixmaterial1pintypenode);
+							
+							//添加material1 hasinternalnodegraph节点
+							var mixmaterial1hasinternalnodegraphnode = ocmxml.createElement("hasinternalnodegraph");
+							mixmaterial1hasinternalnodegraphnode.appendChild(ocmxml.createTextNode("false"));
+							mixmaterial1NodePinnode.appendChild(mixmaterial1hasinternalnodegraphnode);
+							
+							mixinputnodepinsnode.appendChild(mixmaterial1NodePinnode);
+							
+						//添加inputnodepins中的material2 NodePin 节点
+			
+							//material2 nodepin
+							var mixmaterial2NodePinnode = ocmxml.createElement("NodePin");
+							
+							//添加material2 typename节点
+							var mixmaterial2typenamenode = ocmxml.createElement("typename");
+							mixmaterial2typenamenode.appendChild(ocmxml.createTextNode("material2"));
+							mixmaterial2NodePinnode.appendChild(mixmaterial2typenamenode);
+							
+							//添加material2 id节点
+							var mixmaterial2idnode = ocmxml.createElement("id");
+							mixmaterial2idnode.appendChild(ocmxml.createTextNode(2));
+							mixmaterial2NodePinnode.appendChild(mixmaterial2idnode);
+							
+							//添加material2 pintype节点
+							var mixmaterial2pintypenode = ocmxml.createElement("pintype");
+							mixmaterial2pintypenode.appendChild(ocmxml.createTextNode(20005));
+							mixmaterial2NodePinnode.appendChild(mixmaterial2pintypenode);
+							
+							//添加material2 hasinternalnodegraph节点
+							var mixmaterial2hasinternalnodegraphnode = ocmxml.createElement("hasinternalnodegraph");
+							mixmaterial2hasinternalnodegraphnode.appendChild(ocmxml.createTextNode("false"));
+							mixmaterial2NodePinnode.appendChild(mixmaterial2hasinternalnodegraphnode);
+							
+							mixinputnodepinsnode.appendChild(mixmaterial2NodePinnode);
+						
+						
+						
+						
+						mixnode.appendChild(mixinputnodepinsnode);
+						
+						//将mix节点添加到nodes节点之下
+						nodes.appendChild(mixnode);
+						//out.write(l2matrt);
+						//获取nodepinconnections子节点
+						var nodepinconnections =  NodeGraph.getElementsByTagName("nodepinconnections").item(NodeGraph.getElementsByTagName("nodepinconnections").length - 1);
+						
+						//如果是第一次添加材质节点
+						if(l2matindex == 5)
+						{
+							//将第一级mix节点与输出节点相连
+								//创建一个nodepinconnection节点，即可以存储模型中材质输入与材质节点中输出节点的一组对应关系
+								var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+								//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+								var sourceid = ocmxml.createElement("sourceid");
+								sourceid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+								nodepinconnection.appendChild(sourceid);
+								
+								//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+								var sourcepinid = ocmxml.createElement("sourcepinid");
+								sourcepinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(sourcepinid);
+								
+								
+								//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+								var destid = ocmxml.createElement("destid");
+								destid.appendChild(ocmxml.createTextNode("1"));
+								nodepinconnection.appendChild(destid);
+								
+								//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+								destpinid = ocmxml.createElement("destpinid")
+								destpinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(destpinid);
+								
+								
+								//将nodepinconnection节点添加到nodepinconnections节点之下
+								nodepinconnections.appendChild(nodepinconnection);
+								
+								
+								
+							//将mask image节点与mix节点相连	
+								//创建一个nodepinconnection节点，即可以存mix中材质输入与材质节点中输出节点的一组对应关系
+								var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+								//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+								var sourceid = ocmxml.createElement("sourceid");
+								sourceid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length*2 + l2matindex));
+								nodepinconnection.appendChild(sourceid);
+								
+								//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+								var sourcepinid = ocmxml.createElement("sourcepinid");
+								sourcepinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(sourcepinid);
+								
+								
+								//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+								var destid = ocmxml.createElement("destid");
+								destid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+								nodepinconnection.appendChild(destid);
+								
+								//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+								destpinid = ocmxml.createElement("destpinid")
+								destpinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(destpinid);
+								
+								//将nodepinconnection节点添加到nodepinconnections节点之下
+								nodepinconnections.appendChild(nodepinconnection);
+								
+							//将二级材质节点与mix节点相连	
+								//创建一个nodepinconnection节点，即可以存mix中材质输入与材质节点中输出节点的一组对应关系
+								var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+								//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+								var sourceid = ocmxml.createElement("sourceid");
+								sourceid.appendChild(ocmxml.createTextNode(l2matindex));
+								nodepinconnection.appendChild(sourceid);
+								
+								//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+								var sourcepinid = ocmxml.createElement("sourcepinid");
+								sourcepinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(sourcepinid);
+								
+								
+								//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+								var destid = ocmxml.createElement("destid");
+								destid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+								nodepinconnection.appendChild(destid);
+								
+								//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+								destpinid = ocmxml.createElement("destpinid")
+								destpinid.appendChild(ocmxml.createTextNode("1"));
+								nodepinconnection.appendChild(destpinid);
+								
+								
+								//将nodepinconnection节点添加到nodepinconnections节点之下
+								nodepinconnections.appendChild(nodepinconnection);
+								
+							//确定当前mask节点不是最后一个,并将下一级mix节点与本机mix节点的material2相连
+								if(diffnode.getNodes().length > (l2matindex - 4))
+								{
+									//创建一个nodepinconnection节点，即可以存mix中材质输入与材质节点中输出节点的一组对应关系
+									var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+									//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+									var sourceid = ocmxml.createElement("sourceid");
+									sourceid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex + 1));
+									nodepinconnection.appendChild(sourceid);
+									
+									//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+									var sourcepinid = ocmxml.createElement("sourcepinid");
+									sourcepinid.appendChild(ocmxml.createTextNode("0"));
+									nodepinconnection.appendChild(sourcepinid);
+									
+									
+									//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+									var destid = ocmxml.createElement("destid");
+									destid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+									nodepinconnection.appendChild(destid);
+									
+									//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+									destpinid = ocmxml.createElement("destpinid")
+									destpinid.appendChild(ocmxml.createTextNode("2"));
+									nodepinconnection.appendChild(destpinid);
+									
+									
+									//将nodepinconnection节点添加到nodepinconnections节点之下
+									nodepinconnections.appendChild(nodepinconnection);
+								}
+							
+						}
+						else
+						{
+							//将mask image节点与mix节点相连	
+								//创建一个nodepinconnection节点，即可以存mix中材质输入与材质节点中输出节点的一组对应关系
+								var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+								//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+								var sourceid = ocmxml.createElement("sourceid");
+								sourceid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length*2 + l2matindex));
+								nodepinconnection.appendChild(sourceid);
+								
+								//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+								var sourcepinid = ocmxml.createElement("sourcepinid");
+								sourcepinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(sourcepinid);
+								
+								
+								//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+								var destid = ocmxml.createElement("destid");
+								destid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+								nodepinconnection.appendChild(destid);
+								
+								//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+								destpinid = ocmxml.createElement("destpinid")
+								destpinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(destpinid);
+								
+								//将nodepinconnection节点添加到nodepinconnections节点之下
+								nodepinconnections.appendChild(nodepinconnection);
+								
+							//将二级材质节点与mix节点相连	
+								//创建一个nodepinconnection节点，即可以存mix中材质输入与材质节点中输出节点的一组对应关系
+								var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+								//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+								var sourceid = ocmxml.createElement("sourceid");
+								sourceid.appendChild(ocmxml.createTextNode(l2matindex));
+								nodepinconnection.appendChild(sourceid);
+								
+								//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+								var sourcepinid = ocmxml.createElement("sourcepinid");
+								sourcepinid.appendChild(ocmxml.createTextNode("0"));
+								nodepinconnection.appendChild(sourcepinid);
+								
+								
+								//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+								var destid = ocmxml.createElement("destid");
+								destid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+								nodepinconnection.appendChild(destid);
+								
+								//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+								destpinid = ocmxml.createElement("destpinid")
+								destpinid.appendChild(ocmxml.createTextNode("1"));
+								nodepinconnection.appendChild(destpinid);
+								
+								
+								//将nodepinconnection节点添加到nodepinconnections节点之下
+								nodepinconnections.appendChild(nodepinconnection);
+								
+							//确定当前mask节点不是最后一个,并将下一级mix节点与本机mix节点的material2相连
+								if(diffnode.getNodes().length > (l2matindex - 4))
+								{
+									//创建一个nodepinconnection节点，即可以存mix中材质输入与材质节点中输出节点的一组对应关系
+									var nodepinconnection = ocmxml.createElement("nodepinconnection");
+								
+								
+									//创建sourceid节点，并设置其对应材质的id并将其添加到nodepinconnection节点之下
+									var sourceid = ocmxml.createElement("sourceid");
+									sourceid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex + 1));
+									nodepinconnection.appendChild(sourceid);
+									
+									//创建sourcepinid节点，并设置其对应材质的中的pinid并将其添加到nodepinconnection节点之下
+									var sourcepinid = ocmxml.createElement("sourcepinid");
+									sourcepinid.appendChild(ocmxml.createTextNode("0"));
+									nodepinconnection.appendChild(sourcepinid);
+									
+									
+									//创建destid节点，并设置其对应模型中输入节点的id，将其添加到nodepinconnection节点之下
+									var destid = ocmxml.createElement("destid");
+									destid.appendChild(ocmxml.createTextNode(diffnode.getNodes().length + l2matindex));
+									nodepinconnection.appendChild(destid);
+									
+									//创建destpinid节点，并设置其对应模型中输入节点中的pinid，将其添加到nodepinconnection节点之下
+									destpinid = ocmxml.createElement("destpinid")
+									destpinid.appendChild(ocmxml.createTextNode("2"));
+									nodepinconnection.appendChild(destpinid);
+									
+									
+									//将nodepinconnection节点添加到nodepinconnections节点之下
+									nodepinconnections.appendChild(nodepinconnection);
+								}
+							
+						}
+
+						l2matindex = l2matindex + 1;
+					}
+					
+
+					
+				}
+			}
+			//将ocm文件直接存入jcr中
+				//创建xml transformer
+				var transfactory = new Packages.javax.xml.transform.TransformerFactory.newInstance();
+				var transformer = transfactory.newTransformer();
+				
+				//创建stringWriter与xml StreamResult
+				var stringWriter = new Packages.java.io.StringWriter();
+				var result = new Packages.javax.xml.transform.stream.StreamResult(stringWriter);
+				
+				//将xml数据写入result中
+				transformer.transform(new Packages.javax.xml.transform.dom.DOMSource(ocmxml), result);
+
+				//如果已经存在ocm节点则删除
+				if(diffnode["l1mat.ocm"] != null)
+				{
+					diffnode["l1mat.ocm"].remove();
+					diffnode.save();
+				}
+				
+				//添加ocm节点
+				var fileNode = diffnode.addNode("l1mat.ocm", "nt:file");
+				var resNode = fileNode.addNode("jcr:content", "nt:resource");
+				
+				//将数据写入ocm节点之下
+				resNode.setProperty("jcr:data", stringWriter.getBuffer());
+					
+				currentNode.save();	
+			
+			//将一级材质引用添加到相应material节点
+				var matnode = getmat_by_diffuse(diffusename,currentNode);
+				//out.write(matnode);
+				if(matnode != null)
+				{
+					var tnode;
+					for(var i in matnode)
+					{
+						matnode[i].setProperty("sp:refL1Material",fileNode.getPath());
+						tnode = matnode[i];
+						matnode[i].save();
+					}
+					
+					
+					//寻找材质引用diffuse图数据，将数据写入到l1mat中
+					//获取材质节点父节点
+					var matpnode = tnode.getParent();
+					//texturepath
+					var texpath = "";
+					//查找父级节点下的ImageTexture子节点
+					for(var i in matpnode)
+					{
+						var imnode = matpnode[i];
+						if(imnode["sp:Tag"] == "ImageTexture")
+						{
+							texpath = imnode["url"];
+						}
+					}
+					//处理texpath
+					texpath = texpath.substr(texpath.indexOf("/"));
+					//根据当前节点获取其model节点
+					var modelnode = currentNode;
+					while(1)
+					{
+						modelnode = modelnode.getParent();
+						if(modelnode["sling:resourceType"] == "model")
+						{
+							break;
+						}
+					}
+					//获取texture数据节点路径
+					texpath = modelnode.getPath() + "/diffuse" + texpath;
+					if(texpath[0] == "/")
+					{
+						texpath = texpath.substr(1);
+					}
+					var texdatanode = GVAR_RootNode.getNode(texpath);
+					//将texture数据写入jcr中
+					if(texdatanode != null)
+					{
+						if(diffnode["diffusefile"] != null)
+						{
+							diffnode["diffusefile"].remove();
+							diffnode.save();
+						}
+						var diff_file = diffnode.addNode("diffusefile", "nt:file");
+						var diffContent = diff_file.addNode("jcr:content", "nt:resource");
+						diffContent.setProperty("jcr:data",texdatanode["jcr:content"]["jcr:data"]);
+						diffnode.save();
+					}
+					//matnode.save();
+				}
+	}
+	
+	
+	//处理一级材质
+	function process_l1mat()
+	{
+		//遍历一级材质子节点获取diffuse节点
+		for(var i in currentNode)
+		{
+			if(currentNode[i]["sling:resourceType"] == "diffuse")
+			{
+				if(currentNode[i]["sp:isauto"] == "true")
+				{
+					var diffnode = currentNode[i];
+					
+					if(diffnode["sp:hasdiffuse"] == "false")
+					{
+						without_diffuse(diffnode);
+					}
+					
+					
+					if(diffnode["sp:hasdiffuse"] == "true")
+					{
+						auto_diffuse(diffnode);
+					}
+				}
+				else
+				{
+					var diffnode = currentNode[i];
+					pro_diffuse(diffnode);
+				}
+						
+					
+			}
+		}
+		
+	}
+	
+	
+	process_l1mat();	
+ %>

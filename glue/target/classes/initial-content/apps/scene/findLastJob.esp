@@ -1,0 +1,44 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+function findLastJob(node)
+{
+	var lastJobNode;
+	
+	try{
+		//try getting render node
+		try{
+			var rdNode = node.getNode('render');
+		}catch(e){
+			throw new Error("Can not find \'render\' node");
+		}
+		
+		//find last job node
+		var jobNodes = rdNode.getNodes();
+		var lastJobNode = jobNodes[jobNodes.length - 1];
+		
+		if(lastJobNode)
+		{
+			out.write(lastJobNode.path);
+		}else{
+			out.write('error');
+		}
+	}catch(e){
+		out.write('error');
+	}
+}
+
+findLastJob(currentNode);
+%>

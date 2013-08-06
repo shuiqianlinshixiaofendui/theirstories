@@ -1,0 +1,9 @@
+{
+        
+		"resourceName":"云端权限管理",
+		"description":"对云端的权限分配进行管理",
+		"isActive":true,
+		"isTopMenu":true,
+		"sling:resourceType":"module",
+		"jcr:primaryType":"sling:Folder"
+}

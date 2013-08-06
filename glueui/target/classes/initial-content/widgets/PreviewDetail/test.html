@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+				overflow:hidden;
+			}
+			#testContainer{
+				width:100%;
+				height:100%;
+				border:1px solid #d1d1d1;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div id="testContainer"></div>
+		<script>
+			require(
+				[
+					"widgets/PreviewDetail/PreviewDetail",
+					"dojo/on",
+					"dijit/Dialog",
+					"spolo/data/spsession"
+				],
+				function
+				(
+				PreviewDetail, on, Dialog, spsession
+				)
+				{	
+					var json = {
+						totalNum:2,
+						data:{
+							"model201312115432044964468101":{
+								"resourceName":"shafa1_1",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							},
+							"model201312115432044964468092":{
+								"resourceName":"shafa1_2",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							},"model201312115432044964468093":{
+								"resourceName":"shafa1_2",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							},"model201312115432044964468094":{
+								"resourceName":"shafa1_2",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							},"model201312115432044964468095":{
+								"resourceName":"shafa1_2",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							},"model201312115432044964468096":{
+								"resourceName":"shafa1_2",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							},"model201312115432044964468097":{
+								"resourceName":"shafa1_2",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							},"model201312115432044964468098":{
+								"resourceName":"shafa1_2",
+								"sling:resourceType":"model",
+								"jcr:createdBy":"admin",
+								"jcr:created":"2013-02-21T15:43:09.741+08:00",
+								"jcr:primaryType":"sling:Folder"
+							}
+						}
+					}
+					
+					var temp = new Array();
+					for(var i in json["data"]){
+						temp.push(i);
+					}
+					
+					var jsons = {
+						data:temp
+					}
+					//创建PreviewDetail widget对象
+					var preview = new PreviewDetail(jsons);
+					
+					//组装
+					preview.placeAt("testContainer");
+					
+					//测试
+					var src = "/widgets/PreviewDetail/images/test.jpg";
+
+					//自定义效果图
+					preview.setEffectImg(src);
+					
+					//得到需要加入场景中的列表项
+					on(preview,"onAddToScene",function(array){
+						if(array.length == 0){
+							Spolo.notify({
+								"text" : "您还未选择任何模型!",
+								"type" : "error",
+								"timeout" : 1000
+							});
+						}else{
+							console.log(array);
+						}
+					});
+				});
+		</script>
+	</body>
+</html>

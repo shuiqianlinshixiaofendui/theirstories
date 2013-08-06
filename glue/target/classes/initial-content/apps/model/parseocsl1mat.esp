@@ -1,0 +1,1880 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_WorkSpace;
+var GVAR_RootNode;
+var GVAR_COUNT;
+
+GVAR_CurrentNode = currentNode;
+GVAR_Session = currentNode.getSession();
+GVAR_WorkSpace = GVAR_Session.getWorkspace();
+GVAR_RootNode = GVAR_Session.getRootNode();
+GVAR_COUNT = 0;
+
+
+//out.println("test ocs model!!!");
+
+//ocm文件模板
+var l1mat_str = 
+"<?xml version='1.0' encoding='utf-8'?>\
+<OCS_1_0_30_Macro>\
+<embeddedimages>\
+</embeddedimages>\
+</OCS_1_0_30_Macro>";
+
+
+	function getmatnode(modelnode,matmap)
+	{
+		if(modelnode.hasNodes())
+		{
+			for(var nodeindex in modelnode.getNodes())
+			{
+				var inode = modelnode.getNodes()[nodeindex];
+				if((inode["sp:Tag"] == "Material") && (inode["USE"] == null))
+				{
+					matmap[inode.name] = inode;
+				}
+				if(inode.hasNodes())
+				{
+					getmatnode(inode,matmap);
+				}
+			}
+		}
+		
+	}
+
+	//设置material中对ocm文件的引用
+	function setmatref(matnames, matmap, ocmnode)
+	{
+		for(var im in matmap)
+		{
+			var matname = matmap[im]["name"];
+			
+			//out.println(typeof matindexs[0]);
+			//out.println(typeof String(imatindex));
+			
+			//out.println(matindexs.indexOf(String(imatindex)));
+			
+			// out.println(matnames);
+			// out.println(matname);
+			// out.println(matnames.indexOf(String(matname)));
+			
+			if(matnames.indexOf(String(matname)) != -1)
+			{
+				var imat = matmap[im];
+				imat.setProperty("sp:refL1Material", ocmnode.getPath());
+				imat.save();
+			}
+			
+			//imatindex++;
+		}
+	}
+
+	//获取引用当前材质的obj材质的index
+	function getmatrefindex(nodepinconnectionsnode, matid)
+	{
+		var matindexs = [];
+		//根据matid获取obj中对应mat节点的index
+		var nodepinconnection_list = nodepinconnectionsnode.getElementsByTagName("nodepinconnection");
+		
+		for(var ip = 0; ip <　nodepinconnection_list.length; ip++)
+		{
+			var nodepinconnectionnode = nodepinconnection_list.item(ip);
+			var sourceid = nodepinconnectionnode.getElementsByTagName("sourceid").item(0).getChildNodes().item(0).getNodeValue();
+			if(String(sourceid) == String(matid))
+			{
+				var destpinid = nodepinconnectionnode.getElementsByTagName("destpinid").item(0).getChildNodes().item(0).getNodeValue();
+				
+				matindexs.push(String(destpinid));
+			}
+		}
+		
+		return matindexs;
+	}
+	
+	//获取引用当前材质的obj材质的mat name
+	function getmatrefnames(mesh_node, matindexs)
+	{
+		var matnames = [];
+		
+		var NodePins = mesh_node.getElementsByTagName("NodePin");
+		
+		for(var i = 0; i <NodePins.length; i++)
+		{
+			var NodePin = NodePins.item(i);
+			var id = NodePin.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+			
+			if(matindexs.indexOf(String(id)) != -1)
+			{
+				var typename = NodePin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+				matnames.push(String(typename));
+			}
+		}
+		
+		return matnames;
+	}
+
+	//处理obj
+	function proc_obj(tmpnode, objnode)
+	{
+		//遍历tmp节点下所有子节点处理obj
+		for(var it in tmpnode)
+		{
+			var nodename = String(tmpnode[it]["name"]);
+			
+			//判断是否为子节点
+			if(nodename != "undefined")
+			{
+				//out.println(nodename.length);
+				
+				//获取文件类型
+				var filetype = nodename.substr(nodename.length - 3,nodename.length);
+				//out.println(filetype);
+				
+				//判断文件类型obj
+				if(filetype == "obj")
+				{	
+					//复制obj文件到obj节点下
+					GVAR_WorkSpace.copy(tmpnode[it].getPath(), objnode.getPath() + '/' + nodename);
+				}
+				
+				//判断文件类型mtl
+				if(filetype == "mtl")
+				{	
+					//复制mtl文件到obj节点下
+					GVAR_WorkSpace.copy(tmpnode[it].getPath(), objnode.getPath() + '/' + nodename);
+				}
+			}
+			
+		}
+		GVAR_Session.save();
+	}
+	
+	//设置mask中的属性
+	function setmask(diffusenode,modelName)
+	{
+		// out.println(diffusenode);
+		if((diffusenode["diffusename"] != null) && (diffusenode["diffusename"] != undefined))
+		{
+			for(var i in diffusenode)
+			{
+				var masknode = diffusenode[i];
+				
+				// out.println(masknode);
+				
+				if(masknode["sling:resourceType"] == "mask")
+				{
+					masknode.setProperty("diffuseName", diffusenode["diffusename"]);
+					masknode.setProperty("modelName", modelName);
+					
+					masknode.setProperty("L2material", "ocs auto");
+					
+					masknode.save();
+				}
+			}
+			
+			return;
+		}
+		
+		
+		for(var i in diffusenode)
+		{
+			var masknode = diffusenode[i];
+			
+			// out.println(masknode);
+			
+			if(masknode["sling:resourceType"] == "mask")
+			{
+				masknode.setProperty("modelName", modelName);
+				
+				masknode.setProperty("L2material", "ocs auto");
+				
+				masknode.save();
+			}
+		}
+	}
+	
+	
+	//处理diffuse
+	function proc_diffuse(tmpnode,matNodelist,diffusenode,diffusefoldernode,modelName)
+	{
+		var masknode = diffusenode[diffusenode["name"]];
+		if(masknode == undefined)
+		{
+			masknode = diffusenode.addNode(diffusenode["name"], "sling:Folder");
+			diffusenode.save();
+			masknode.setProperty("L2material", "ocs auto");
+			masknode.setProperty("sp:isauto", "true");
+			masknode.setProperty("sling:resourceType", "mask");
+			masknode.save();
+		}
+		// out.println(tmpnode);
+		//遍历所有node
+		for(var im = 0; im < matNodelist.length; im++)
+		{
+			//获取当前node
+			var matNode = matNodelist.item(im);
+			
+			//获取当前node类型
+			var type = matNode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			// out.println(type);
+			
+			//判断当前node类型
+			if((type == "diffuse") || (type == "glossy") || (type == "specular"))
+			{
+				// if(type == "specular")
+				// {
+				   // out.println("mat name : " + matNode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				// }
+				// out.println("mat name : " + matNode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				
+				//获取二级材质id
+				var l2matid = matNode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//获取二级材质父节点
+				var parnode = matNode.getParentNode();
+				
+				while(1)
+				{
+					if(parnode.getTagName() == "Node")
+					{
+						break;
+					}
+					
+					parnode = parnode.getParentNode();
+				}
+				
+				//获取一级材质中的nodepinconnections
+				var nodepinconnections_node = parnode.getElementsByTagName("nodepinconnections").item(0);
+				
+				// out.println(nodepinconnections_node);
+				
+				if(nodepinconnections_node == null)
+				{
+					continue;
+				}
+				
+				
+				if((nodepinconnections_node == null) || (nodepinconnections_node == undefined))
+				{
+					var masknode = diffusenode[diffusenode["name"]];
+					if(masknode == undefined)
+					{
+						masknode = diffusenode.addNode(diffusenode["name"], "sling:Folder");
+						diffusenode.save();
+						masknode.setProperty("L2material", "ocs auto");
+						masknode.setProperty("sp:isauto", "true");
+						masknode.setProperty("sling:resourceType", "mask");
+						masknode.save();
+					}
+					
+					continue;
+				}
+				
+				//获取一级材质中的nodepinconnection
+				var nodepinconnections_list = nodepinconnections_node.getElementsByTagName("nodepinconnection");
+				
+				//遍历一级材质中的nodepinconnection
+				for(var ip = 0; ip < nodepinconnections_list.length; ip++)
+				{
+					//获取当前nodepinconnection
+					var nodepinconnection_node = nodepinconnections_list.item(ip);
+					
+					//获取destid
+					var destid = nodepinconnection_node.getElementsByTagName("destid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//获取destpinid
+					var destpinid = nodepinconnection_node.getElementsByTagName("destpinid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					
+					// out.println("destid : " + destid);
+					// out.println("destpinid : " + destpinid);
+					// out.println("destid　check : " + (String(destid) == String(l2matid)));
+					// out.println("destpinid check : " + (String(destpinid) == "0"));
+					
+					
+					//判断destid destpinid
+					if((String(destid) == String(l2matid)) && (String(destpinid) == "0"))
+					{
+						//获取sourceid
+						var sourceid = nodepinconnection_node.getElementsByTagName("sourceid").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//获取当前node的兄弟节点
+						var bnodelist = parnode.getElementsByTagName("Node");
+						
+						//遍历所有兄弟节点
+						for(var it = 0; it < bnodelist.length; it++)
+						{
+							//获取当前兄弟节点
+							var texnode = bnodelist.item(it);
+							
+							//判断是否为兄弟节点
+							//texnode.get
+							
+							//获取当前兄弟节点的type
+							var type = texnode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+							
+							// out.println(type);
+							
+							if((String(type) != "image") && (String(type) != "floatimage"))
+							{
+								continue;
+							}
+							
+							//获取当前兄弟节点的id
+							var texid = texnode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+							
+							//判断id是否为所查找id
+							if(String(texid) == String(sourceid))
+							{
+								//获取image节点中对图片的引用
+								var linkedfilenode = texnode.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0);
+								var linkedfile = linkedfilenode.getNodeValue();
+								var filetype = linkedfile.substr(0,3);
+								
+								// out.println(linkedfile);
+								
+								if(filetype == "ocs")
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split(":");
+									
+									//获取diffusename
+									var diffusename = namearr[namearr.length - 1];
+									// out.println("diffuse name : " + diffusename);
+									
+									//设置diffusenode 的 diffusename
+									diffusenode.setProperty("diffusename", diffusename);
+									
+									diffusenode.save();
+									
+									// out.println(diffusename);
+									
+									//获取diffuse文件节点
+									var diffusefilenode = tmpnode[diffusename];
+									
+									if(diffusefilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											diffusefilenode = tmpdiffolder[diffusename];
+										}
+									}
+									//out.println("maskname : " + maskname);
+									
+									
+									
+									// if(diffusefoldernode[diffusename] == undefined)
+									// {
+										// continue;
+									// }
+									
+									if(diffusefilenode != undefined)
+									{
+										//修改linkedfilename
+										linkedfilenode.setNodeValue(".\\" + modelName + "_" + diffusename);
+										
+										//将diffuse复制到diffusefoldernode之下
+										if(diffusefoldernode[diffusename] == undefined)
+										{
+											GVAR_WorkSpace.copy(diffusefilenode.getPath(), diffusefoldernode.getPath() + '/' + diffusename);
+										}
+										
+										//将diffuse复制到diffusenode之下
+										if(diffusenode["diffusefile"] == undefined)
+										{
+											GVAR_WorkSpace.copy(diffusefilenode.getPath(), diffusenode.getPath() + '/' + "diffusefile");
+										}
+										
+										
+									}
+								}
+								else
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split("\\");
+									
+									//获取diffusename
+									var diffusename = namearr[namearr.length - 1];
+									diffusename = String(diffusename);
+								    // out.println("diffuse name : " + diffusename);
+									
+									//设置diffusenode 的 diffusename
+									diffusenode.setProperty("diffusename", diffusename);
+									
+									diffusenode.save();
+									
+									// out.println(diffusename);
+									
+									//获取diffuse文件节点
+									var diffusefilenode = tmpnode[diffusename];
+									//out.println("maskname : " + maskname);
+									//out.println(diffusefilenode);
+									if(diffusefilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											diffusefilenode = tmpdiffolder[diffusename];
+										}
+									}
+									
+								    // out.println(diffusefilenode);
+									
+									// out.println(tmpnode);
+									
+									//修改linkedfilename
+									linkedfilenode.setNodeValue(".\\" + modelName + "_" + diffusename);
+									
+									// if(diffusefoldernode[diffusename] != undefined)
+									// {
+										// continue;
+									// }
+									
+									if(diffusefilenode != undefined)
+									{
+										
+										//将diffuse复制到diffusefoldernode之下
+										// out.println(diffusefoldernode[diffusename]);
+										// out.println(diffusefoldernode.getPath());
+										// for(var i in diffusefoldernode)
+										// {
+											// out.println(i + " : " + diffusefoldernode[i]);
+										// }
+										if(diffusefoldernode[diffusename] == undefined)
+										{
+											GVAR_WorkSpace.copy(diffusefilenode.getPath(), diffusefoldernode.getPath() + '/' + diffusename);
+										}
+										
+										//将diffuse复制到diffusenode之下
+									    // out.println(diffusenode["diffusefile"]);
+										if(diffusenode["diffusefile"] == undefined)
+										{
+											GVAR_WorkSpace.copy(diffusefilenode.getPath(), diffusenode.getPath() + '/' + "diffusefile");
+										}
+									}
+									
+									//diffusefoldernode
+								}
+								
+							}
+						}
+					}
+				}
+			}
+			
+			
+			
+		}
+	}
+	
+	
+	//处理bump
+	function proc_bump(tmpnode,matNodelist,bumpnode,modelName)
+	{
+		// out.println(tmpnode);
+		//遍历所有node
+		for(var im = 0; im < matNodelist.length; im++)
+		{
+			//获取当前node
+			var matNode = matNodelist.item(im);
+			
+			//获取当前node类型
+			var type = matNode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//out.println(type);
+			
+			//判断当前node类型
+			if((type == "diffuse") || (type == "glossy") || (type == "specular"))
+			{
+				//获取bumpmap的id
+				var bumpmapid = 0;
+				var nodepins = matNode.getElementsByTagName("NodePin");
+				for(var inp = 0; inp < nodepins.length; inp++)
+				{
+					var nodepin = nodepins.item(inp);
+					var nodepintypename = nodepin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					if(nodepintypename == "bump")
+					{
+						bumpmapid = nodepin.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+						break;
+					}
+				}
+				// out.println("mat name : " + matNode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				
+				//获取二级材质id
+				var l2matid = matNode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//获取二级材质父节点
+				var parnode = matNode.getParentNode();
+				
+				while(1)
+				{
+					if(parnode.getTagName() == "Node")
+					{
+						break;
+					}
+					
+					parnode = parnode.getParentNode();
+				}
+				
+				//获取一级材质中的nodepinconnections
+				var nodepinconnections_node = parnode.getElementsByTagName("nodepinconnections").item(0);
+				
+				// out.println(nodepinconnections_node);
+				if(nodepinconnections_node == null)
+				{
+					continue;
+				}
+				
+				//获取一级材质中的nodepinconnection
+				var nodepinconnections_list = nodepinconnections_node.getElementsByTagName("nodepinconnection");
+				
+				//遍历一级材质中的nodepinconnection
+				for(var ip = 0; ip < nodepinconnections_list.length; ip++)
+				{
+					//获取当前nodepinconnection
+					var nodepinconnection_node = nodepinconnections_list.item(ip);
+					
+					//获取destid
+					var destid = nodepinconnection_node.getElementsByTagName("destid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//获取destpinid
+					var destpinid = nodepinconnection_node.getElementsByTagName("destpinid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					
+					// out.println("destid : " + destid);
+					// out.println("destpinid : " + destpinid);
+					// out.println("destid　check : " + (String(destid) == String(l2matid)));
+					// out.println("destpinid check : " + (String(destpinid) == "0"));
+					
+					
+					//判断destid destpinid
+					if((String(destid) == String(l2matid)) && (String(destpinid) == String(bumpmapid)))
+					{
+						//获取sourceid
+						var sourceid = nodepinconnection_node.getElementsByTagName("sourceid").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//获取当前node的兄弟节点
+						var bnodelist = parnode.getElementsByTagName("Node");
+						
+						//遍历所有兄弟节点
+						for(var it = 0; it < bnodelist.length; it++)
+						{
+							//获取当前兄弟节点
+							var texnode = bnodelist.item(it);
+							
+							//判断是否为兄弟节点
+							//texnode.get
+							
+							//获取当前兄弟节点的type
+							var type = texnode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+							
+							// out.println(type);
+							
+							if((String(type) != "image") && (String(type) != "floatimage"))
+							{
+								continue;
+							}
+							
+							//获取当前兄弟节点的id
+							var texid = texnode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+							
+							//判断id是否为所查找id
+							if(String(texid) == String(sourceid))
+							{
+								//获取image节点中对图片的引用
+								var linkedfilenode = texnode.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0);
+								var linkedfile = linkedfilenode.getNodeValue();
+								var filetype = linkedfile.substr(0,3);
+								
+								// out.println(linkedfile);
+								
+								if(filetype == "ocs")
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split(":");
+									
+									//获取bumpname
+									var bumpname = namearr[namearr.length - 1];
+									// out.println("bump name : " + bumpname);
+									
+									//设置bumpnode 的 bumpname
+									bumpnode.setProperty("bumpname", bumpname);
+									
+									bumpnode.save();
+									
+									out.println(bumpname);
+									
+									//获取bump文件节点
+									var bumpfilenode = tmpnode[bumpname];
+									//out.println("maskname : " + maskname);
+									
+									if(bumpfilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											bumpfilenode = tmpdiffolder[bumpname];
+										}
+									}
+									
+									if(bumpfilenode != undefined)
+									{
+										//修改linkedfilename
+										linkedfilenode.setNodeValue(".\\" + modelName + "_" + bumpname);
+																				
+										//将bump复制到bumpnode之下
+										GVAR_WorkSpace.copy(bumpfilenode.getPath(), bumpnode.getPath() + '/' + "bumpfile");
+										
+									}
+								}
+								else
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split("\\");
+									
+									//获取bumpname
+									var bumpname = namearr[namearr.length - 1];
+									// out.println("bump name : " + bumpname);
+									
+									//设置bumpnode 的 bumpname
+									bumpnode.setProperty("bumpname", bumpname);
+									
+									bumpnode.save();
+									
+									// out.println(bumpname);
+									
+									//获取bump文件节点
+									var bumpfilenode = tmpnode[bumpname];
+									//out.println("maskname : " + maskname);
+									
+									// out.println(bumpfilenode);
+									
+									// out.println(tmpnode);
+									
+									if(bumpfilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											bumpfilenode = tmpdiffolder[bumpname];
+										}
+									}
+									
+									
+									if(bumpfilenode != undefined)
+									{
+										
+										//修改linkedfilename
+										linkedfilenode.setNodeValue(".\\" + modelName + "_" + bumpname);
+										
+										//将bump复制到bumpnode之下
+										GVAR_WorkSpace.copy(bumpfilenode.getPath(), bumpnode.getPath() + '/' + "bumpfile");
+										// out.println("unocs");
+									}
+									
+								}
+								
+							}
+						}
+					}
+				}
+			}
+			
+			
+			
+		}
+	}
+	
+	
+	//处理normal
+	function proc_normal(tmpnode,matNodelist,normalnode,modelName)
+	{
+		// out.println(tmpnode);
+		//遍历所有node
+		for(var im = 0; im < matNodelist.length; im++)
+		{
+			//获取当前node
+			var matNode = matNodelist.item(im);
+			
+			//获取当前node类型
+			var type = matNode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//out.println(type);
+			
+			//判断当前node类型
+			if((type == "diffuse") || (type == "glossy") || (type == "specular"))
+			{
+				//获取normalmap的id
+				var normalmapid = 0;
+				var nodepins = matNode.getElementsByTagName("NodePin");
+				for(var inp = 0; inp < nodepins.length; inp++)
+				{
+					var nodepin = nodepins.item(inp);
+					var nodepintypename = nodepin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					if(nodepintypename == "normal")
+					{
+						normalmapid = nodepin.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+						break;
+					}
+				}
+				// out.println("mat name : " + matNode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				
+				//获取二级材质id
+				var l2matid = matNode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//获取二级材质父节点
+				var parnode = matNode.getParentNode();
+				
+				while(1)
+				{
+					if(parnode.getTagName() == "Node")
+					{
+						break;
+					}
+					
+					parnode = parnode.getParentNode();
+				}
+				
+				//获取一级材质中的nodepinconnections
+				var nodepinconnections_node = parnode.getElementsByTagName("nodepinconnections").item(0);
+				
+				if(nodepinconnections_node == null)
+				{
+					continue;
+				}
+				
+				// out.println(nodepinconnections_node);
+				
+				//获取一级材质中的nodepinconnection
+				var nodepinconnections_list = nodepinconnections_node.getElementsByTagName("nodepinconnection");
+				
+				//遍历一级材质中的nodepinconnection
+				for(var ip = 0; ip < nodepinconnections_list.length; ip++)
+				{
+					//获取当前nodepinconnection
+					var nodepinconnection_node = nodepinconnections_list.item(ip);
+					
+					//获取destid
+					var destid = nodepinconnection_node.getElementsByTagName("destid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//获取destpinid
+					var destpinid = nodepinconnection_node.getElementsByTagName("destpinid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					
+					// out.println("destid : " + destid);
+					// out.println("destpinid : " + destpinid);
+					// out.println("destid　check : " + (String(destid) == String(l2matid)));
+					// out.println("destpinid check : " + (String(destpinid) == "0"));
+					
+					
+					//判断destid destpinid
+					if((String(destid) == String(l2matid)) && (String(destpinid) == String(normalmapid)))
+					{
+						//获取sourceid
+						var sourceid = nodepinconnection_node.getElementsByTagName("sourceid").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//获取当前node的兄弟节点
+						var bnodelist = parnode.getElementsByTagName("Node");
+						
+						//遍历所有兄弟节点
+						for(var it = 0; it < bnodelist.length; it++)
+						{
+							//获取当前兄弟节点
+							var texnode = bnodelist.item(it);
+							
+							//判断是否为兄弟节点
+							//texnode.get
+							
+							//获取当前兄弟节点的type
+							var type = texnode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+							
+							// out.println(type);
+							
+							if((String(type) != "image") && (String(type) != "floatimage"))
+							{
+								continue;
+							}
+							
+							//获取当前兄弟节点的id
+							var texid = texnode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+							
+							//判断id是否为所查找id
+							if(String(texid) == String(sourceid))
+							{
+								//获取image节点中对图片的引用
+								var linkedfilenode = texnode.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0);
+								var linkedfile = linkedfilenode.getNodeValue();
+								var filetype = linkedfile.substr(0,3);
+								
+								// out.println(linkedfile);
+								
+								if(filetype == "ocs")
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split(":");
+									
+									//获取normalname
+									var normalname = namearr[namearr.length - 1];
+									// out.println("normal name : " + normalname);
+									
+									//设置normalnode 的 normalname
+									normalnode.setProperty("normalname", normalname);
+									
+									normalnode.save();
+									
+									out.println(normalname);
+									
+									//获取normal文件节点
+									var normalfilenode = tmpnode[normalname];
+									//out.println("maskname : " + maskname);
+									
+									
+									if(normalfilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											normalfilenode = tmpdiffolder[normalname];
+										}
+									}
+									
+									if(normalfilenode != undefined)
+									{
+										//修改linkedfilename
+										linkedfilenode.setNodeValue(".\\" + modelName + "_" + normalname);
+																				
+										//将normal复制到normalnode之下
+										GVAR_WorkSpace.copy(normalfilenode.getPath(), normalnode.getPath() + '/' + "normalfile");
+										
+									}
+								}
+								else
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split("\\");
+									
+									//获取normalname
+									var normalname = namearr[namearr.length - 1];
+									// out.println("normal name : " + normalname);
+									
+									//设置normalnode 的 normalname
+									normalnode.setProperty("normalname", normalname);
+									
+									normalnode.save();
+									
+									// out.println(normalname);
+									
+									//获取normal文件节点
+									var normalfilenode = tmpnode[normalname];
+									//out.println("maskname : " + maskname);
+									
+									// out.println(normalfilenode);
+									
+									// out.println(tmpnode);
+									
+									
+									if(normalfilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											normalfilenode = tmpdiffolder[normalname];
+										}
+									}
+									
+									if(normalfilenode != undefined)
+									{
+										
+										//修改linkedfilename
+										linkedfilenode.setNodeValue(".\\" + modelName + "_" + normalname);
+										
+										//将normal复制到normalnode之下
+										GVAR_WorkSpace.copy(normalfilenode.getPath(), normalnode.getPath() + '/' + "normalfile");
+										// out.println("unocs");
+									}
+									
+								}
+								
+							}
+						}
+					}
+				}
+			}
+			
+			
+			
+		}
+	}
+	
+	//处理opacity
+	function proc_opacity(tmpnode,matNodelist,opacitynode,modelName)
+	{
+		// out.println(tmpnode);
+		//遍历所有node
+		for(var im = 0; im < matNodelist.length; im++)
+		{
+			//获取当前node
+			var matNode = matNodelist.item(im);
+			
+			//获取当前node类型
+			var type = matNode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//out.println(type);
+			
+			//判断当前node类型
+			if((type == "diffuse") || (type == "glossy") || (type == "specular"))
+			{
+				//获取opacitymap的id
+				var opacitymapid = 0;
+				var nodepins = matNode.getElementsByTagName("NodePin");
+				for(var inp = 0; inp < nodepins.length; inp++)
+				{
+					var nodepin = nodepins.item(inp);
+					var nodepintypename = nodepin.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+					if(nodepintypename == "opacity")
+					{
+						opacitymapid = nodepin.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+						break;
+					}
+				}
+				// out.println("mat name : " + matNode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				
+				//获取二级材质id
+				var l2matid = matNode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//获取二级材质父节点
+				var parnode = matNode.getParentNode();
+				
+				while(1)
+				{
+					if(parnode.getTagName() == "Node")
+					{
+						break;
+					}
+					
+					parnode = parnode.getParentNode();
+				}
+				
+				//获取一级材质中的nodepinconnections
+				var nodepinconnections_node = parnode.getElementsByTagName("nodepinconnections").item(0);
+				
+				if(nodepinconnections_node == null)
+				{
+					continue;
+				}
+				
+				// out.println(nodepinconnections_node);
+				
+				//获取一级材质中的nodepinconnection
+				var nodepinconnections_list = nodepinconnections_node.getElementsByTagName("nodepinconnection");
+				
+				//遍历一级材质中的nodepinconnection
+				for(var ip = 0; ip < nodepinconnections_list.length; ip++)
+				{
+					//获取当前nodepinconnection
+					var nodepinconnection_node = nodepinconnections_list.item(ip);
+					
+					//获取destid
+					var destid = nodepinconnection_node.getElementsByTagName("destid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//获取destpinid
+					var destpinid = nodepinconnection_node.getElementsByTagName("destpinid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					
+					// out.println("destid : " + destid);
+					// out.println("destpinid : " + destpinid);
+					// out.println("destid　check : " + (String(destid) == String(l2matid)));
+					// out.println("destpinid check : " + (String(destpinid) == "0"));
+					
+					
+					//判断destid destpinid
+					if((String(destid) == String(l2matid)) && (String(destpinid) == String(opacitymapid)))
+					{
+						//获取sourceid
+						var sourceid = nodepinconnection_node.getElementsByTagName("sourceid").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//获取当前node的兄弟节点
+						var bnodelist = parnode.getElementsByTagName("Node");
+						
+						//遍历所有兄弟节点
+						for(var it = 0; it < bnodelist.length; it++)
+						{
+							//获取当前兄弟节点
+							var texnode = bnodelist.item(it);
+							
+							//判断是否为兄弟节点
+							//texnode.get
+							
+							//获取当前兄弟节点的type
+							var type = texnode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+							
+							// out.println(type);
+							
+							if((String(type) != "image") && (String(type) != "floatimage"))
+							{
+								continue;
+							}
+							
+							//获取当前兄弟节点的id
+							var texid = texnode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+							
+							//判断id是否为所查找id
+							if(String(texid) == String(sourceid))
+							{
+								//获取image节点中对图片的引用
+								var linkedfilenode = texnode.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0);
+								var linkedfile = linkedfilenode.getNodeValue();
+								var filetype = linkedfile.substr(0,3);
+								
+								// out.println(linkedfile);
+								
+								if(filetype == "ocs")
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split(":");
+									
+									//获取opacityname
+									var opacityname = namearr[namearr.length - 1];
+									// out.println("opacity name : " + opacityname);
+									
+									//设置opacitynode 的 opacityname
+									opacitynode.setProperty("opacityname", opacityname);
+									
+									opacitynode.save();
+									
+									out.println(opacityname);
+									
+									//获取opacity文件节点
+									var opacityfilenode = tmpnode[opacityname];
+									//out.println("maskname : " + maskname);
+									
+									if(opacityfilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											opacityfilenode = tmpdiffolder[opacityname];
+										}
+									}
+									
+									
+									if(opacityfilenode != undefined)
+									{
+										//修改linkedfilename
+										linkedfilenode.setNodeValue(".\\" + modelName + "_" + opacityname);
+																				
+										//将opacity复制到opacitynode之下
+										GVAR_WorkSpace.copy(opacityfilenode.getPath(), opacitynode.getPath() + '/' + "opacityfile");
+										
+									}
+								}
+								else
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split("\\");
+									
+									//获取opacityname
+									var opacityname = namearr[namearr.length - 1];
+									// out.println("opacity name : " + opacityname);
+									
+									//设置opacitynode 的 opacityname
+									opacitynode.setProperty("opacityname", opacityname);
+									
+									opacitynode.save();
+									
+									// out.println(opacityname);
+									
+									//获取opacity文件节点
+									var opacityfilenode = tmpnode[opacityname];
+									//out.println("maskname : " + maskname);
+									
+									// out.println(opacityfilenode);
+									
+									// out.println(tmpnode);
+									
+									
+									if(opacityfilenode == undefined)
+									{
+										var tmpdiffolder = tmpnode["diffuse"];
+										if(tmpdiffolder != undefined)
+										{
+											opacityfilenode = tmpdiffolder[opacityname];
+										}
+									}
+									
+									if(opacityfilenode != undefined)
+									{
+										
+										//修改linkedfilename
+										linkedfilenode.setNodeValue(".\\" + modelName + "_" + opacityname);
+										
+										//将opacity复制到opacitynode之下
+										GVAR_WorkSpace.copy(opacityfilenode.getPath(), opacitynode.getPath() + '/' + "opacityfile");
+										// out.println("unocs");
+									}
+									
+								}
+								
+							}
+						}
+					}
+				}
+			}
+			
+			
+			
+		}
+	}
+	
+	//处理mask
+	function proc_mask(tmpnode,matNodelist,diffusenode,diffusefoldernode,modelName)
+	{
+		//mask计数
+		var maskcount = 0;
+		//遍历所有node
+		for(var im = 0; im < matNodelist.length; im++)
+		{
+			//获取当前node
+			var matNode = matNodelist.item(im);
+			
+			//获取当前node类型
+			var type = matNode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+			
+			//out.println(type);
+			
+			
+			//判断当前node类型
+			if(type == "material mix")
+			{
+			
+				maskcount++;
+			
+				//获取mix节点id
+				var mixmatid = matNode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+				
+				//获取mix父节点
+				var parnode = matNode.getParentNode();
+				
+				while(1)
+				{
+					if(parnode.getTagName() == "Node")
+					{
+						break;
+					}
+					
+					parnode = parnode.getParentNode();
+				}
+				
+				//out.println("mix name : " + matNode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				
+				//out.println("parnode name : " + parnode.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				
+				//out.println("mixmatid : " + mixmatid);
+				
+				//out.println("nodepinconnections length : " + parnode.getElementsByTagName("nodepinconnections").length);
+				
+				
+				//获取一级材质中的nodepinconnections
+				var nodepinconnections_node = parnode.getElementsByTagName("nodepinconnections").item(parnode.getElementsByTagName("nodepinconnections").length - 1);
+				
+				if(nodepinconnections_node == null)
+				{
+					continue;
+				}
+				
+				//获取一级材质中的nodepinconnection
+				var nodepinconnections_list = nodepinconnections_node.getElementsByTagName("nodepinconnection");
+				
+				
+				
+				//遍历一级材质中的nodepinconnection
+				for(var ip = 0; ip < nodepinconnections_list.length; ip++)
+				{
+					//获取当前nodepinconnection
+					var nodepinconnection_node = nodepinconnections_list.item(ip);
+					
+					//获取destid
+					var destid = nodepinconnection_node.getElementsByTagName("destid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//获取destpinid
+					var destpinid = nodepinconnection_node.getElementsByTagName("destpinid").item(0).getChildNodes().item(0).getNodeValue();
+					
+					//out.println("destid : " + destid);
+					//out.println("destpinid : " + destpinid);
+					//out.println("destid　check : " + (String(destid) == String(mixmatid)));
+					//out.println("destpinid check : " + (String(destpinid) == "0"));
+					
+					//判断destid destpinid
+					if((String(destid) == String(mixmatid)) && (String(destpinid) == "0"))
+					{
+						//获取sourceid
+						var sourceid = nodepinconnection_node.getElementsByTagName("sourceid").item(0).getChildNodes().item(0).getNodeValue();
+						
+						//out.println("mask id : " + sourceid);
+						
+						//获取当前node的兄弟节点
+						var bnodelist = parnode.getElementsByTagName("Node");
+						
+						//遍历所有兄弟节点
+						for(var it = 0; it < bnodelist.length; it++)
+						{
+							//获取当前兄弟节点
+							var texnode = bnodelist.item(it);
+							
+							//获取当前兄弟节点的type
+							var type = texnode.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+							
+							if((String(type) != "image") && (String(type) != "floatimage"))
+							{
+								var masknode = diffusenode[diffusenode["name"]];
+								//创建mask节点
+								if(masknode == undefined)
+								{
+									masknode = diffusenode.addNode(diffusenode["name"], "sling:Folder");
+									diffusenode.save();
+									masknode.setProperty("sling:resourceType", "mask");
+									masknode.setProperty("sp:isauto","true");
+									masknode.save();
+								}
+								
+								continue;
+							}
+							
+							//获取当前兄弟节点的id
+							var texid = texnode.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+							
+							//判断id是否为所查找id
+							if(String(texid) == String(sourceid))
+							{
+								//获取image节点中对图片的引用
+								var linkedfilenode = texnode.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0)
+								var linkedfile = linkedfilenode.getNodeValue();
+								var filetype = linkedfile.substr(0,3);
+								if(filetype == "ocs")
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split(":");
+									
+									//获取maskname
+									var maskname = namearr[namearr.length - 1];
+									
+									//获取mask文件节点
+									var maskfilenode = tmpnode[maskname];
+									//out.println("maskname : " + maskname);
+									
+									//修改linkedfilename
+									linkedfilenode.setNodeValue(".\\" + modelName + "_" + diffusenode["diffusename"] + "_" + mixmatid + maskname);
+									
+									if(maskfilenode != undefined)
+									{
+										//创建mask节点
+										var masknode = diffusenode.addNode(mixmatid + maskname, "sling:Folder");
+										diffusenode.save();
+										masknode.setProperty("sling:resourceType", "mask");
+										masknode.save();
+										
+										//将mask复制到maskfilenode之下
+										GVAR_WorkSpace.copy(maskfilenode.getPath(), masknode.getPath() + '/' + "maskfile");
+									}
+								}
+								else
+								{
+									//分割linkedfilename
+									var namearr = String(linkedfile).split("\\");
+									
+									//获取maskname
+									var maskname = namearr[namearr.length - 1];
+									
+									//获取mask文件节点
+									var maskfilenode = tmpnode[maskname];
+									//out.println("maskname : " + maskname);
+									
+									//修改linkedfilename
+									linkedfilenode.setNodeValue(".\\" + modelName + "_" + diffusenode["diffusename"] + "_" + mixmatid + maskname);
+									
+									if(maskfilenode != undefined)
+									{
+										//创建mask节点
+										var masknode = diffusenode.addNode(mixmatid + maskname, "sling:Folder");
+										diffusenode.save();
+										masknode.setProperty("sling:resourceType", "mask");
+										masknode.save();
+										
+										//将mask复制到maskfilenode之下
+										GVAR_WorkSpace.copy(maskfilenode.getPath(), masknode.getPath() + '/' + "maskfile");
+									}
+								}
+								
+							}
+						}
+					}
+				}
+			}
+			
+		}
+		
+		if(maskcount == 0)
+		{
+			var masknode = diffusenode[diffusenode["name"]];
+			//创建mask节点
+			if(masknode == undefined)
+			{
+				masknode = diffusenode.addNode(diffusenode["name"], "sling:Folder");
+				diffusenode.save();
+				masknode.setProperty("sling:resourceType", "mask");
+				masknode.setProperty("sp:isauto","true");
+				masknode.save();
+			}
+		}
+	}
+	
+	function addembeddedimages(rootnode, scenert, Node, ocmxml)
+	{
+		var ocs_embeddedimages = rootnode.getElementsByTagName("embeddedimages").item(0);
+		
+		if((ocs_embeddedimages == null) || (ocs_embeddedimages == undefined))
+		{
+			return;
+		}
+		
+		
+		var ocs_embeddedimage_list = ocs_embeddedimages.getElementsByTagName("image")
+		
+		if((ocs_embeddedimage_list != null) || (ocs_embeddedimage_list != undefined))
+		{
+			var ocm_embeddedimages = scenert.getElementsByTagName("embeddedimages").item(0);
+		
+			// out.println(ocs_embeddedimage_list.length);
+			
+			var linked_files = Node.getElementsByTagName("linkedfilename");
+			
+			var em_images = [];
+			
+			var em_floatimages = [];
+			for(var i = 0; i < linked_files.length; i++)
+			{
+				var linked_file = linked_files.item(i);
+				
+				var linked_file_name = linked_file.getChildNodes().item(0).getNodeValue();
+				// out.println(linked_file_name);
+				var filetype = linked_file_name.substr(0,3);
+				
+				if(filetype == "ocs")
+				{
+					// out.println("ocs");
+					
+					if(em_images.indexOf(linked_file_name.toString()) != -1)
+					{
+						continue;
+					}
+				
+					for(var im = 0; im < ocs_embeddedimage_list.length; im++)
+					{
+						
+						var image = ocs_embeddedimage_list.item(im);
+						
+						var imagename = image.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+						
+						// out.println(imagename);
+						// out.println(linked_file_name);
+						
+						if(String(imagename) == String(linked_file_name))
+						{
+						
+							// out.println("import");
+							
+							//将当前处理一级材质节点引入ocmxml中
+							var tmpxmlnode = ocmxml.importNode(image,true);
+							
+							//将一级材质节点添加到ocmxml的根节点之下
+							ocm_embeddedimages.appendChild(tmpxmlnode);
+							
+							em_images.push(imagename.toString());
+							
+							break;
+						}
+					}
+					
+					
+				}
+			}
+		
+		}
+		
+		
+		var ocs_embeddedfloatimage_list = ocs_embeddedimages.getElementsByTagName("floatimage")
+		
+		if((ocs_embeddedfloatimage_list != null) || (ocs_embeddedfloatimage_list != undefined))
+		{
+			var ocm_embeddedfloatimages = scenert.getElementsByTagName("embeddedimages").item(0);
+		
+			// out.println(ocs_embeddedfloatimage_list.length);
+			
+			var linked_files = Node.getElementsByTagName("linkedfilename");
+			
+			
+			var em_floatimages = [];
+			for(var i = 0; i < linked_files.length; i++)
+			{
+				var linked_file = linked_files.item(i);
+				
+				var linked_file_name = linked_file.getChildNodes().item(0).getNodeValue();
+				// out.println(linked_file_name);
+				var filetype = linked_file_name.substr(0,3);
+				
+				if(filetype == "ocs")
+				{
+					// out.println("ocs");
+					
+					if(em_floatimages.indexOf(linked_file_name.toString()) != -1)
+					{
+						continue;
+					}
+				
+					for(var im = 0; im < ocs_embeddedfloatimage_list.length; im++)
+					{
+						
+						var floatimage = ocs_embeddedfloatimage_list.item(im);
+						
+						var imagename = floatimage.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+						
+						// out.println(imagename);
+						// out.println(linked_file_name);
+						
+						if(String(imagename) == String(linked_file_name))
+						{
+						
+							// out.println("import");
+							
+							//将当前处理一级材质节点引入ocmxml中
+							var tmpxmlnode = ocmxml.importNode(floatimage,true);
+							
+							//将一级材质节点添加到ocmxml的根节点之下
+							ocm_embeddedfloatimages.appendChild(tmpxmlnode);
+							
+							em_floatimages.push(imagename.toString());
+							
+							break;
+						}
+					}
+					
+					
+				}
+			}
+		
+		}
+		
+		
+	}
+	
+	
+	//处理未使用image
+	function proc_unlinkimage(Node)
+	{
+		var image_nodes = Node.getElementsByTagName("Node");
+		
+		for(var i = 0; i < image_nodes.length; i++)
+		{
+			var image_node = image_nodes.item(i);
+			var typename_nodes = image_node.getElementsByTagName("typename");
+			
+			// out.println(typename_nodes);
+			
+			var typename = typename_nodes.item(0).getChildNodes().item(0).getNodeValue();
+			
+			if(String(typename) == "image")
+			{
+				var filename = image_node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue();
+				filename = String(filename);
+				
+				if(filename.substr(0,3) == "ocs")
+				{
+					continue;
+				}
+				
+				if(filename.substr(0,2) == ".\\")
+				{
+					continue;
+				}
+				
+				// image_node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).setNodeValue("")
+				// out.println(image_node.getElementsByTagName("linkedfilename").item(0).getChildNodes().item(0).getNodeValue());
+				var parnode = image_node.getParentNode() 
+				var parnode = parnode.removeChild(image_node);
+			}
+		}
+	}
+	
+	
+	function parseocs(modelnode)
+	{
+		//判断当前节点sling:resourceType
+		if(modelnode["sling:resourceType"] == "model")
+		{
+			// out.println("model");
+			
+			//获取modelname
+			 var modelName = modelnode["name"];
+			
+			//判断L1Material节点是否存在
+			var l1matnode = modelnode["L1Material"];
+			
+			if(l1matnode != undefined)
+			{
+				l1matnode.remove();
+				modelnode.save();
+			}
+			
+			//创建L1Material节点
+			var l1matnode = modelnode.addNode("L1Material","sling:Folder");
+			modelnode.save();
+			
+			//设置sling:resourceType
+			l1matnode.setProperty("sling:resourceType","l1material");
+			l1matnode.setProperty("sp:isauto","true");
+			l1matnode.save();
+			
+			
+			//判断obj节点是否存在
+			var objnode = modelnode["obj"];
+			
+			if(objnode != undefined)
+			{
+				objnode.remove();
+				modelnode.save();
+			}
+			
+			//创建obj节点
+			var objnode = modelnode.addNode("obj","sling:Folder");
+			modelnode.save();
+			
+			//设置sling:resourceType
+			objnode.setProperty("sling:resourceType","obj");
+			objnode.setProperty("sp:isauto","true");
+			objnode.save();
+			
+			//判断diffuse节点是否存在
+			var diffusefoldernode = modelnode["diffuse"];
+			
+			if(diffusefoldernode != undefined)
+			{
+				diffusefoldernode.remove();
+				modelnode.save();
+			}
+			
+			
+			//判断preview节点是否存在
+			var previewfoldernode = modelnode["preview"];
+			
+			if(previewfoldernode != undefined)
+			{
+				previewfoldernode.remove();
+				modelnode.save();
+			}
+			
+			//判断x3d节点是否存在
+			var x3dnode = modelnode["x3d"];
+			
+			if(x3dnode != undefined)
+			{
+				x3dnode.remove();
+				modelnode.save();
+			}
+			
+			
+			
+			
+			//获取tmp节点
+			var tmpnode = modelnode["tmp"];
+			
+			//判断是否获取tmp节点
+			if(tmpnode != undefined)
+			{
+				out.println("tmp");
+				
+				if(tmpnode["preview"] != undefined)
+				{
+					//复制preview
+					GVAR_WorkSpace.copy(tmpnode["preview"].getPath(), modelnode.getPath() + '/' + "preview");
+				}
+				
+				
+				
+				if(tmpnode["diffuse"] != undefined)
+				{
+					//复制diffuse
+					GVAR_WorkSpace.copy(tmpnode["diffuse"].getPath(), modelnode.getPath() + '/' + "diffuse");
+				}
+				
+				out.println(modelnode["diffuse"]);
+				//创建diffuse节点
+				if(modelnode["diffuse"] == undefined)
+				{
+					diffusefoldernode = modelnode.addNode("diffuse","sling:Folder");
+					modelnode.save();
+				}
+				
+				
+				diffusefoldernode = modelnode["diffuse"];
+				//处理obj
+				proc_obj(tmpnode, objnode);
+				
+				//产生x3d节点
+				
+				try{
+						var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+						var path = modelnode.getPath() + ".uploadX3D";
+						var disp = request.getRequestDispatcher(path,dispOption);
+						var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+						disp.forward(request,cache_response);
+					}catch(e)
+					{
+						
+					}
+					
+				var x3dnode;
+				
+				//等待x3d节点生成
+				while(1)
+				{
+					x3dnode = modelnode["x3d"];
+					if(x3dnode != undefined)
+					{
+						break;
+					}
+					//此处应该sleep。。。
+					//sleep(100);
+				}
+				
+				var matmap = [];
+				getmatnode(modelnode, matmap)
+				
+				//ocs文件节点
+				var ocsnode;
+				
+				//遍历tmp节点下所有子节点处理ocs
+				for(var it in tmpnode)
+				{
+					if(tmpnode[it] == undefined)
+					{
+						continue;
+					}
+					var nodename = String(tmpnode[it]["name"]);
+					
+					//判断是否为子节点
+					if(nodename != "undefined")
+					{
+						//out.println(nodename.length);
+						
+						//获取文件类型
+						var filetype = nodename.substr(nodename.length - 3,nodename.length);
+						// out.println(filetype);
+						
+						//判断文件类型
+						if(filetype == "ocs")
+						{	
+							//获取ocs文件节点
+							ocsnode = tmpnode[it];
+						}
+					}
+					
+					
+					//判断是否获取ocs文件节点
+					if(ocsnode != undefined)
+					{
+						// out.println(ocsnode);
+						
+						//获取ocs文件数据
+						var ocsfiledata = ocsnode["jcr:content"]["jcr:data"];
+						
+						//out.println(ocsfiledata);
+						
+						//解析ocs文件
+						var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+						var builder = factory.newDocumentBuilder();
+						var ocsxml = builder.parse(ocsfiledata);
+						
+						//获取ocs文件根节点
+						var rootnode =  ocsxml.getDocumentElement();
+						//out.println(rootnode.getNodeName());
+						
+						//获取ocs中的最外层nodepinconnections节点
+						var nodepinconnections_list = rootnode.getElementsByTagName("nodepinconnections");
+						
+						var nodepinconnectionsnode = nodepinconnections_list.item(nodepinconnections_list.length - 1);
+						
+						//获取ocs中的第一层nodes节点
+						var ocsnodes = rootnode.getElementsByTagName("nodes").item(0);
+						//out.println(ocsnodes.getNodeName());
+						
+						//获取nodes子节点下的所有Node子节点
+						var Nodes = ocsnodes.getElementsByTagName("Node");
+						
+						//obj mesh节点
+						var mesh_node;
+						for(var i = 0; i < (Nodes.length); i++)
+						{
+							// out.println(i);
+							var Node = Nodes.item(i);
+							var type = "";
+							type = Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+							if(type == "mesh")
+							{
+								mesh_node = Node;
+							}
+						}
+						// out.println(Nodes.length);
+						for(var i = 0; i < (Nodes.length); i++)
+						{
+							// out.println(i);
+							var Node = Nodes.item(i);
+							var parentnode = Node.getParentNode();
+							if(parentnode == ocsnodes)
+							{
+								//out.println(Node.getNodeName());
+								var nodetypename = Node.getElementsByTagName("typename").item(0).getChildNodes().item(0).getNodeValue();
+								//out.println(nodetypename);
+								
+								if(nodetypename == "material macro")
+								{
+									
+									
+									var nodename = Node.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+									
+									// out.println(nodename + i);
+									
+									var diffusenode = l1matnode[nodename + i];
+									
+									if(diffusenode == undefined)
+									{
+										//需要在L1Material节点下创建diffuse节点
+										diffusenode = l1matnode.addNode(nodename + i,"sling:Folder");
+										l1matnode.save();
+										
+										//
+										diffusenode.setProperty("sling:resourceType", "diffuse");
+										diffusenode.save();
+									}
+									var matid = Node.getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+									//out.println(matid);
+									
+									var matNodelist = Node.getElementsByTagName("Node");
+									
+									//处理diffuse
+									proc_diffuse(tmpnode,matNodelist,diffusenode,diffusefoldernode,modelName);
+									
+									//处理bump
+									proc_bump(tmpnode,matNodelist,diffusenode,modelName);
+									
+									//处理normal
+									proc_normal(tmpnode,matNodelist,diffusenode,modelName);
+									
+									//处理opacity
+									proc_opacity(tmpnode,matNodelist,diffusenode,modelName);
+										
+									//处理mask
+									proc_mask(tmpnode,matNodelist,diffusenode,diffusefoldernode,modelName);
+									
+									//删除无用image节点
+									proc_unlinkimage(Node);
+									
+									//创建l1mat_instr模板
+									var l1mat_instr = new Packages.org.xml.sax.InputSource();
+									l1mat_instr.setCharacterStream(new Packages.java.io.StringReader(l1mat_str));
+									
+									//解析l1mat_instr模板
+									var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+									var builder = factory.newDocumentBuilder();
+									var ocmxml = builder.parse(l1mat_instr);
+									
+									//获取OCS_1_0_23_Scene节点，即ocs的根节点
+									var scenert = ocmxml.getElementsByTagName("OCS_1_0_30_Macro").item(0);
+									
+									//将当前处理一级材质节点引入ocmxml中
+									var tmpxmlnode = ocmxml.importNode(Node,true);
+									
+									//将一级材质节点添加到ocmxml的根节点之下
+									scenert.appendChild(tmpxmlnode);
+									
+									
+									//将Node中引用的embeddedimages放到ocmxml中
+									addembeddedimages(rootnode, scenert, Node, ocmxml);
+									
+									
+									
+									//创建xml transformer
+									var transfactory = new Packages.javax.xml.transform.TransformerFactory.newInstance();
+									var transformer = transfactory.newTransformer();
+									
+									//创建stringWriter与xml StreamResult
+									var stringWriter = new Packages.java.io.StringWriter();
+									var result = new Packages.javax.xml.transform.stream.StreamResult(stringWriter);
+									
+									//将xml数据写入result中
+									transformer.transform(new Packages.javax.xml.transform.dom.DOMSource(ocmxml), result);
+									
+									var ocmnode = diffusenode.addNode("l1mat.com","nt:file");
+									var ocmContent = ocmnode.addNode("jcr:content", "nt:resource");
+									ocmContent.setProperty("jcr:mimeType","octane/ocs");
+									ocmContent.setProperty("jcr:data", stringWriter.getBuffer());
+									diffusenode.save();
+									
+									//获取引用当前材质的obj材质index
+									var matindexs = getmatrefindex(nodepinconnectionsnode, matid);
+									
+									//根据matindexs获取连接obj中材质的名称
+									var matnames = getmatrefnames(mesh_node, matindexs);
+									
+									//out.println(matnames);
+									
+									//设置material节点对ocm的引用 sp:refL1Material
+									// out.println(matid);
+									// out.println(matindexs);
+									// out.println(ocmnode);
+									setmatref(matnames, matmap, ocmnode);
+									
+									// out.println(diffusenode["diffusename"]);
+									//设置masknode中的diffusename
+									setmask(diffusenode,modelName);
+									
+									
+								}
+							}
+						}
+						
+					}
+					
+
+					ocsnode = undefined;
+				}
+			}
+			
+		}
+	}
+	//判断当前节点是否为空
+	if(currentNode != null)
+	{
+		parseocs(currentNode)
+	}
+	else
+	{
+		
+	}
+%>

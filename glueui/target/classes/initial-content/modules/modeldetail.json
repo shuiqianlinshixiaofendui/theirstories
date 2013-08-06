@@ -1,0 +1,5 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"name":"模型属性编辑"
+}

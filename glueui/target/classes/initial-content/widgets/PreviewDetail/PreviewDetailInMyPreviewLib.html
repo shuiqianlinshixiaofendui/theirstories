@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/SlideShow/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+				margin:0px;
+				padding:0px;
+			}
+			#testContainer{
+				width: 99%; 
+				height: 99%;
+				float:left;
+				border:1px solid #d1d1d1;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div id="testContainer"></div>
+		<script>
+			require(
+				[
+					"widgets/PreviewDetail/PreviewDetailWidget",
+					"dojo/on",
+					"dojo/_base/array",
+					"dojo/json",
+					"dijit/Dialog",
+					"spolo/data/spsession",
+					"spolo/data/scene"
+				],
+				function
+				(
+				PreviewDetailWidget, on,arrayUtil,jsonUtil, Dialog,spsession, sceneClass
+				)
+				{	
+					var data = Spolo.getDialogData();
+					var iframe = data["iframe"];
+					var scene = data["scene"];
+					var isGutil = data["isGutil"];
+					
+					//var path = decodeURIComponent(window.location.href);
+					//获取是否显示数量框
+					var numberSpinner = data["numberSpinner"];
+					if(numberSpinner == undefined){
+						numberSpinner = getParameter("numberSpinner");
+					}
+					if(numberSpinner!=true && numberSpinner!="true"){
+						numberSpinner = false
+					}
+					
+					var canAddModel = data["canAddModel"];
+					if(canAddModel == undefined){
+						canAddModel = getParameter("canAddModel");
+					}
+					if(canAddModel!=false && canAddModel!="false"){
+						canAddModel = true;
+					}
+					var isRadio = data["isRadio"];
+					if(isRadio == undefined){
+						isRadio = getParameter("isRadio");
+					}
+					if(isRadio != true && isRadio != "true"){
+						isRadio = false;
+					}
+					var isInsteadModel = data["isInsteadModel"];
+					if(isInsteadModel == undefined){
+						isInsteadModel = getParameter("isInsteadModel");
+					}
+					if(isInsteadModel!=true && isInsteadModel!="true"){
+						isInsteadModel =  false;
+					}
+					var oldModel = data["oldModel"];
+					if(oldModel == undefined){
+						oldModel = getParameter("oldModel");
+					}
+					
+					var modelPath = data["itemId"];
+					var scenepath = data["path"];
+					if(scenepath == undefined){
+						scenepath = getParameter("path");
+					}
+					var json = { 
+						scene : scene,
+						path : scenepath,
+						canAddModel : canAddModel,
+						numberSpinner : numberSpinner,
+						isInsteadModel : isInsteadModel,
+						oldModel : oldModel,
+						isRadio : isRadio,
+						modelPath : modelPath,
+						showAddItemsModelLib : true,
+						iframe : iframe,
+						isGutil : isGutil
+					}
+					//创建PreviewDetail widget对象
+					var pdw = new PreviewDetailWidget(json);
+					console.log(json + "    PreviewDetailWidget");
+					//加载数据
+					//PreviewDetailWidget.refreshList(json);
+					//组装PreviewDetail组件
+					pdw.placeAt("testContainer");
+					
+					//默认选中该模型
+					pdw.on("modellistReady",function(){
+						if(modelPath){
+							pdw.selectedByItemId(modelPath);
+						}
+					});
+					pdw.on("onAddModelSuccess",function(){
+						var func = iframe.refreshEditItems;
+						if(func){
+							func();
+						}
+					});
+					
+					//根据参数名，获取值
+					function getParameter(param){
+						var value = "";
+						var paramSearch = param+"=";
+						var paramStr = location.search;
+						var decode_paramStr = decodeURIComponent(paramStr).substring(1);
+						var paramsArr = new Array();
+						if(decode_paramStr.search(/&/)!=-1){
+							paramsArr = decode_paramStr.split("&");
+						}
+						if(paramsArr[0]){
+							arrayUtil.forEach(paramsArr,function(item,i){
+								if(item.indexOf(param+"=")!=-1){
+									value = item.substr(item.indexOf(param+"=")+paramSearch.length);
+								}
+							});
+						}else{
+							value = decode_paramStr.substr(decode_paramStr.indexOf(param+"=")+paramSearch.length);
+						}
+						return value;
+						
+					}
+				});
+		</script>
+	</body>
+</html>

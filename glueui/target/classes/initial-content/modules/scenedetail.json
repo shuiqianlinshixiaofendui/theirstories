@@ -1,0 +1,6 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"resourceName":"场景详细信息",
+		"description":"对单个场景的名称，模型等信息的展示和下载，渲染等功能"
+}

@@ -1,0 +1,205 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+	response.setCharacterEncoding("UTF-8");
+    
+	
+	var value = request.getRequestParameter("value");
+	var type = request.getRequestParameter("type");
+	var start = request.getRequestParameter("start");
+	var length = request.getRequestParameter("length");
+	
+	
+	if(start == null)
+	{
+		start = 0;
+	}
+	
+	if(length == null)
+	{
+		length = 50;
+	}
+	
+	if(value == null){
+		getfav(type, start, length);
+		
+	}else{
+		out.println(value);
+		var characterEncoding = request.getCharacterEncoding();
+		value = Packages.org.apache.commons.io.IOUtils.toString(value.getString().getBytes(characterEncoding), 'utf-8');
+
+		searchfavourite(value, type, start, length);
+		
+	}
+	
+	// 通过value 进行搜索
+	function searchfavourite(value, type, start, length){
+	
+		var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+		var jsondatas = new Packages.org.apache.sling.commons.json.JSONObject();
+		if(type!="model"&&type!="preview"){
+			jsonobj.put("suc",false);
+			jsonobj.put("info","type must be 'model' or 'preview'!");
+			out.print(jsonobj.toString());
+			//out.print("{\"suc\":\"false\"}");
+			return;
+		}
+		
+		var typenode = currentNode.getNode(type);
+		var nodes =typenode.getNodes();
+		
+		var tmpEndPos = 0;
+		out.println("tmpEndPos" + tmpEndPos.toString());
+		for(var i = 0; i < nodes.length; i++)
+		{	
+			var refpath = type + "path";
+			var path = nodes[i][refpath];
+			// 收藏时间
+			var favtime = nodes[i]["jcr:created"];
+			favtime = new Date(favtime).toString();
+			
+			var subpath = path;
+			var rootNode = currentNode.getAncestor(0);
+			
+			if (path[0] == '/')
+			{
+				subpath = path.substring(1);
+			}
+			
+			var DstNode = rootNode.getNode(subpath);
+			
+			if(DstNode.resourceName != undefined)
+			{
+				if(DstNode.resourceName.toLowerCase().indexOf(value.toLowerCase()) != -1)
+				{	
+					
+					if(tmpEndPos>=start && tmpEndPos<(start+length)){
+						//jsonobj.put(DstNode.resourceName,nodes[i].refpath);
+						var data = getDataJSON(path);
+						// 收藏时间
+						data.put("favtime",	favtime);
+						
+						//out.println(path);
+						jsondatas.put(path,data);
+					}
+					//out.println("tmpEndPos" + tmpEndPos);
+					tmpEndPos ++;
+					//out.println("tmpEndPos" + tmpEndPos);
+				}
+			}
+			
+			
+		}
+		jsonobj.put("suc", true);
+		jsonobj.put("data",jsondatas);
+		jsonobj.put("count", tmpEndPos);
+		//return jsonobj.toString();
+		//response.setCharacterEncoding("UTF-8");
+		out.print(jsonobj.toString());
+		
+	}
+	
+	// 获取所收藏的模型或者是效果图
+	function getfav(type, start, length){
+		var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+		var jsondatas = new Packages.org.apache.sling.commons.json.JSONObject();
+		if(type!="model"&&type!="preview"){
+			jsonobj.put("suc",false);
+			jsonobj.put("info","type must be 'model' or 'preview'!");
+			out.print(jsonobj.toString());
+			//out.print("{\"suc\":\"false\"}");
+			return;
+		}
+		
+		var typenode = currentNode.getNode(type);
+		var nodes =typenode.getNodes();
+		
+		var tmpEndPos = 0;
+		
+		for(var i = 0; i < nodes.length; i++)
+		{	
+			var refpath = type + "path";
+			var path = nodes[i][refpath];
+			// 收藏时间
+			var favtime = nodes[i]["jcr:created"];
+			favtime = new Date(favtime).toString();
+			var subpath = path;
+			var rootNode = currentNode.getAncestor(0);
+			
+			if (path[0] == '/')
+			{
+				subpath = path.substring(1);
+			}
+			
+			var DstNode = rootNode.getNode(subpath);
+		
+			if(tmpEndPos>=start && tmpEndPos<(start+length)){
+				//jsonobj.put(DstNode.resourceName,nodes[i].refpath);
+				var data = getDataJSON(path);
+				// 收藏时间
+				data.put("favtime",favtime);
+				//out.println(path);
+				jsondatas.put(path,data);
+			}
+			tmpEndPos ++;
+			
+		}
+		jsonobj.put("suc", true);
+		jsonobj.put("data",jsondatas);
+		jsonobj.put("count", tmpEndPos);
+		//return jsonobj.toString();
+		//response.setCharacterEncoding("UTF-8");
+		out.print(jsonobj.toString());
+	}
+	
+	// 获取数据的.0.json, jcr 中的属性
+	function getDataJSON(refpath){
+		var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+		var path = refpath + ".0.json";
+		
+		// request.setCharacterEncoding("UTF-8");
+		
+		var disp = request.getRequestDispatcher(path,dispOption);
+		var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+		// cache_response.setCharacterEncoding("UTF-8");
+		
+		cache_response.setContentType("application/json");
+		// outstr += "CharacterEncoding : " + cache_response.getCharacterEncoding() + "\n";
+		// outstr += "getContentType : " + cache_response.getContentType() + "\n";
+		
+		var dataJson;
+		
+		try
+		{
+			disp.forward(request,cache_response);
+			var content = cache_response.getBodyContent();
+			dataJson = new Packages.org.apache.sling.commons.json.JSONObject(content);
+			response.setCharacterEncoding("UTF-8");
+			return dataJson;
+		}
+		catch(e)
+		{	
+			var errorObj = new Packages.org.apache.sling.commons.json.JSONObject();
+			// out.println(path);
+			errorObj.put("suc",false);
+			errorObj.put("info",e);
+			// out.print(errorObj.toString());
+			return errorObj;
+		}
+		
+	}
+	//success
+	//out.print(searchstring);
+
+	//response.flushBuffer();
+%>

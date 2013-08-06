@@ -1,0 +1,87 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+// response.setContentType("application/json");
+
+var GVAR_LoadLibrary = true;
+load("/apps/material/_update.esp");
+load("/apps/util/request.esp");
+
+
+
+// out.println(currentNode);
+
+var mat_prop = {};
+
+var characterEncoding = request.getCharacterEncoding();
+
+var matname = request.getParameter("matname");
+var matname = Packages.org.apache.commons.io.IOUtils.toString(matname.getBytes(characterEncoding), 'utf-8');
+
+// out.println(matname);
+
+var mattype = request.getParameter("mattype");
+var mattype = Packages.org.apache.commons.io.IOUtils.toString(mattype.getBytes(characterEncoding), 'utf-8');
+
+// out.println(mattype);
+
+var keyInfo = request.getParameter("keyInfo");
+var keyInfo = Packages.org.apache.commons.io.IOUtils.toString(keyInfo.getBytes(characterEncoding), 'utf-8');
+
+// out.println(keyInfo);
+
+var introduction = request.getParameter("introduction");
+var introduction = Packages.org.apache.commons.io.IOUtils.toString(introduction.getBytes(characterEncoding), 'utf-8');
+
+// out.println(introduction);
+
+// out.println(request.getCharacterEncoding());
+if(String(matname) != "null")
+	mat_prop["resourceName"] = String(matname);
+
+if(String(mattype) != "null")
+	mat_prop["categoryName"] = String(mattype);
+
+if(String(keyInfo) != "null")
+	mat_prop["keyInfo"] = String(keyInfo);
+
+if(String(introduction) != "null")
+	mat_prop["introduction"] = String(introduction);
+
+var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+
+// out.println(1);
+
+var uret;
+try
+{
+	uret = updateMaterial(currentNode,mat_prop);
+}catch(e)
+{
+	uret = e;
+}
+
+
+jsonobj.put('result', uret);
+
+response.setCharacterEncoding("UTF-8");
+response.setContentType("text/html");
+out.println("<html> <body> ");
+out.println("<textarea>");
+out.println(jsonobj.toString());
+out.println("</textarea>");
+// out.println("<script>window.parent.notifyInfo(2);</script>");
+out.println("</body></html>");
+
+%>

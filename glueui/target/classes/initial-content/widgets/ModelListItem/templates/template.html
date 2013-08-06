@@ -1,0 +1,24 @@
+<div class="_modelListItem">
+	<div class="_modelListItem_check">
+		<input id="___${id}" name="${name}" alt="${path}" type="checkbox" key="${key}"
+				data-dojo-attach-point="checkNode" data-dojo-attach-event='onclick:__onCheckBoxClick' />
+	</div>
+	<div class="_modelListItem_imgdiv">
+		<img class="_modelListItem_mimg_img" src="${img}" data-dojo-attach-point="imageNode" data-dojo-attach-event='onclick:__onWeb3d'/>
+	</div>
+	<div class="_modelListItem_name">
+		<span class="field name">名称：<a data-dojo-attach-point="nameNode">${name}</a></span>
+		<span class="field type">类型：<a data-dojo-attach-point="typeNode">${type}</a></span>
+		<span class="field number">数量：<a data-dojo-attach-point="numberNode">${number}</a></span>
+		<span class="field invalid"><a data-dojo-attach-point="invalidNode"></a></span>
+		<span class="field material"><a data-dojo-attach-point="materialNode"></a></span>
+		<!--<a href="${referModel}.x3d">查看模型</a>-->
+		<span class="oper">
+			<button class="_modelListItem_Modify" data-dojo-attach-point="canModify" data-dojo-attach-event='onclick:__onClickModify'>修改属性</button>
+			<button class="_modelListItem_insteadFromPreview" data-dojo-attach-point="canInsteadFromPreview" data-dojo-attach-event='onclick:__onClickInsteadFromPreview'>从效果图替换模型</button>
+			<button class="_modelListItem_instead" data-dojo-attach-point="canInstead" data-dojo-attach-event='onclick:__onClickInstead'>替换模型</button>
+			<button class="_modelListItem_modelInfo" data-dojo-attach-point="modelInfo" data-dojo-attach-event='onclick:__onClickModelInfo'>关联的效果图</button>
+		</span>
+	</div>
+	
+</div>

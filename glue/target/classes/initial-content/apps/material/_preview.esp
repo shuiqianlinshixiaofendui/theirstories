@@ -1,0 +1,78 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+
+var GVAR_LoadLibrary = true;
+
+load("/apps/util/sysconfig.esp");
+load("/apps/image/_resize.esp");
+
+function matpreview(Node,format)
+{
+	var previewPath = GVAR_system.getNodePath(Node,true) + GVAR_system.path_separator + "preview";
+
+	var previewDir = new Packages.java.io.File(previewPath);
+
+	var files = previewDir.listFiles();
+	
+	var previewFile = null;
+	//得到需要转换的源文件
+	for(var i = 0; i < files.length; i++)
+	{
+		if(!files[i].isDirectory())
+		{
+			previewFile = files[i];
+			
+			break;
+		}
+	}
+    
+    if(previewFile && previewFile.exists())
+	{
+        var mimeService = sling.getService(Packages.org.apache.sling.commons.mime.MimeTypeService);
+
+        var srcImage = previewFile.getPath();
+        var destImage = previewFile.getName();
+        
+        var commandPara = request.getRequestParameter("commandPara");
+        
+        if(!commandPara){
+            commandPara = "235x235";
+        }
+        
+        var newPreviewFile = new Packages.java.io.File(previewPath + "/cache/" + destImage);
+
+        if(newPreviewFile.exists())
+        {
+            newPreviewFile["delete"]();
+        }
+        
+        if (!newPreviewFile.exists())
+        {
+            var newfile = new Packages.java.io.File(previewPath + "/cache/");
+            
+            newfile.mkdirs();
+            
+            resizeSave(srcImage,commandPara,destImage,previewPath);
+        }
+        
+        previewFile = newPreviewFile;
+        
+	}
+	return previewFile;
+}
+
+
+%>

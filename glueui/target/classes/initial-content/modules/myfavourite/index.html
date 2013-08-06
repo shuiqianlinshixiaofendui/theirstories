@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            我的收藏
+        </title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/index.css" media="screen"/>
+    </head>
+    <body class="claro">
+		<div id="myfavouriteContent" dojoType="dijit.layout.BorderContainer" gutters=false>
+			<div dojoType="dijit.layout.ContentPane" region="center">
+				<div data-dojo-type="dijit.layout.TabContainer">
+					<div data-dojo-type="dijit.layout.ContentPane" title="模型" data-dojo-props="selected:true" id="myfavouritemodel">
+						<iframe src = "myfavouritemodel.html" scrolling = "no" framespacing = "0" border = "0" frameborder = "0" style='width:100%;height:95%;'>
+						</iframe>
+					</div>
+					<div data-dojo-type="dijit.layout.ContentPane" title="效果图" id="myfavouritepreview">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	<script type="text/javascript">
+		
+		require(
+			[
+				"dojo/parser","dojo/ready","dojo/dom","dojo/dom-style","dojo/on","dojo/query", 
+				"dijit/form/Button","dijit/registry","dijit/layout/BorderContainer", "dijit/layout/ContentPane","dijit/layout/TabContainer","dojo/NodeList-traverse"
+				
+			],function(
+				parser, ready, dom, domStyle, on, query, Buttton,registry,
+				BorderContainer,ContentPane,TabContainer
+			){
+				ready(function(){
+					registry.byId("myfavouritepreview").watch("selected", function(){
+						if(this.selected == true)
+						{
+							var chi = query("#myfavouritepreview").children();
+							if(chi.length == 0)
+							{
+								dom.byId("myfavouritepreview").innerHTML = "<iframe src = \"myfavouritepreview.html\" scrolling = \"no\" framespacing = \"0\" border = \"0\" frameborder = \"0\" style='width:100%;height:95%;'></iframe>";
+								
+							}
+						}
+					});
+				});
+			});
+	</script>	
+    </body>
+</html>

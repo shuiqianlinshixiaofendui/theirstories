@@ -1,0 +1,23 @@
+<div data-dojo-attach-point="widget_dialog" class="widget_dialog">
+    <!-- 
+        template 中禁止使用id，如果调整css样式可以通过class
+        获取dom对象： data-dojo-attach-point="rightUI"
+        给dom添加事件：data-dojo-attach-event='onmouseover: onMouseOverEvent , onmouseout: onMouseOutEvent'
+        <div data-dojo-attach-point="rightUI" data-dojo-attach-event='onmouseover: onMouseOverEvent , onmouseout: onMouseOutEvent' class="water_rightUI"/>
+    -->
+    <div class="dialog_top">
+        <span data-dojo-attach-point="dialog_prompt">Dialog</span>
+    </div>
+    
+    <div class="dialog_close_button" data-dojo-attach-point="dialog_close_button">
+    </div>
+    
+    <div data-dojo-attach-point="dialog_widgets_placeAt">
+    </div>
+
+    
+    <link href = ${hrefURL} rel="stylesheet" type="text/css" data-dojo-attach-point="dialog_css"/> 
+</div>
+
+
+

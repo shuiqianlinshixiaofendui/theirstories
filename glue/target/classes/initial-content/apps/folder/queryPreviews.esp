@@ -1,0 +1,153 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+*/
+response.setCharacterEncoding("UTF-8");
+
+//该esp用于查询 云端效果图库 下的所有场景，并返回json对象
+
+var characterEncoding = request.getCharacterEncoding();
+var limit = request.getParameter("limit");
+	limit = Number(limit);
+var offset = request.getParameter("offset");
+	offset = Number(offset);
+var keyword = request.getParameter("keyword");
+var publishAuthor  = request.getParameter("publishAuthor");
+var startdate = request.getParameter("startdate");
+var enddate = request.getParameter("enddate");
+var publishdate = "";
+
+//定义查询语句类型
+var language = "xpath";
+//生成查询语句 expression(默认包含resourceName的模糊查询)
+var expression = "/jcr:root/content/previewlib/*";
+if(keyword){
+	//转码
+	keyword = Packages.org.apache.commons.io.IOUtils.toString(keyword.toString().getBytes(characterEncoding), 'utf-8');
+	keyword.replace(' ', '%');
+	keyword = "((jcr:like(@resourceName,\"%" + keyword +"%\")) or (jcr:like(@keyInfo,\"%" + keyword +"%\")) or (jcr:like(@introduction,\"%" + keyword +"%\")) or (jcr:like(@publishAuthor,\"%" + keyword +"%\")))";
+}else{
+	keyword = "(jcr:like(@resourceName,\"%%\"))";
+}
+
+if(publishAuthor){
+	//转码
+	publishAuthor = Packages.org.apache.commons.io.IOUtils.toString(publishAuthor.toString().getBytes(characterEncoding), 'utf-8');
+	publishAuthor = " and (jcr:like(@publishAuthor,\"%"+publishAuthor+"%\"))";	
+}else{
+	publishAuthor = ""
+}
+
+if(startdate || enddate){
+	//转码
+	if(startdate && enddate){
+		startdate = Packages.org.apache.commons.io.IOUtils.toString(startdate.toString().getBytes(characterEncoding), 'utf-8');
+		enddate = Packages.org.apache.commons.io.IOUtils.toString(enddate.toString().getBytes(characterEncoding), 'utf-8');
+		publishdate =  " and (@publishdate>=xs:dateTime(\""+ startdate +"\") and @publishdate<=xs:dateTime(\""+ enddate +"\"))";
+	}else if(startdate && !enddate){
+		startdate = Packages.org.apache.commons.io.IOUtils.toString(startdate.toString().getBytes(characterEncoding), 'utf-8');
+		publishdate =  " and (@publishdate>=xs:dateTime(\""+ startdate +"\"))";
+	}else{
+		enddate = Packages.org.apache.commons.io.IOUtils.toString(enddate.toString().getBytes(characterEncoding), 'utf-8');
+		publishdate =  " and (@publishdate<=xs:dateTime(\""+ enddate +"\"))";
+	}	
+}else{
+	publishdate = "";
+}
+//拼接查询语句
+expression = expression + "["+keyword+publishAuthor+publishdate+"] order by @publishdate descending";
+
+var res = query(language, expression,limit,offset);
+
+var isiframe = request.getParameter("isiframe");
+if(!isiframe){
+	out.print(res);
+}else{
+	response.setContentType("text/html");
+	out.println("<html><body> ");
+	out.println("<textarea>");
+	out.println(res);
+	out.println("</textarea>");
+	out.println("</body></html>");
+}
+//Packages.java.lang.System.out.println("Notify client msg = " + res);
+function totalNum(language,expression)
+{
+	if(!language || !expression)
+	{
+		out.print("{\"error\":\"language or expression is undefined!\"}");
+		return "";
+	}
+	var qry,result;
+	var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+	qry = queryManager.createQuery(expression,language);
+	
+	try{
+		result = qry.execute().getNodes();
+	}
+	catch(e){
+		out.println("{error:'query.execute() error!'}");
+	}
+	//这里因为查询语句中设置了order by 排序，所以可以使用getSize() 如果语句中没有order by，getSize()返回了-1，是一个的bug
+	//http://jackrabbit.510166.n4.nabble.com/NodeIterator-getSize-returns-1-for-query-with-order-by-clause-td1839436.html
+	return result.getSize();
+}
+function query(language, expression,limit,offset){
+	if(!language || !expression){
+		out.print("{\"error\":\"language or expression is undefined!\"}");
+		return false;
+	}
+	
+	var qry,result;
+	var queryManager = currentNode.getSession().getWorkspace().getQueryManager();
+	qry = queryManager.createQuery(expression,language);
+	if(limit && limit > 0){
+		qry.setLimit(limit);
+	}	
+	if(offset && offset > 0){
+		qry.setOffset(offset);
+	}
+	try{
+		result = qry.execute().getNodes();
+	}
+	catch(e){
+		out.println("{error:'query.execute() error!'}");
+		return false;
+	}
+	
+	var total = totalNum(language,expression);
+	var json = new Packages.org.apache.sling.commons.json.JSONObject();
+	var data = new Packages.org.apache.sling.commons.json.JSONObject();
+	json.put("totalNum",total);
+//遍历结果，将数据写入jsonobject对象
+	while(result.hasNext()){
+		var node = result.nextNode();
+		if(node.getName()=="rep:policy"){
+			continue;
+		}
+		var properties = node.getProperties();
+		var nodeInfo = new Packages.org.apache.sling.commons.json.JSONObject();	
+		for(var key in properties){
+			nodeInfo.put(key,properties[key].toString());
+		}
+		nodeInfo.put("nodeName",node.getName());
+		var children = node.getNodes();
+		var previews = new Packages.org.apache.sling.commons.json.JSONArray();
+		for(var index in children){
+			previews.put(children[index].getPath());
+		}
+		nodeInfo.put("previews",previews);
+		data.put(node.getPath(),nodeInfo);
+	}
+	json.put("data",data)
+	return json.toString();
+}
+%>

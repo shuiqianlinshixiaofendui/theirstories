@@ -1,0 +1,114 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+
+response.setCharacterEncoding("UTF-8");
+response.setContentType("text/html");
+
+
+var result = "";
+//设置git参数
+var option = {};
+
+	
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/request.esp");
+load("/apps/util/blendercgi.esp");
+load("/apps/util/git.esp");
+load("/apps/util/history.esp");
+
+//TODO: 支持事物处理，在当前节点下记录importing属性。并在结束之后清理之。所以检查importing属性，如果正在importing，则直接返回。本处理应该在客户端检查，如果importing，则暂停上传。
+//上面的TODO优先级很低，因为我们目前几乎不会共享操作文件——每人用户有自己的目录。
+//out.println(Packages.org.spolo.apps.util.Sysconfig);
+try {
+   var NodePath = GVAR_system.getNodePath(currentNode, true);
+
+   var updatePath = NodePath + GVAR_system.path_separator + "update";
+   var file = null;
+   //初始化git仓库
+   GVAR_Git.preCommit();
+
+    //防止出现git分支
+   if(currentNode.hasProperty("NewestVersion") && currentNode.hasProperty("CurrentVersion"))
+   {
+      var newestVersion = currentNode.getProperty("NewestVersion").toString();
+      var currentVersion = currentNode.getProperty("CurrentVersion").toString();
+      if(newestVersion != currentVersion)
+      {
+         option.version = newestVersion;	
+         GVAR_Git_History.reVersion(option);
+         currentNode.setProperty("CurrentVersion", newestVersion);
+         currentNode.save();
+      }
+   }
+
+   GVAR_uploader.foreach(function(name,param){
+         Packages.java.lang.System.out.println("recieve " + name + "=" + param);
+         if(!param.isFormField())
+         {
+            //TODO: 给出客户端正在处理的提示。
+            var notifyInfo = "copy and uncompress file '" + param.getFileName() + "'...";
+            // result += "filename : " + param.getFileName();
+            file = GVAR_uploader.copyFile(param, updatePath);
+            // result += "updatePath : " + updatePath;
+         }
+      });
+   
+   if(file) {
+      if(GVAR_system.uncompress(file)) {//如果是一个压缩文件，删除原始文件．
+         Packages.org.apache.commons.io.FileUtils.forceDelete(file);
+      }
+   } else {
+      throw Error("Copy upload file failed");
+   }
+   result = GVAR_bcgi.forward({cgi : "model/update.py", node : currentNode, useEmptyBlend : false});
+
+   var author = request.getRequestParameter("author");
+   var msg = request.getRequestParameter("msg");
+   
+   option.name = author ? Packages.org.spolo.utils.EncodeUname().decode(author.getString()) : "Anonymous";
+   option.msg = msg ? Packages.org.apache.commons.io.IOUtils.toString(msg.getString().getBytes("ISO-8859-1"), "UTF-8") : "";
+   
+
+   //提交此版本到git
+   GVAR_Git.postCommit(option);
+
+
+   //获取版本号作为最新版本号
+   var versionID = GVAR_Git_History.showNewestVersion();
+   if(versionID) {
+      currentNode.setProperty("NewestVersion", versionID);
+      currentNode.setProperty("CurrentVersion", versionID);
+      currentNode.save();
+   } else {
+      throw Error("Can not get NewestVersion")
+   }
+
+   var cachePath = NodePath + GVAR_system.path_separator + "cache";
+   GVAR_system.deleteDirectory(cachePath);
+   
+} catch(e) {
+   result = "{suc : false, reason : \"" + e + "\"}";
+}
+
+
+out.println("<html> <body> ");
+out.println("<textarea>");
+out.println(result);
+out.println("</textarea>");
+// out.println("<script>window.parent.notifyInfo(2);</script>");
+out.println("</body></html>");
+
+%>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link href = "/libs/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+		<style type="text/css">
+			html,body
+			{
+				height:100%;
+			}
+			#testContainer{
+				height:100%;
+				width: 900px; 
+			}
+		</style>
+	</head>
+	
+	<body>
+	
+		<div id="testContainer"></div>
+		<script>
+			require([
+					"widgets/menu/ThirdNav/main",
+					"spolo/data/folder",
+					"dojo/on"
+					],
+			function(main_cls,folder,on){
+				var path = "/content/materiallibcategory";
+				var main = new main_cls().placeAt("testContainer");
+				folder.getCategory
+				({
+					path:path,
+					success:function(cateData)
+					{
+						//console.log(cateData);
+						main.initialize(cateData);
+					},
+					failed:function(error)
+					{
+						console.log(error);
+					}
+				});
+				on(main,"changeNav",function(json)
+				{
+					var path = json["path"];
+					console.log(path);
+				});
+			});
+		</script>
+	</body>
+</html>

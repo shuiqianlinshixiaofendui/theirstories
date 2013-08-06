@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>Glue</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div id="testContainer"></div>
+	
+		<script>
+			
+			require(["widgets/ModelListItem/ModelListItem", "dojo/domReady!"],function( ModelListItem ){
+				var json = {
+					"referModel":"/content/users/admin/scenelib/scene2013151255241512799224/model/j6964",
+					"name":"shafa1_1",
+					"rotation_axis_angle":["0.0","0.0","1.0","0.0"],
+					"scale":["1.0","1.0","1.0"],
+					"location":["0.0","0.0","0.0"],
+					"type":"MESH",
+					"img":"image/nopreview.jpg"
+				};
+				var widget = new ModelListItem(json).placeAt("testContainer");
+				//var widget = new ModelListItem(json).placeAt("testContainer");
+				//var widget = new ModelListItem(json).placeAt("testContainer");
+				console.log(widget.get("checked"));
+				
+				setTimeout(function(){
+					widget.set("checked",true);
+					console.log(widget.get("checked"));
+				},3000);
+			});
+			
+		</script>
+	</body>
+	
+</html>

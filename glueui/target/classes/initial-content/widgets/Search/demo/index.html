@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>SearchBox</title>	
+		<link rel="stylesheet" href="/libs/dijit/themes/nihilo/nihilo.css" media="screen">		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/widgets/Search/main.js"></script>	
+		<style>
+			body,html{
+				margin:0px;
+				padding:0px;
+			}
+			.searchContainer{
+				margin-top:10px;
+				margin-left:10px;
+			}
+		</style>
+	</head>
+	
+	<body class="nihilo">
+				
+		<div id="searchContainer" class="searchContainer"></div>	
+		<div id="ccw" style="width:200px; height:500px;margin-left:50px;position:absolute;top:100px;left:400px;">					
+		</div>
+		<div id="cw" class="add"></div>	
+		
+		<script>
+			require(["dojo/_base/window","dojo/on", "dojo/ready","dojo/dom","dojo/dom-style","dijit/form/FilteringSelect","widgets/Search/main"], function(win,on, ready,dom,dom_style,FilteringSelect,search){
+				ready(function(){
+					//====================================================================================	
+					//滑动之后另一种css样式					
+					/*console.log("This is win body  :",win.body());	
+					var args = [
+						{"name":"发件人","id":"sender"},
+						{"name":"收件人","id":"receiver"},
+						{"name":"主题","id":"theme"},
+						{"name":"包含字词","id":"containWords"},
+						{"name":"主题","id":"theme1"},
+						{"name":"包含字词","id":"containWords1"},
+						{"name":"主题","id":"theme2"},
+						{"name":"包含字词","id":"containWords2"},
+						{"name":"发件人","id":"sendfsfer"}					
+						
+					];
+					var t = new search({
+						filterData: args
+					}).placeAt("searchContainer");
+					on(t,"search",function(filterData){
+						console.log(filterData);
+					});
+					on(t,"advanceSearch",function(filterData){
+						console.log(filterData);
+					});
+					var f = new search().placeAt("ccw");
+					on(f,"search",function(filterData){
+						console.log(filterData);
+					});*/
+					var args2 = [
+						{"name":"发件人","id":"sender"},
+						{"name":"收件人","id":"receiver"},
+						{"name":"主题","id":"theme"},
+						{"name":"时间段","id":"timeRange","type":"calendar"},
+						{"name":"时间段2","id":"timeRange1","type":"calendar"}
+					];				
+					//f.createSearchBox(win.body(),args2);	
+					var n = new search({
+						filterData: args2
+					}).placeAt("cw");	
+					on(n,"search",function(filterData){
+						console.log(filterData);
+					});
+					on(n,"advanceSearch",function(filterData){
+						console.log(filterData);
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

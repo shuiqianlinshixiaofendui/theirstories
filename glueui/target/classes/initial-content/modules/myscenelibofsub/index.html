@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>我的子场景</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+		<style type="text/css">
+			html,body{
+				height:100%;
+				margin:0px;
+				padding:0px;
+				background-color:white;
+			}
+			#sceneList{
+				//width: 1200px; 				
+				height:auto !important;	
+				min-height:500px;
+				margin-left:10%;
+			}
+			.btnGroup{
+				float:left;
+				margin-top:5px;
+				margin-bottom:5px;
+				width:100%;
+				//margin-left:11%;
+			}
+			.selectBtn,#listType,#editBtn,.orderItem{
+				float:left;
+				margin-left:20px;
+				display:inline;
+				color:#fff;
+				padding:10px;
+				font-weight:bold;
+				background:#5080d8;
+				cursor:pointer;
+				z-index:1;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+			}
+			#pager{
+				margin-left:13%;
+			}
+		</style>
+	</head>
+	
+	<body class="claro">
+		<div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%;margin:0px;" gutters="false">
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" gutters="false">		
+				<div class="btnGroup">
+					<!-- <div class="selectBtn">全选</div>
+					<div id="listType">列表</div>
+					<div id="editBtn">编辑</div> -->
+				</div>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" gutters="false">		
+				<div id="sceneList"></div>				
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" gutters="false" style="height:40px;">		
+				<div id="pager"></div>
+			</div>
+		</div>	
+		<script>
+			require(
+				[
+					"widgets/List/List",
+					"widgets/Toolbar/Toolbar",
+					"dojo/on",
+					"dojo/query",
+					"dijit/Dialog",
+					"widgets/Pagination/Pagination",
+					"spolo/data/queryClass",
+					"dojo/dom-style",
+					"dojo/dom",
+					"spolo/data/folder",
+					"dijit/form/Button",
+					"dojo/request/xhr",
+					"spolo/data/scene",
+					"spolo/data/folder/scenelib"
+				],
+				function
+				(
+					List,Toolbar, on,query, Dialog, Pagination, queryClass, dom_style, dom, folder_cls, Button, xhr,scene_cls,scenelib
+				)
+				{
+					//创建List widget对象
+					var list = new List();
+					//创建Toolbar widget对象
+					var toolbarData = {
+						sortable : true,
+						selectAll : true,
+						editable : true,
+						gridList : true,
+						rowList : true
+						
+					};
+					var toolbar = new Toolbar(toolbarData);
+					toolbar.placeAt(query(".btnGroup")[0]);
+					// 记录场景的状态
+					var sceneState = {};
+					//监听加载状态
+					var loading = false;
+					
+					var uid = Spolo.getUserId();
+					var userNodePath = "/content/users/"+uid;
+					var scenelibPath = userNodePath + '/' + "scenelib";
+					var previewlibPath = userNodePath + '/' + "previewlib";
+					var currentPage = 1;
+					var perPageNum = 10;
+					var scenelib_folder = new folder_cls(scenelibPath);
+					var previewlib_folder = new folder_cls(previewlibPath);
+					var widget;
+					initSceneList();					
+					on(list,"onListItemClick",function(nodeData)
+					{
+						var scenePath = nodeData;
+						//var path = scenePath.substring(scenePath.lastIndexOf("/")+1);
+						getSceneState.call(this,nodeData,function(scenestate){
+							if(scenestate["isProcessing"] > 0)
+								{
+									window.location.href="../scenedetail/index.html?path=" + scenePath;
+								}
+						});					
+					});
+					//得到某个场景的状态
+					function getSceneState(nodeData,callback)
+					{
+						scenelib.getSceneStatus({
+							"path" : nodeData,
+							success : function(sucdata){
+								callback(sucdata);
+							},
+							failed : function(error){
+								console.log(error);
+							}
+						});
+					}					
+				
+					//排序我的场景
+					function sortList(data){
+						var dthis = this;
+						initSceneList(data);
+					}
+					
+					function initSceneList(params)
+					{	
+						var _this = this;
+						queryScene(function(data,num)
+						{
+							//setSceneItems(data);
+							list.placeAt("sceneList");							
+							//动态加载场景预览图
+							setImage(data);
+							setSceneName(data);
+						    addSceneTime(data);//添加场景时间
+							setSceneStateDiv(data);
+							var total = num;
+							var totalPage = getTotalPage(total);
+							var json = 
+							{
+								total:totalPage
+							};
+							widget = new Pagination(json).placeAt("pager");
+							
+							on(widget,"onClickPage",function(data)
+							{
+								currentPage = data.nowPage;
+								queryScene(function(json,num){
+									refreshData(json,num);
+								});
+							});							
+						},params);
+					}
+					
+					function getPageIndex()
+					{
+						 return currentPage;
+					}
+					
+					function getTotalPage(total)
+					{
+						var totalPage;
+						if(total % perPageNum == 0){
+							totalPage = total / perPageNum;
+						}
+						else 
+						{
+							totalPage = Math.ceil(total / perPageNum);
+						}
+						return totalPage;
+					}				
+					//显示场景预览图
+					function setImage(data){
+						var listData = data;						
+						var array = new Array();
+						for(var key in listData){
+							array.push(key);
+						}		
+						list.addItems(array,true);	// 这里会刷新List组件	
+						for(var i = 0; i < array.length; i++){
+							var key = array[i];
+							// 设置listitem中的图片
+							var imgUrl = key;
+						    setCurrentImg(key);
+						}	
+					}
+					//调用scene当中的getPreview方法
+					function setCurrentImg(key){									
+						 scene_cls.getPreview(
+								key,
+								function(urls){
+									for(var url in urls){
+										if(url != "hasObject" && urls[url]){
+											list.setItemImage(key,urls[0]);
+										}
+									}
+								},
+								// 执行一个默认的效果图
+								function(error){								
+									list.setItemImage(key,"images/nopreview.jpg");									
+								});								
+					}
+					//设置场景的名字
+					function setSceneName(data)
+					{
+						for(var key in data){
+							list.addDomNode(key,"<div>名称：" + data[key]["resourceName"] + "</div>");
+						}
+					}
+					//添加场景时间
+					function addSceneTime(data){
+							for(var key in data){			
+							var datatime = data[key]["jcr:created"];
+							datatime = datatime.substr(0,datatime.indexOf("."));
+							datatime = datatime.split("T");							
+							if(datatime[0]&&datatime[1]){
+								list.addDomNode(key,"<div>时间：" +datatime[0]+"\t"+datatime[1] + "</div>");
+							}else{
+								list.addDomNode(key,"<div>时间：" +"无时间"+ "</div>");
+							}
+						}
+					}
+					// 设置场景的状态
+					function setSceneStateDiv(data){
+						for(var key in data)
+						{
+							list.addDomNode(key,"<div></div>");
+						}
+					}
+					
+					//设置场景列表初始化
+					function setSceneItems(data)
+					{
+						var array = [];
+						for(var key in data)
+						{
+							array.push(key);
+						}
+						list.addItems(array,true);	// 这里会刷新List组件
+					}
+					//获得父场景的方法
+					function getParentScene(){
+						//此方法是由spdialog传来的参数做操作
+						var scenepath;					
+						var data = Spolo.getDialogData();
+						//console.log(" data :",Spolo.getDialogData());
+						if(data){
+							scenepath = data["scenepath"];
+						}else{
+							throw("spolo.getDialogdata() is not exist !");
+						}						
+						if(scenepath){
+							return scenepath;
+						}else{
+							throw("scenepath is not exist !");
+						}
+						return "没有父场景地址!";
+						//return "/content/users/admin/scenelib/scene2013421612587941052589";
+					}
+					//查询我的场景列表
+					function queryScene(callback,params){
+						//获得子场景的父场景 
+						var parentScene = getParentScene();		
+						var _currentPage = getPageIndex();
+						var offset = (_currentPage - 1) * perPageNum;
+						var queryData = {
+							"parentScene" : parentScene,
+							"offset" : offset.toString(),
+							"limit" : perPageNum,
+							success : function(sucdata,num){
+								callback(sucdata,num);
+							},
+							failed : function(error){
+								console.log(error);
+							}
+						};
+						if(params != undefined){
+							var sortName = params["sortName"];
+							var order = params["order"];
+							queryData[order] = sortName;
+						}
+						scenelib.getSubScenesFromScene(queryData);
+					}		
+					on(toolbar,"sortable",function(data){
+						sortList.call(this,data);
+					});
+					//全选/取消按钮切换事件
+					on(toolbar,"selectAll",function(data){
+						if(data){
+							list.selectAll();
+						}else{
+							list.unSelectAll();
+						}
+					});
+					
+					on(toolbar,"gridList",function(data){
+						list.showList();
+					});
+					on(toolbar,"rowList",function(data){
+						list.showThumbnail();
+					});
+					//编辑/结束编辑按钮切换事件
+					on(toolbar,"editable",function(data){
+						if(data){
+							list.openEdit();
+						}else{
+							list.closeEdit();
+						}
+					});
+						
+					var temp = "<center><label>确定删除该场景吗？</label><br />"+
+								"<button id='Sure'></button>"+
+								"<button id='Cancel'></button></center>";
+					var dialog = new Dialog({
+						title: "删除场景",
+						content: temp,
+						style: "width: 200px;position:relavite;top:20px;font-size:12px"
+					});
+					new Button({
+						label:"确定"
+					},"Sure");
+					new Button({
+						label:"取消"
+					},"Cancel");
+						
+					//监听删除场景的事件
+					on(list,"onDelItemClick",function(data){
+						dialog.show();
+						var data = data;
+						on(dom.byId("Sure"),"click",function(){
+							var list = [];
+							scenePath = data.substring(data.lastIndexOf("/")+1);
+							list.push(scenePath);
+							scenelib_folder.batchRemove(list,
+								function(){
+									dialog.hide();
+									//这里需要刷新数据
+									queryScene(function(json,num){
+										if(json == "{}"){
+											if(currentPage > 1)
+											{
+												currentPage = currentPage - 1;
+											}
+											queryScene(function(data,num){
+												refreshData(data,num);
+											});
+										}	
+										refreshData(json,num);
+									});
+								}
+							);
+							previewlib_folder.batchRemove(list);
+						});
+						on(dom.byId("Cancel"),"click",function(){
+							dialog.hide();
+						});	
+					});
+					
+					//刷新数据的方法
+					function refreshData(data,num){
+						setSceneItems(data);//刷新场景列表						
+						setImage(data);//设置场景的缩略图
+						setSceneName(data);//设置场景的名字
+						addSceneTime(data);//刷新时添加场景时间
+						setSceneStateDiv(data);//设置场景的状态
+						var total = num;
+						widget.refresh(getTotalPage(total));//刷新分页显示		
+						if(dom.byId("editBtn").innerHTML == "结束编辑"){
+							list.openEdit();
+						}
+					}
+					//编辑当前场景名称
+					on(list,"onEditItemClick",function(scenepath){						
+						var url = "/modules/scenedetail/myscenelibEditSceneName.html";								
+						var sceneNameField = list.getField(scenepath,1);
+						var scenename = sceneNameField.innerHTML;
+						var name = scenename.replace("<div>","").replace("名称：","").replace("</div>","");
+						var dialogData = {
+							widthradio: 0.3,
+							heightradio:0.2,
+							title:"修改场景",										
+							url:url,
+							data:{	
+								"scenename":name,
+								"scenepath":scenepath,
+								"window": window
+							},
+							callback: function(spdialog){									
+								spdialog.on("sceneRenameSuccess",function(data){
+									list.setField(sceneNameField,"名称："+data);
+								});
+							}
+						};
+						Spolo.dialog(dialogData);							
+					});			
+				});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,89 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+// 获取某一个用户在一段时间内发布在云端效果图的效果图集的数量以及效果图所包含的模型的数量
+//1. 拼接查询条件 /jcr:root/content/previewlib//*[jcr:contains(@publishAuthor,'admin'),@publishdate >= xs:dateTime('2008-06-04T15:34:15.917+08:00'), @publishdate <=xs:dateTime('2014-06-04T15:34:15.917+08:00')]
+//2. 获取的是 /content/previewlib/scenexxxxx ,
+   // 2.1 然后通过getNodes() 获取/contnet/previewlib/scenexx/previewxxx
+   // 2.2 然后通过getNode('model').getNodes() 获取/content/previewlib/scenexxx/previewxxx/model/modelxxx..
+  
+  
+  
+  
+getModelsNum();	
+
+	
+// 根据效果图获取模型数量
+function getModelsNum(){
+	
+	// http://devvm.spolo.org/content/previewlib.statics?previews=/content/previewlib/sceneyyy,content/previewlib/scenezz
+	var previews = request.getParameter("previews");
+
+	var totalNum = 0;
+
+	var previewsArray = previews.split(",");
+	
+	var ancestorNode = currentNode.getAncestor(0);
+  
+	var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+	
+    var jsonobjArray = [];  
+	for(var i=0; i<previewsArray.length; i++){
+		
+		var relpath = previewsArray[i].substring(1);
+		//out.println(relpath);
+		
+		var scene = ancestorNode.getNode(relpath);
+		//out.println(scene.getPath());
+		//out.println(scene);
+		
+		var scenes = scene.getNodes();
+			
+		var preview = scenes[0];
+		
+		var models = preview.getNode("model").getNodes()
+		
+		var modelsCount = models.length;
+		//out.println("modelsCount" + modelsCount);
+		
+		jsonobj.put(scene.getPath(),modelsCount);
+
+		totalNum += modelsCount;
+		//out.println("totalNum" + totalNum);
+			
+		
+	}
+	
+	var resultJson = new Packages.org.apache.sling.commons.json.JSONObject();
+	
+	resultJson.put("data", jsonobj);
+	
+	resultJson.put("totalNum", totalNum);
+	
+	out.print(resultJson.toString());
+	
+	// var json = "{";
+	// json += "\"totalNum\":"+ totalNum +",";
+	// json += "\"data\":" +  jsonobj.toString();
+	// json += "}";
+	// out.println(json); 
+	
+	
+}
+  
+  
+
+
+%>

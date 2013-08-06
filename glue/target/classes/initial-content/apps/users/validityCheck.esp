@@ -1,0 +1,32 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ var GVAR_LoadLibrary = true;
+ load("/apps/users/_validity.esp");
+ 
+ var GVAR_CurrentNode = currentNode;
+ var GVAR_Session = GVAR_CurrentNode.getSession();
+ var GVAR_RootNode = GVAR_Session.getRootNode();
+ 
+ 
+ var targetPath = '/content/users/' + request.getParameter('username');
+ var targetNode = GVAR_RootNode.getNode(targetPath.substr(1));
+ var result = checkValidity(targetNode);
+ if(result){
+	out.println('{suceess:true}');
+ }
+ else
+	out.println('{success:false}');
+%>

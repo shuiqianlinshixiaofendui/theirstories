@@ -1,0 +1,5 @@
+{
+	"resourceName":"材质库",
+	"sling:resourceType":"folder",
+	"jcr:primaryType":"sling:Folder"
+}

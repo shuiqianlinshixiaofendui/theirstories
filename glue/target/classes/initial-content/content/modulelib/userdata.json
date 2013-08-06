@@ -1,0 +1,5 @@
+{
+        "sling:resourceType":"module",
+        "jcr:primaryType":"sling:Folder",
+		"name":"用户个人信息"
+}

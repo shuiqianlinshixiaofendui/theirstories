@@ -1,0 +1,155 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ /*本文件维护了BlenderCGI子系统。
+ 
+ 如下全局变量被定义和使用:
+ GVAR_LoadLibrary : 必须被设置，否则视同直接从客户端访问。这将直接返回空。
+ 
+ 使用方法: <code>
+
+	var GVAR_LoadLibrary = true;
+	load("/apps/util/blendercgi.esp");
+	//将当前请求forward给blendercgi.option对象可以包含如下参数:
+	//env : (可选)通过env将参数传递给blender cgi.
+	//pwd : 指示了新设置的当前路径，如果不设置，则使用配置中配置的当前路径．
+	//throwExitcode : 当返回值不为０时，抛出异常．
+	//throwPWD : 当pwd不能被设置时，抛出异常．
+	//cgi : (可选)cgi脚本名称。如果未指定,则路径等同于当前脚本名称。
+	//useEmptyBlend : (可选) 如果给出，则使用空的blend文件，否则使用当前场景的blend文件。(此时如果当前场景不存在，则抛出异常).
+	//return : cgi脚本的标准输出。
+	//请注意：这里是同步模型，因此不要传输海量的内容，这会引发大量的内存消耗。异步模型这里不被支持，因此与Request/Response模型不符。
+	var stdout = GVAR_bcgi.forward(option);
+
+	测试代码请参考testbundle: scene/test.esp. 使用devvmp.spolo.org/test/scene.test来访问测试代码。
+  </code>
+*/
+
+
+var GVAR_bcgi;
+
+(function()
+{
+	if(!GVAR_bcgi && GVAR_LoadLibrary)
+	{
+		//确认sysconfig模块被加载。
+		load("/apps/util/sysconfig.esp");
+		load("/apps/util/string.esp");
+	
+		GVAR_bcgi = {};
+		
+		/** @brief 将当前请求forward给blendercgi.option对象可以包含如下参数:
+			@notice 请注意：这里是同步模型，因此不要传输海量的内容，这会引发大量的内存消耗。异步模型这里不被支持，因此与Request/Response模型不符。
+		    @param env : (可选)通过env将参数传递给blender cgi.
+		    @param cgi : (可选)cgi脚本名称。如果未指定,则路径等同于当前脚本名称。
+		    @return : cgi脚本的标准输出。
+		//*/
+		
+		function	getBlenderScript(option)
+		{
+			var cgiPath;
+			if(option && option.cgi)
+			{
+				cgiPath = option.cgi;
+			}else{
+				var requestPath = sling.getScript().getScriptResource().getPath();
+				if(!requestPath.startWith("/apps/"))
+				{
+					throw "invalid request path";
+				}
+				cgiPath = requestPath.substring(6);
+				//pc path component.
+				var pc = cgiPath.split('.');
+				cgiPath = '';
+				for(var i = 0; i < pc.length - 1; i++)
+				{
+					if(cgiPath.length)
+						cgiPath += '.';
+					cgiPath += pc[i];
+				}
+				cgiPath += '.py';
+			}
+
+			//校正cgiPath,使其保存全路径．@FIXME: 未检查错误．
+			if(cgiPath[0] != '/')
+				cgiPath = GVAR_system.getSppScriptPath() + '/bcgi/' + cgiPath;
+
+			//确保脚本文件存在。
+			if(!(new Packages.java.io.File(cgiPath)).exists())
+			{
+				throw "blender cgi script '" + cgiPath + "' not exist!";
+			}
+			return cgiPath;
+		}
+		
+		GVAR_bcgi.main_blend_file = Packages.org.spolo.apps.util.BlenderCGI.main_blend_file;
+
+		GVAR_bcgi.asyncforward = function(option)
+		{
+			//获取当前脚本对应的(或者由option指定的)blender script文件。
+			var cgiPath = getBlenderScript(option);
+			//获取当前scene对象对应的blender文件。
+			var useEmptyBlend = false;
+			if(option && option.useEmptyBlend)
+				useEmptyBlend = true;
+			var env = null;
+			if(option && option.env)
+			{
+				var envmap = new Packages.java.util.HashMap();
+				for(var i in option.env)
+				{
+					envmap.put(i,option.env[i]);
+				}
+				env = envmap;
+			}
+			return Packages.org.spolo.apps.util.BlenderCGI.asyncForward(cgiPath,currentNode,useEmptyBlend,env);
+		}
+		
+		GVAR_bcgi.forward = function(option)
+		{
+			//获取当前脚本对应的(或者由option指定的)blender script文件。
+			var cgiPath = getBlenderScript(option);
+			//获取当前scene对象对应的blender文件。
+			var useEmptyBlend = false;
+			if(option && option.useEmptyBlend)
+				useEmptyBlend = true;
+			var env = null;
+			if(option && option.env)
+			{
+				var envmap = new Packages.java.util.HashMap();
+				for(var i in option.env)
+				{
+					envmap.put(i,option.env[i]);
+				}
+				env = envmap;
+			}
+			
+			var node = currentNode;
+			if(option && option.node)
+			{
+				node = option.node;
+			}
+			
+			if(option && option.debug)
+			{//如果debug被设置，直接输出forward的全部内容．
+				return Packages.org.spolo.apps.util.BlenderCGI.forward(cgiPath,node,useEmptyBlend,env);
+			}else{
+			//否则，输出截取之后的内容．
+				return Packages.org.spolo.apps.util.BlenderCGI.forward(cgiPath,node,useEmptyBlend,env,true);
+			}
+		}
+	}
+}());
+
+%>

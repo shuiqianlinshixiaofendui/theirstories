@@ -1,0 +1,38 @@
+<%
+var GVAR_LoadLibrary = true;
+	
+load("/apps/util/blendercgi.esp");
+load("/apps/util/request.esp");
+load("/apps/util/file.esp");
+
+function generateBlenderZip(jsonPath, destPath) {
+
+	var result = GVAR_bcgi.forward({
+	               cgi : "sweethome/create_scene.py", 
+	               useEmptyBlend : true,
+	               env : {
+	                  "path": jsonPath,
+	                  "dest": destPath 
+	               }
+	            });
+	result = new Packages.org.apache.sling.commons.json.JSONObject(result);
+	if(result.getBoolean("success") == true) {
+		return result.getString("path");
+	} 
+
+	return null
+}
+
+var jsonFileReq = request.getRequestParameter("json");
+var tempDir = GVAR_File.createTempFolder();
+var jsonFile = GVAR_uploader.copyFile(jsonFileReq, tempDir.getPath());
+
+var blendZipPath = generateBlenderZip(jsonFile.getPath(), tempDir.getPath());
+var blendZipFile = Packages.java.io.File(blendZipPath);
+response.setContentType("application/zip");
+response.setHeader("Content-Disposition", "attachment; filename=\"blend.zip\"");
+var blendZipInputStream = Packages.org.apache.commons.io.FileUtils.openInputStream(blendZipFile);
+Packages.org.apache.commons.io.IOUtils.copyLarge(blendZipInputStream, response.getOutputStream());
+Packages.org.apache.commons.io.IOUtils.closeQuietly(blendZipInputStream);
+Packages.org.apache.commons.io.FileUtils.deleteDirectory(tempDir);
+%>

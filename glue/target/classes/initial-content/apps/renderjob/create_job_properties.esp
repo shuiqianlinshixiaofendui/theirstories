@@ -1,0 +1,45 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ //创建job_properties节点并根据任务设置相关属性
+ 
+ 
+if(currentNode != null)
+{
+	var job_propertiesnode = currentNode.addNode("job_properties","slingevent:Job");
+	job_propertiesnode.setProperty("sling:resourceType","job_properties");
+	job_propertiesnode.setProperty("job_frames",1);
+	job_propertiesnode.setProperty("regions_per_frame",1);
+	var target_propertiesnode = job_propertiesnode.addNode("target_properties","slingevent:Job");
+	target_propertiesnode.setProperty("sling:resourceType","target_properties");
+	target_propertiesnode.setProperty("targetfiletype","picture");
+	target_propertiesnode.setProperty("targetfilepath",currentNode.getPath() + "/out.png");
+	currentNode.save(); 
+	//调用split_frame esp
+	var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+	var path = currentNode.getPath() + ".split_frame";
+	var disp = request.getRequestDispatcher(path,dispOption);
+	var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+	disp.forward(request,cache_response);
+
+
+	// sling.forward(currentNode.getPath() + ".split_frame");
+	// out.write(currentNode.getPath() +"\n"); 
+	// currentNode.save(); 
+	// sling.forward(currentNode.getPath() + ".split_frame");
+	// out.write(currentNode.getPath() +"\n"); 
+	currentNode.save(); 
+}
+
+//out.write("ok!" +"\n"); 
+%>

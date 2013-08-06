@@ -1,0 +1,265 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+	response.setCharacterEncoding("UTF-8");
+
+	function getModelJSON(modelpath){
+		var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+		var path = modelpath + ".1.json";
+		
+		request.setCharacterEncoding("UTF-8");
+		
+		var disp = request.getRequestDispatcher(path,dispOption);
+		var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+		cache_response.setCharacterEncoding("UTF-8");
+		
+		cache_response.setContentType("application/json");
+		// outstr += "CharacterEncoding : " + cache_response.getCharacterEncoding() + "\n";
+		// outstr += "getContentType : " + cache_response.getContentType() + "\n";
+		
+		var modelsJson;
+		
+		try
+		{
+			disp.forward(request,cache_response);
+			var models = cache_response.getBodyContent();
+			modelsJson = new Packages.org.apache.sling.commons.json.JSONObject(models);
+			return modelsJson;
+		}
+		catch(e)
+		{
+			// out.println(path);
+			return null;
+		}
+		
+	}
+
+	
+	
+	function searchmodel(keyWord,start,length)
+	{
+		var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+		var modelnode = currentNode.getNode("model");
+		var models = modelnode.getNodes();
+		//out.print(models.length);
+		//search by name
+		var tmpEndPos = 0;
+		for(var i = 0; i < models.length; i++)
+		{
+			var path = models[i].modelpath;
+			var rootNode = currentNode.getAncestor(0);
+			var modelsJSON = getModelJSON(path);
+			if (path[0] == '/')
+			{
+				path = path.substring(1);
+			}
+			
+			var DstNode = rootNode.getNode(path);
+			if(DstNode.resourceName != undefined)
+			{
+				//out.print(modelsJSON.toString());
+				if(DstNode.resourceName.indexOf(keyWord) != -1 && modelsJSON != null)
+				{
+					//jsonobj.put(DstNode.resourceName,models[i].modelpath);
+					if(tmpEndPos >= start && tmpEndPos < (start + length))
+					{
+						jsonobj.put(models[i].modelpath, modelsJSON);
+					}
+					tmpEndPos++;
+				}
+			}
+		}
+		
+		if(jsonobj.length() != 0)
+		{
+			jsonobj.put("count", tmpEndPos);
+			var jsonstring = jsonobj.toString();
+			return jsonstring;
+		}
+		
+		
+		//search by keyinfo
+		var tmpEndPos = 0;
+		for(var i = 0; i < models.length; i++)
+		{
+			var path = models[i].modelpath;
+			var rootNode = currentNode.getAncestor(0);
+			var modelsJSON = getModelJSON(path);
+			if (path[0] == '/')
+			{
+				path = path.substring(1);
+			}
+			
+			var DstNode = rootNode.getNode(path);
+			if(DstNode.keyInfo != undefined)
+			{
+				if(DstNode.keyInfo.indexOf(keyWord) != -1 && modelsJSON != null)
+				{
+					//jsonobj.put(DstNode.resourceName,models[i].modelpath);
+					if(tmpEndPos >= start && tmpEndPos < (start + length))
+					{
+						jsonobj.put(models[i].modelpath, modelsJSON);
+					}
+					tmpEndPos++;
+				}
+			}
+		}
+		
+		if(jsonobj.length() != 0)
+		{
+			jsonobj.put("count", tmpEndPos);
+			var jsonstring = jsonobj.toString();
+			return jsonstring;
+		}
+		
+		//search by introduction
+		var tmpEndPos = 0;
+		for(var i = 0; i < models.length; i++)
+		{
+			var path = models[i].modelpath;
+			var rootNode = currentNode.getAncestor(0);
+			var modelsJSON = getModelJSON(path);
+			if (path[0] == '/')
+			{
+				path = path.substring(1);
+			}
+			
+			var DstNode = rootNode.getNode(path);
+			
+			if(DstNode.introduction != undefined)
+			{
+				if(DstNode.introduction.indexOf(keyWord) != -1 && modelsJSON != null)
+				{
+					//jsonobj.put(DstNode.resourceName,models[i].modelpath);
+					if(tmpEndPos >= start && tmpEndPos < (start + length))
+					{
+						jsonobj.put(models[i].modelpath, modelsJSON);
+					}
+					tmpEndPos++;
+				}
+			}
+		}
+		
+		if(jsonobj.length() != 0)
+		{
+			jsonobj.put("count", tmpEndPos);
+			var jsonstring = jsonobj.toString();
+			return jsonstring;
+		}
+		
+		//search by publishAuthor
+		var tmpEndPos = 0;
+		for(var i = 0; i < models.length; i++)
+		{
+			var path = models[i].modelpath;
+			var rootNode = currentNode.getAncestor(0);
+			var modelsJSON = getModelJSON(path);
+			if (path[0] == '/')
+			{
+				path = path.substring(1);
+			}
+			
+			var DstNode = rootNode.getNode(path);
+			
+			if(DstNode.publishAuthor != undefined)
+			{
+				if(DstNode.publishAuthor.indexOf(keyWord) != -1 && modelsJSON != null)
+				{
+					//jsonobj.put(DstNode.resourceName,models[i].modelpath);
+					if(tmpEndPos >= start && tmpEndPos < (start + length))
+					{
+						jsonobj.put(models[i].modelpath, modelsJSON);
+					}
+					tmpEndPos++;
+				}
+			}
+		}
+		
+		jsonobj.put("count", tmpEndPos);
+		var jsonstring = jsonobj.toString();
+		return jsonstring;
+	}
+	
+	function searchbydate(startTime,endTime)
+	{
+		var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+		var modelnode = currentNode.getNode("model");
+		var models = modelnode.getNodes();
+		
+		for(var i = 0; i < models.length; i++)
+		{
+			var path = models[i].modelpath;
+			var rootNode = currentNode.getAncestor(0);
+			var modelsJSON = getModelJSON(path);
+			if (path[0] == '/')
+			{
+				path = path.substring(1);
+			}
+			
+			var DstNode = rootNode.getNode(path);
+			//var DstDate = new Packages.java.util.Calendar.getInstance();
+			//DstNode.publishdate;
+			var DstDate = DstNode.publishdate.getTimeInMillis();
+
+			if(DstDate != 0)
+			{
+				if(DstDate >= startTime && DstDate <= endTime)
+				{
+					//jsonobj.put(DstNode.resourceName,models[i].modelpath);
+					jsonobj.put(models[i].modelpath, modelsJSON);
+				}
+			}
+		}
+		
+		jsonobj.put("count", jsonobj.length());
+		var jsonstring = jsonobj.toString();
+		return jsonstring;
+	}
+
+	var startTime = request.getRequestParameter("startTime");//date type:millisecond
+	var endTime = request.getRequestParameter("endTime");//date type:millisecond
+	var keyWord = request.getRequestParameter("keyWord");
+	var start = request.getRequestParameter("start");
+	var length = request.getRequestParameter("length");
+
+	var characterEncoding = request.getCharacterEncoding();
+	keyWord = Packages.org.apache.commons.io.IOUtils.toString(keyWord.getString().getBytes(characterEncoding), 'utf-8');
+
+	if(start == null)
+	{
+		start = 0;
+	}
+	
+	if(length == null)
+	{
+		length = 50;
+	}
+	
+	start = Number(start);
+	length = Number(length);
+	
+	if(startTime == null && endTime == null && keyWord != null)
+	{
+		var searchstring = searchmodel(keyWord,start,length);
+	}else if(startTime != null && endTime != null && keyWord == null)
+	{
+		startTime = parseInt(startTime);
+		endTime = parseInt(endTime);
+		var searchstring = searchbydate(startTime,endTime);
+	}
+	
+	response.setCharacterEncoding("UTF-8");
+	out.print(searchstring);
+	response.flushBuffer();
+
+%>

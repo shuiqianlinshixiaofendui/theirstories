@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Glue</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="description" content="Glue">
+		<meta name="keywords" content="Glue">
+		<link rel="stylesheet" href="css/index.css" media="screen">
+		<script type="text/javascript" src="testdata.js"></script>
+	</head>
+	<body>
+		<div id="categoryContainer">
+			<div id="selectedList">
+				<span class="note_light">您已经选择：</span>
+				<!-- <a class="selected_item">
+					<span class="" title="家具" dir="">家具</span>
+					<span class="arrow">></span>
+					<span class="">沙发</span>
+					<span class="arrow">></span>
+					<span class="">组合沙发</span>
+					<span class="close_x">X</span>
+				</a>
+				<a class="selected_item">
+					亮金属
+					<span class="close_x">X</span>
+				</a>
+				<a class="selected_item">
+					人造板材
+					<span class="close_x">X</span>
+				</a> -->
+			</div>
+			<div class="equalcat_overlay" id="equalcat_overlay">
+				<div class="equalcat_clearfix_shadow" id="equalcat">
+					<div class="equalmain" id="equalmain">
+					</div>
+				</div>
+			</div>
+			<div id="categoryAllList">
+				<div id="clTone" class="category_list">
+					<div class="cat_head">
+						<span class="note_bold">色&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;调</span>
+					</div>
+					<div class="cat_body">
+						<a class="cat_item cat_item_radio">不限</a>
+						<a class="cat_item" alt="色调">红色</a>
+						<a class="cat_item" alt="色调">蓝色</a>
+						<a class="cat_item" alt="色调">绿色</a>
+						<a class="cat_item" alt="色调">黑色</a>
+						<a class="cat_item" alt="色调">橙色</a>
+						<a class="cat_item" alt="色调">黄色黄色黄色黄色黄色</a>
+					</div>
+				</div>
+
+				<div id="clCategory" class="category_list">
+					<div class="cat_head">
+						<span class="note_bold">分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类</span>
+					</div>
+					<div class="cat_body">
+						<a class="cat_item cat_item_radio">不限</a>
+						<a class="cat_item" alt="分类">家具</a>
+						<a class="cat_item" alt="分类">房体</a>
+						<a class="cat_item" alt="分类">电气设备</a>
+						<a class="cat_item" alt="分类">窗饰</a>
+						<a class="cat_item" alt="分类">饰品</a>
+					</div>
+				</div>
+				
+				<div id="clStyle" class="category_list">
+					<div class="cat_head">
+						<span class="note_bold">风&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格</span>
+					</div>
+					<div class="cat_body">
+						<a class="cat_item cat_item_radio">不限</a>
+						<a class="cat_item" alt="风格">现代</a>
+						<a class="cat_item" alt="风格">欧式</a>
+						<a class="cat_item" alt="风格">简欧</a>
+						<a class="cat_item" alt="风格">中式</a>
+						<a class="cat_item" alt="风格">美式乡村</a>
+						<a class="cat_item" alt="风格">日式</a>
+						<a class="cat_item" alt="风格">地中海</a>
+						<a class="cat_item" alt="风格">东南亚</a>
+						<a class="cat_item" alt="风格">混搭</a>
+					</div>
+				</div>
+				<div id="clMadeof" class="category_list">
+					<div class="cat_head">
+						<span class="note_bold">主&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;材</span>
+					</div>
+					<div class="cat_body">
+						
+					</div>
+				</div>
+				<div id="clVision" class="category_list">
+					<div class="cat_head">
+						<span class="note_bold">视觉感受</span>
+					</div>
+					<div class="cat_body">
+						<a class="cat_item cat_item_radio">不限</a>
+						<a class="cat_item" alt="视觉感受">明快</a>
+						<a class="cat_item" alt="视觉感受">庄重</a>
+						<a class="cat_item" alt="视觉感受">温暖</a>
+						<a class="cat_item" alt="视觉感受">冷峻</a>
+						<a class="cat_item" alt="视觉感受">艳丽</a>
+						<a class="cat_item" alt="视觉感受">素雅</a>
+						<a class="cat_item" alt="视觉感受">华丽</a>
+						<a class="cat_item" alt="视觉感受">淳朴</a>
+					</div>
+				</div>
+				<!-- test -->
+				
+				<div style="clear:both;"> </div>
+			</div>
+			<div id="moreCategory">
+				<div class="cat_head">
+					<span class="note_bold">更多选项</span>
+				</div>
+				<div class="cat_more_body">
+					<a class="cat_more_item" id="brand">品牌</a>
+					<a class="cat_more_item" id="livingroom">居室</a>
+					<a class="cat_more_item" id="visualpercept">户型</a>
+				</div>
+				<div style="clear:both;"> </div>
+			</div>
+			<div class="overlay" id="cat_list">
+				<!--<a class="cat_item cat_item_radio">不限</a>
+				<a class="cat_item">明快</a>
+				<a class="cat_item">庄重</a>
+				<a class="cat_item">温暖</a>
+				<a class="cat_item">冷峻</a>
+				<a class="cat_item">艳丽</a>
+				<a class="cat_item">素雅</a>
+				<a class="cat_item">华丽</a>
+				<a class="cat_item">淳朴</a> -->
+			</div>
+			
+		</div>
+		
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script>
+			var testdata = {
+				"/content/modellib1":
+				{
+					"resourceName":"色调",
+					"isradio":false,
+					"catData":{
+						"content/modellib11":
+						{
+							"resourceName":"红色"
+						},
+						"content/modellib12":
+						{
+							"resourceName":"蓝色"
+						},
+						"content/modellib13":
+						{
+							"resourceName":"黄色"
+						}
+					}
+				},
+				"/content/modellib2":
+				{
+					"resourceName":"色调",
+					"isradio":true,
+					"catData":{
+						"content/modellib21":{
+						"resourceName":"红色"
+						},
+						"content/modellib22":{
+						"resourceName":"蓝色"
+						},
+						"content/modellib23":{
+						"resourceName":"黄色"
+						}
+					}
+				},
+				"/content/modellib3":
+				{
+					"resourceName":"色调",
+					"isradio":true,
+					"catData":{
+						"content/modellib31":{
+						"resourceName":"红色"
+						},
+						"content/modellib32":{
+						"resourceName":"蓝色"
+						},
+						"content/modellib33":{
+						"resourceName":"黄色"
+						}
+					}
+				}
+			}
+			var name = cateData["resourceName"];
+			//重写window.setTimeout
+			var __sto = setTimeout;     
+			window.setTimeout = function(callback,timeout,param)
+			{     
+				var args = Array.prototype.slice.call(arguments,2);     
+				var _cb = function()
+				{     
+					callback.apply(null,args);     
+				}     
+				return __sto(_cb,timeout);     
+			}     
+			//初始化并且发出事件
+			require(["dojo/ready","dojo/query","dojo/dom","dojo/mouse","dojo/on","dojo/dom-attr","dojo/topic"],function(ready,query,dom,mouse,on,domAttr,topic){
+				//点击分类发出事件
+				var morecategory;
+				query(".cat_item").on("click",function(){
+					var cat = domAttr.get(query(this)[0],"alt");
+					topic.publish("catitemClick",this,this.innerHTML,cat);
+				});
+				on(dom.byId("brand"), mouse.enter, function(evt){
+					var brand = ["三彩","尤麦","月光石"];
+					morecategory = dom.byId("brand").innerHTML;
+					topic.publish("brandmouseenter",brand,this.innerHTML);
+				});
+				on(dom.byId("brand"), mouse.leave, function(evt){
+					topic.publish("brandmouseleave",this.innerHTML);
+				});
+				on(dom.byId("livingroom"), mouse.enter, function(evt){
+					var livingroom = ["瓷砖","地板","电视柜"];
+					morecategory = dom.byId("livingroom").innerHTML;
+					topic.publish("livingroommouseenter",livingroom,this.innerHTML);
+				});
+				on(dom.byId("livingroom"), mouse.leave, function(evt){
+					topic.publish("livingroommouseleave",this.innerHTML);
+				});
+				on(dom.byId("visualpercept"), mouse.enter, function(evt){
+					var visualpercept = ["影像视觉","青年视觉"];
+					morecategory = dom.byId("visualpercept").innerHTML;
+					topic.publish("visualperceptmouseenter",visualpercept,this.innerHTML);
+				});
+				on(dom.byId("visualpercept"), mouse.leave, function(evt){
+					topic.publish("visualperceptmouseleave",this.innerHTML);
+				});
+				on(dom.byId("cat_list"), mouse.enter, function(evt){
+					var cat = domAttr.set(query(this)[0],"alt",morecategory);
+					var alt = domAttr.get(query(cat)[0],"alt");
+					topic.publish("catlistmouseenter",alt);
+					query("#cat_list .cat_item").on("click",function(){
+						topic.publish("catlistitemClick",this,this.innerHTML,alt);
+					});
+				});
+				on(dom.byId("cat_list"), mouse.leave, function(evt){
+					var cat = domAttr.set(query(this)[0],"alt",morecategory);
+					var alt = domAttr.get(query(cat)[0],"alt");
+					topic.publish("catlistmouseleave",alt);
+				});
+				on(dom.byId("equalcat_overlay"), mouse.enter, function(evt){
+					topic.publish("equalcatmouseenter",this.offsetLeft,this.offsetTop,this.textContent);
+				});
+				on(dom.byId("equalcat_overlay"), mouse.leave, function(evt){
+					topic.publish("equalcatmouseleave");
+				});
+				//将数据显示在页面上
+				initMulCategory(cateData);
+				//测试方法
+				test(testdata);
+			});
+			//接收初始化时发出的事件
+			require(["dojo/topic","dojo/dom","dojo/dom-style"],function(topic,dom,domStyle){
+				var text;
+				var time;//定义一个计时器
+				var morecat_time;//更多选项的分类计时器
+				//接收点击分类发出的事件
+				topic.subscribe("catitemClick",function(dthis,innerhtml,cat){
+					catItemClick(dthis,innerhtml,cat);
+				});
+				//接收更多分类中的鼠标滑进滑出事件
+				topic.subscribe("brandmouseenter",function(array,innerhtml){
+					changeBorderStyle(true,innerhtml);
+					loadCategory(array,innerhtml);
+					text = dom.byId("cat_list").innerHTML;
+				});
+				topic.subscribe("brandmouseleave",function(innerhtml){
+					changeBorderStyle(false,innerhtml);
+					emptyList("cat_list");
+				});
+				topic.subscribe("livingroommouseenter",function(array,innerhtml){
+					changeBorderStyle(true,innerhtml);
+					loadCategory(array,innerhtml);
+					text = dom.byId("cat_list").innerHTML;
+				});
+				topic.subscribe("livingroommouseleave",function(innerhtml){
+					changeBorderStyle(false,innerhtml);
+					emptyList("cat_list");
+				});
+				topic.subscribe("visualperceptmouseenter",function(array,innerhtml){
+					changeBorderStyle(true,innerhtml);
+					loadCategory(array,innerhtml);
+					text = dom.byId("cat_list").innerHTML;
+				});
+				topic.subscribe("visualperceptmouseleave",function(innerhtml){
+					changeBorderStyle(false,innerhtml);
+					emptyList("cat_list");
+				});
+				topic.subscribe("catlistmouseenter",function(alt){
+					changeBorderStyle(true,alt);
+					dom.byId("cat_list").innerHTML = text;
+				});
+				topic.subscribe("catlistmouseleave",function(alt){
+					changeBorderStyle(false,alt);
+					emptyList("cat_list");
+				});
+				topic.subscribe("catlistitemClick",function(dthis,innerhtml,cat){
+					catItemClick(dthis,innerhtml,cat);
+				});
+				topic.subscribe("mulcategory",function(catObj,catname,dthis,handleArr){
+					//这里需要在已经选中的分类中显示当前所选分类，同时又要在分类中显示当前分类的一级子分类
+					//分成两部分
+					//1、在分类中显示当前所选分类的子分类,调用方法 initMulCategory(obj)
+					//2、在已经选中的地方显示当前所选分类，格式参考淘宝,方法showSelectedMulCategory()
+					//这里需要处理点击事件(根据实际确定是否应该解绑定点击事件)
+					console.log(handleArr);
+					var flagclick = false;
+					for(var key in catObj)
+					{
+						if(typeof catObj[key] == "object")
+						{
+							initMulCategory(catObj);
+							flagclick = false;
+							break;
+						}
+						else{
+							flagclick = true;
+						}
+					}
+					if(flagclick){
+						for(var i = 0;i < handleArr.length;i++){
+							handleArr[i].remove();
+						}
+					}
+					var flag = getSelectedMulCategory(catname,catObj["resourceName"]);
+					if(!flag)
+					{
+						getMulCategory(catObj["resourceName"],dthis,catname);
+					}
+				});
+				topic.subscribe("mouse_multicategory",function(x,y){
+					if(time != undefined)
+					{
+						clearTimeout(time);
+					}
+					setTimeout(createDivAndShowCategory,300,x,y);
+				});
+				topic.subscribe("mouseleave_multicategory",function()
+				{
+					time = setTimeout(emptyList,600,"equalmain");
+				});
+				topic.subscribe("equalcatmouseenter",function(x,y,text)
+				{
+					clearTimeout(time);
+				});
+				topic.subscribe("equalcatmouseleave",function()
+				{
+					setTimeout(emptyList,600,"equalmain");
+				});
+			});
+			//写一个测试方法进行测试确定的json格式是否好用
+			function test(testdata){
+				console.log(testdata);
+				require(["dojo/dom-construct"],function(domConstruct){
+					for(var key in testdata)
+					{
+						var divcontainer = domConstruct.create(
+							"div",
+							{
+								class : "category_list"
+							},
+							"categoryAllList"
+						);
+						var divhead = domConstruct.create(
+							"div",
+							{
+								class : "cat_head",
+								innerHTML : "<span class=\"note_bold\">"+testdata[key]["resourceName"]+"</span>"
+							},
+							divcontainer
+						);
+						var divbody = domConstruct.create(
+							"div",
+							{
+								class : "cat_body",
+								innerHTML : "<a class=\"cat_item cat_item_radio\">不限</a>"
+							},
+							divcontainer
+						);
+						var catData = testdata[key]["catData"];
+						var isradio = testdata[key]["isradio"];
+						for(var i in catData){
+							var a;
+							if(isradio){
+								a = domConstruct.create(
+									"a",
+									{
+										class : "cat_item cat_item_radio",
+										alt : testdata[key]["resourceName"],
+										innerHTML : catData[i]["resourceName"]
+									},
+									divbody
+								);
+							}
+							else{
+								a = domConstruct.create(
+									"a",
+									{
+										class : "cat_item",
+										alt : testdata[key]["resourceName"],
+										innerHTML : catData[i]["resourceName"]
+									},
+									divbody
+								);
+							}
+						}
+					}
+				});
+			}
+			//处理点击分类的事件方法,这里需要添加一个分类隶属于哪个组的判断
+			function catItemClick(dthis,innerhtml,cat){
+				require(["dojo/dom-style","dojo/dom-construct","dojo/query","dojo/dom-attr","dojo/NodeList-traverse"],
+					function(domStyle,domConstruct,query,domAttr){
+						var attr = domAttr.get(dthis,"class");
+						if(attr != "cat_item cat_item_radio"){
+							var pos = domStyle.get(dthis,"backgroundPosition");
+							if(pos == "0px -190px")//选中的状态
+							{
+								domStyle.set(dthis,"backgroundPosition","0 -205px");
+								getCurrSelect(innerhtml,dthis,cat);
+							}
+							else//取消选中
+							{
+								domStyle.set(dthis,"backgroundPosition","0 -190px");
+								var chi = query("#selectedList").children();
+								console.log(chi);
+								for(var i = 1;i < chi.length;i++){
+									var id = query(chi[i]).attr("id")[0];
+									var idArr = id.split("：")[1].split("、");
+									console.log(idArr);
+									for(var key = 0;key < idArr.length;key++){
+										if(innerhtml == idArr[key]){
+											if(idArr.length == 1)
+											{
+												domConstruct.destroy(chi[i]);
+											}
+											else
+											{
+												var sela = getSelectedSpan(cat);//得到的是a标签
+												var selspan = query(sela).children()[0];
+												var str = selspan.innerHTML.split("：")[1];
+												var index = str.indexOf(idArr[key],0);
+												if(index == 0)
+												{
+													str = str.substring(index + 1 + idArr[key].length,str.length);
+												}
+												else
+												{
+													str = str.substring(0,index - 1) + str.substring(index + idArr[key].length,str.length);
+												}
+												selspan.innerHTML = selspan.innerHTML.split("：")[0] + "：" + str;
+												domAttr.set(sela,"id",selspan.innerHTML);
+												domAttr.set(sela,"title",selspan.innerHTML);
+											}
+										}
+									}
+								}
+							}
+						}
+						else{
+							if(innerhtml != "不限")
+							{
+								//先这样判断，如果对接数据，那么这里需要改变
+								var catArr = query(".cat_item_radio");
+								var flag = false;//默认是没有选择的
+								for(var key = 0;key < catArr.length;key++){
+									if(innerhtml == catArr[key].innerHTML){
+										flag = true;
+										break;
+									}
+								}
+								if(!flag){
+									getCurrSelect(innerhtml,dthis,cat);
+								}
+							}
+						}	
+					}
+				);
+			}
+			//显示已选中分类
+			function getCurrSelect(text,dthis,cat){//这里首先需要判断这个分类是属于单选还是多选,如果是单选，这个参数就不会传递
+				require(["dojo/dom-style","dojo/dom-construct","dojo/query","dojo/dom-attr","dojo/on","dojo/NodeList-traverse"],
+					function(domStyle,domConstruct,query,domAttr,on){
+						if(cat != undefined)//如果是多选
+						{
+							var flag = getCategoryNameBySelected(cat);
+							console.log(flag);
+							if(flag)//已经选择过这个组的分类,先找到对应的元素
+							{
+								var sela = getSelectedSpan(cat);//得到的是a标签
+								var selspan = query(sela).children()[0];
+								selspan.innerHTML = selspan.innerHTML.split("：")[0] + "：" + text + "、" + selspan.innerHTML.split("：")[1];
+								domAttr.set(sela,"id",selspan.innerHTML);
+								domAttr.set(sela,"title",selspan.innerHTML);
+							}
+							else
+							{
+								showSelectedCategory(text,dthis,cat);
+								//console.log(query(dthis).siblings());
+							}
+						}
+						else
+						{
+							showSelectedCategory(text,dthis,cat);
+						}
+						
+					}
+				);
+			}
+			//显示已经选中的分类
+			function showSelectedCategory(text,dthis,cat){
+				require(["dojo/dom-construct","dojo/on","dojo/dom-style","dojo/query","dojo/dom","dojo/NodeList-traverse"],function(domConstruct,on,domStyle,query,dom){
+					var sib = query(dthis).siblings();
+					var a = domConstruct.create("a",
+						{
+							class : "selected_item",
+							id : cat + "：" + text,
+							alt:cat,
+							title : cat + "：" + text
+						},
+						"selectedList"
+					);
+					var span = domConstruct.create("span",
+						{//如果超出规定的长度，则通过下面的样式来解决
+							class:"selectedSpan",
+							innerHTML : cat + "：" + text
+						},
+						a
+					);
+					var spanX = domConstruct.create("span",
+						{
+							class : "close_x",
+							innerHTML : "X"
+						},
+						a
+					);
+					on(spanX,"click",function(){
+						//点击关闭按钮时，根据按钮找到所属的组，然后将改组下的所有分类全部变成取消状态
+						domStyle.set(dthis,"backgroundPosition","0 -190px");
+						for(var i = 0;i < sib.length;i++)
+						{
+							domStyle.set(sib[i],"backgroundPosition","0 -190px");
+						}
+						var item = query(this).parents("a")[0];
+						domConstruct.destroy(item);
+					});
+				});
+			}
+			//生成加载分类的代码
+			function loadCategory(array,innerhtml)
+			{
+				require(["dojo/dom-construct","dojo/dom-style","dojo/query"],function(domConstruct,domStyle,query){
+					var a = domConstruct.create("a",
+						{
+							class : "cat_item cat_item_radio",
+							innerHTML:"不限"
+						},
+						"cat_list"
+					);
+					for(var i = 0;i < array.length;i++)
+					{
+						var a = domConstruct.create("a",
+							{
+								class : "cat_item",
+								innerHTML : array[i],
+								alt:innerhtml
+							},
+							"cat_list"
+						);
+					}
+					//获取已经选中的分类
+					var selectedCategory = getSelectedCategory();
+					if(selectedCategory.length > 0){
+						for(var i = 0;i < selectedCategory.length;i++){
+							var arr = selectedCategory[i].split("：")[1].split("、");
+							var cat = query("#cat_list .cat_item");
+							for(var key = 0;key < arr.length;key++){
+								var sel = arr[key];
+								for(var j = 0;j < cat.length;j++){
+									if(cat[j].innerHTML == sel){
+										domStyle.set(cat[j],"backgroundPosition","0 -205px");
+									}
+								}
+							}
+						}
+					}
+				});
+			}
+			//获取已经选中的分类名称
+			function getSelectedCategory(){
+				var array = [];
+				require(["dojo/query","dojo/dom-attr","dojo/NodeList-traverse"],function(query,domAttr){
+					//获取已经选中的分类,进行遍历
+					var sel = query("#selectedList .selected_item");
+					if(sel.length){
+						for(var i = 0;i < sel.length;i++){
+							var id = domAttr.get(query(sel[i])[0],"id");
+							array.push(id);
+						}
+					}
+				});
+				return array;
+			}
+			//通过已经选中的分类判断是否已经选中当前组
+			function getCategoryNameBySelected(cat){
+				var flag = false;//默认是还没有选择
+				require(["dojo/query","dojo/dom-attr","dojo/NodeList-traverse"],function(query,domAttr){
+					var sel = query("#selectedList .selected_item");
+					if(sel.length){
+						for(var i = 0;i < sel.length;i++){
+							var alt = domAttr.get(query(sel[i])[0],"alt");
+							if(alt != undefined){
+								if(alt == cat){
+									flag = true;
+									break;
+								}
+							}
+						}
+					}
+				});
+				return flag;
+			}
+			//获取某个已经选中的分类的标签
+			function getSelectedSpan(cat){
+				var a;
+				require(["dojo/query","dojo/dom-attr","dojo/NodeList-traverse"],function(query,domAttr){
+					var sel = query("#selectedList .selected_item");
+					for(var i = 0;i < sel.length;i++){
+						var alt = domAttr.get(sel[i],"alt");
+						if(alt == cat){
+							a = sel[i];
+							break;
+						}
+					}
+				});
+				return a;
+			}
+			//改变边框的样式
+			function changeBorderStyle(flag,alt)
+			{
+				require(["dojo/dom","dojo/dom-style","dojo/query","dojo/dom-attr"],function(dom,domStyle,query,domAttr){
+					if(flag){
+						domStyle.set("cat_list","border","1px solid #ddd");
+					}
+					else{
+						domStyle.set("cat_list","border","0px solid #ddd");
+					}
+					if(alt != undefined){
+						//查询所有class=cat_more_item的innerHTML,和传递的alt进行对比
+						var textArr = query(".cat_more_item");
+						for(var key = 0;key < textArr.length;key++){
+							if(alt == textArr[key].innerHTML){
+								var id = domAttr.get(textArr[key],"id");
+								if(flag){
+									domStyle.set(id,"border-bottom","0px solid #ddd");
+								}
+								else{
+									domStyle.set(id,"border-bottom","1px solid #ddd");
+								}
+							}
+						}
+					}
+				});
+			}
+			//显示多级分类
+			function getMulCategory(text,dthis,cat){
+				require(["dojo/dom","dojo/dom-style","dojo/query","dojo/dom-attr","dojo/dom-construct","dojo/on","dojo/query","dojo/mouse","dojo/topic"],function(dom,domStyle,query,domAttr,domConstruct,on,query,mouse,topic){
+					var flag = getCategoryNameBySelected(cat);
+					if(flag){
+						var sela = getSelectedSpan(cat);//得到的是a标签
+						var selspan = query(sela).children()[0];
+						var selSpanText = selspan.textContent;
+						var newText = "";
+						var cates = selSpanText.split("：")[1].split(">");
+						for(var key=0;key < cates.length;key++)
+						{
+							newText += "<span class=\"multicategory\">"+cates[key]+"</span>"+"<span class=\"arrow\">></span>";
+						}
+						selspan.innerHTML = "<span>"+selspan.textContent.split("：")[0]+"</span>" + 
+											"：" + newText + "<span class=\"multicategory\">"+text+"</span>";
+						domAttr.set(sela,"id",selspan.innerHTML);
+						query(".multicategory").on(mouse.enter,function(evt)
+						{
+							topic.publish("mouse_multicategory",this.offsetLeft,this.offsetTop,this.textContent);
+						});
+						query(".multicategory").on(mouse.leave,function(evt)
+						{
+							topic.publish("mouseleave_multicategory");
+						});
+					}
+					else
+					{
+						showMulCategory(text,dthis,cat);
+					}
+				});	
+			}
+			//显示多级分类
+			function showMulCategory(text,dthis,cat){
+				require(["dojo/dom-construct","dojo/on","dojo/query","dojo/mouse","dojo/topic"],function(domConstruct,on,query,mouse,topic){
+					var a = domConstruct.create("a",
+						{
+							class : "selected_item",
+							id : cat + "：" + text,
+							alt:cat
+						},
+						"selectedList"
+					);
+					var span = domConstruct.create("span",
+						{
+							class:"mulselectedSpan",
+							innerHTML : "<span>"+cat+"</span>" + "：" + "<span class=\"multicategory\">"+text+"</span>"
+						},
+						a
+					);
+					var spanX = domConstruct.create("span",
+						{
+							class : "close_x",
+							innerHTML : "X"
+						},
+						a
+					);
+					on(spanX,"click",function()
+					{
+						initMulCategory(cateData);
+						var item = query(this).parents("a")[0];
+						domConstruct.destroy(item);
+					});
+					query(".multicategory").on(mouse.enter,function(evt)
+					{
+						topic.publish("mouse_multicategory",this.offsetLeft,this.offsetTop,this.textContent);
+					});
+					query(".multicategory").on(mouse.leave,function(evt)
+					{
+						topic.publish("mouseleave_multicategory");
+					});
+				});
+			}
+			//根据组名得到某一已选中的组的分类名称
+			function getSelectedMulCategory(cat,selname){
+				var flag = false;//默认是还没有选择
+				require(["dojo/on","dojo/query","dojo/NodeList-traverse"],function(on,query){
+					var a = getSelectedSpan(cat);
+					if(a == undefined)
+					{
+						flag = false;
+					}
+					else
+					{
+						var span = query(a).children()[0];
+						var selcat = span.textContent.split("：")[1].split(">");
+						for(var i = 0;i < selcat.length;i++)
+						{
+							if(selcat[i] == selname){
+								flag = true;
+								break;
+							}
+						}
+					}
+				});
+				return flag;
+			}
+			//动态创建div,并且显示同级分类
+			function createDivAndShowCategory(x,y)
+			{
+				require(["dojo/query","dojo/dom-construct","dojo/on","dojo/dom-style","dojo/dom"],function(query,domConstruct,on,domStyle,dom){
+					domStyle.set(query(".equalcat_overlay")[0],"visibility","visible");
+					//domStyle.set(query(".equalcat_clearfix_shadow")[0],"display","inline-block");
+					domStyle.set(query(".equalcat_overlay")[0],"left",x + "px");
+					domStyle.set(query(".equalcat_overlay")[0],"top","40px");
+					domStyle.set(query(".equalcat_clearfix_shadow")[0],"border","solid 1px #d9d9d9");
+					query(".equalmain").empty();
+					//这里需要些一些测试数据进行遍历显示
+					var testdata = 
+					{
+						0:{
+							"resourceName":"花都开好了huahghggh"
+						},
+						1:{
+							"resourceName":"哈哈"
+						},
+						2:{
+							"resourceName":"heeh"
+						},
+						3:{
+							"resourceName":"gangzi"
+						},
+						4:{
+							"resourceName":"公共"
+						},
+						5:{
+							"resourceName":"花都开好了"
+						},
+						6:{
+							"resourceName":"结束了..."
+						}
+					};
+					//遍历json对象，将要取到的值放到数组中
+					var testArr = [];
+					for(var key in testdata)
+					{
+						testArr.push(testdata[key]["resourceName"]);
+					}
+					var totalUL = Math.ceil(testArr.length / 3);
+					domStyle.set(query(".equalcat_overlay")[0],"width",120 * totalUL + "px");//动态改变外层div的宽度
+					for(var i = 0;i < totalUL;i++)
+					{
+						var innerhtml = "";
+						for(var j = i * 3;j < (i + 1) * 3;j++)
+						{
+							if(testArr[j] != undefined)
+							{
+								innerhtml += "<li><a class=\"cat_multitem\">"+testArr[j]+"</a></li>";
+							}
+						}
+						var ul = domConstruct.create
+						(
+							"ul",
+							{
+								style : "list-style:none;width:100px;float:left;padding-right:10px;margin-bottom:10px;",
+								innerHTML : innerhtml
+							},
+							"equalmain"
+						);
+					}
+					console.log(query("#equalmain").style("height")[0]);//获取动态加载的高度
+				});	
+			}
+			//清空分类内容
+			function emptyList(id)
+			{
+				require(["dojo/dom","dojo/query","dojo/dom-style","dojo/NodeList-traverse"],function(dom,query,domStyle)
+				{
+					dom.byId(id).innerHTML = "";
+					domStyle.set(query(".equalcat_overlay")[0],"visibility","hidden");
+				});
+			}
+			/******equalcat***********************以上是dom操作的方法，以下是获取数据的方法***********************************************************/
+			//初始化分类
+			function initMulCategory(cateData){
+				require(["dojo/query","dojo/dom-construct","dojo/on","dojo/topic"],function(query,domConstruct,on,topic){
+					var div = query("#clMadeof .cat_body")[0];
+					var text = div.innerHTML.trim();
+					var array = [];
+					if(text != ""){
+						domConstruct.empty(div);
+					}
+					domConstruct.create
+					(
+						"a",
+						{
+							class : "cat_item cat_item_radio",
+							innerHTML : "不限"
+						},
+						div
+					);
+					for(var key in cateData){
+						if(cateData[key]["resourceName"] != undefined)
+						{
+							var cate = domConstruct.create
+							(
+								"a",
+								{
+									class : "cat_item cat_item_radio",
+									innerHTML : cateData[key]["resourceName"]
+								},
+								div
+							);
+							//添加分类的点击事件
+							catClick(cate,cateData[key],name);
+						}
+					}
+					function catClick(cate,obj,catname){
+						require(["dojo/query","dojo/on","dojo/topic"],function(query,on,topic){
+							var handleclick = query(cate).on("click",function(){
+								topic.publish("mulcategory",obj,catname,this,array);
+							});
+							array.push(handleclick);
+						});
+					}
+				});
+			}
+			// 查询各组分类节点，并添加点击事件
+			
+			// 监听分类节点的点击事件，转发单选、多选、多级分类处理
+			
+			// 单选处理
+			
+			// 多选处理
+			
+			// 多级处理
+			
+			// 已选择列表的添加选中项，需要考虑分组
+			
+			// 已选择列表的删除选中项
+			
+			// 已选择列表的多级分类浮动框显示和隐藏
+			
+			// 更多选项的浮动框显示和隐藏
+			
+		</script>
+		
+	</body>
+</html>

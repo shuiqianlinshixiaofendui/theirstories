@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            从我的效果图添加模型
+        </title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name: "scenedetail",
+						location: "/modules/scenedetail"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/addmodelfrommypreviewlib.css" media="screen" />
+		<link rel="stylesheet" href="/widgets/ModelListItem/css/main.css" media="screen"/>
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelEdit/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/ModelLib/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+    </head>
+    <body class="claro">
+		<div id="mypreviewlibContent" dojoType="dijit.layout.BorderContainer" gutters=false>
+			<div id="mypreviewlib" dojoType="dijit.layout.ContentPane" region="center">
+				
+			</div>
+		</div>
+	<script type="text/javascript">
+		
+		require(
+			[
+				"dojo/ready", "scenedetail/js/preview"
+				
+			],function(
+				ready, preview
+			){
+				ready(function(){
+					var json = {};
+					var varsMap = Spolo.getUrlVars();
+					var isGutil = varsMap['isGutil'];
+					if(isGutil == "true"){
+						json["isGutil"] = true;
+					}
+					else{
+						json["isGutil"] = false;
+					}
+					preview.initMyPreview("mypreviewlib", json);
+				});
+			});
+	</script>	
+    </body>
+</html>

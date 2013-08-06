@@ -1,0 +1,58 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ /**该esp提供下载指定路径的文件，指定的路径必须是不带共享目录的路径，并且指向一个文件。
+ */
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+
+var filePath = request.getRequestParameter('filePath');
+if(filePath){
+	filePath =	GVAR_system.getGlueSharePath() + filePath;
+	var file = new Packages.java.io.File(filePath);
+	try{
+		if(file.exists() && file.isFile()){
+			response.setContentType("application/octet-stream");
+			response.setHeader("content-length", file.length());
+			response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+			var inputstream = new Packages.java.io.FileInputStream(file);
+			Packages.org.apache.commons.io.IOUtils.copyLarge(inputstream,response.getOutputStream());
+			inputstream.close();				
+		}
+		else
+		{
+			response.sendError(404);
+		}
+	}catch(e){
+		Packages.java.lang.System.out.println(e);  
+		response.sendError(500,e);	
+	}
+}else{
+	var nodePath = GVAR_system.getNodePath(currentNode,true);
+	var testZipFilePath = nodePath + Packages.java.io.File.separator + "test.zip";
+	var testZipFile = new Packages.java.io.File(testZipFilePath);
+	if(!testZipFile.exists()){
+		testZipFile.getParentFile().mkdirs();
+		var testInfoFile = new Packages.java.io.File(testZipFile.getParentFile().getPath()+Packages.java.io.File.separator + "test.txt");
+		var info = "如果您看到这个文件，说明您可以通过http访问来获取资源文件！";
+		Packages.org.apache.commons.io.FileUtils.writeStringToFile(testInfoFile,info,"UTF-8");
+		GVAR_system.runTool("7za", ["a -tzip "+testZipFile.getPath()," " + testInfoFile.getPath()]);	
+	}
+	response.setContentType("application/octet-stream");
+	response.setHeader("content-length", testZipFile.length());
+	response.setHeader("Content-Disposition", "attachment; filename=" + testZipFile.getName());	
+	var inputstream = new Packages.java.io.FileInputStream(testZipFile);
+	Packages.org.apache.commons.io.IOUtils.copyLarge(inputstream,response.getOutputStream());
+	inputstream.close();
+}
+%>

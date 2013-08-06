@@ -1,0 +1,37 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+response.setCharacterEncoding("UTF-8"); 
+var GVAR_LoadLibrary = true;
+load("/apps/util/git.esp");
+
+	var userName = request.getParameter("username");
+	var msgInfo = request.getParameter("info");
+	var jsonobj = new Packages.org.apache.sling.commons.json.JSONObject();
+	if(userName&&msgInfo){
+		var option = {};
+		option.name = userName;
+		option.msg = msgInfo;		
+		try{
+			//此方法所传入的参数没用到,因为改动底层的方法牵扯到其他用到此方法的代码
+			//所以暂时传入一个没用的参数,以符合api要求
+			GVAR_Git.preCommit(option);
+			GVAR_Git.postCommit(option);		
+			jsonobj.put("suc",true);		
+		}catch(e){
+			jsonobj.put("suc",false);		
+		}		
+	}else{
+		jsonobj.put("suc",false);
+		jsonobj.put("info","No author or log message");		
+	}
+	out.print(jsonobj.toString());

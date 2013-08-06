@@ -1,0 +1,43 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+// response.setContentType("application/json");
+
+var GVAR_LoadLibrary = true;
+load("/apps/folder/_createEmptyMaterial.esp");
+
+// out.println(currentNode);
+
+var mat_prop = {};
+
+var matname = request.getRequestParameter("matname");
+
+var mattype = request.getRequestParameter("mattype");
+
+matname = Packages.org.apache.commons.io.IOUtils.toString(matname.getString().getBytes(request.getCharacterEncoding()), 'utf-8'); 
+
+mattype = Packages.org.apache.commons.io.IOUtils.toString(mattype.getString().getBytes(request.getCharacterEncoding()), 'utf-8'); 
+
+// out.println(request.getCharacterEncoding());
+
+mat_prop["resourceName"] = String(matname);
+
+mat_prop["categoryName"] = String(mattype);
+
+// out.println(mat_prop["resourceName"]);
+// out.println(mat_prop["categoryName"]);
+
+out.print(createEmptyMaterial(currentNode,mat_prop));
+
+%>

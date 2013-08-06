@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>效果图编辑</title>
+		
+		<script type="text/javascript">
+			var dojoConfig = {
+				parseOnLoad: true, 
+				packages:[
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name: "myscenelib",
+						location: "/modules/myscenelib"
+					},
+					{
+						name:"spolo",
+						location:"/script/spolo"
+					}
+					
+				]
+			};
+		</script>
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+	</head>
+	<body class="claro">
+		<div data-dojo-type="dijit/layout/BorderContainer" style="width:100%; height:100%;" gutters=false>
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="margin:15px;">
+				<div class="addPreviewBtn" id="btnaddpreview">添加效果图</div>
+				<div class="deletePreviewBtn" id="btndeletepreview">删除效果图</div>
+				<form id="add_form" action="" method="POST" enctype="multipart/form-data">
+						<input id="add_file" name="效果图" type="file" style="height: 0px; display: none;">
+				</form>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+				<div id="previewList"></div>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="height:40px;">
+				<div id="pager"></div>
+			</div>
+		</div>
+		<script>
+			require(
+				[
+					"widgets/List/List",
+					"dojo/on",
+					"dojo/query",
+					"spolo/data/folder",
+					"dojo/parser",
+					"dojo/ready",
+					"dijit/Dialog",
+					"dijit/form/Button",
+					"dojo/_base/array",
+					"dijit/layout/TabContainer",
+					"dijit/layout/BorderContainer",
+					"dijit/layout/ContentPane",
+					"dojo/dom-construct",
+					"widgets/Pagination/Pagination",
+					"spolo/data/folder/previewset",
+					"dojo/dom",
+					"spolo/data/preview",
+					"widgets/Mask/Mask"
+				],
+				function
+				(
+					List, on, query, folder_cls, parser, ready, Dialog,
+					Button, arrayUtil, TabContainer, BorderContainer, ContentPane,
+					domConstruct,Pagination,previewset,dom,preview,Mask
+				)
+				{
+					var list = new List();
+					list.placeAt("previewList");
+					var json = 
+					{
+						total:0
+					};
+					var pagination = new Pagination(json).placeAt("pager");
+					var currentPage = 1;
+					var limit = 10;
+					var allSelectedPreviewPath = {};
+					//获取传递过来的路径参数
+					var data = Spolo.getDialogData();
+					var scenepath = data["path"];
+					//初始化效果图列表
+					initpreviewlist();
+					function initpreviewlist(){
+						//显示效果图列表
+						getPreviewList.call(this,function(urlarr,num){
+							var array = [];
+							pagination.refresh(Math.ceil(num/limit),currentPage);
+							for(var i = 0;i < urlarr.length;i++){
+								var path = urlarr[i].substring(0,urlarr[i].lastIndexOf("."));
+								array.push(path);
+							}
+							list.addItems(array,true);
+							for(var i = 0;i < urlarr.length;i++){
+								var path = urlarr[i].substring(0,urlarr[i].lastIndexOf("."));
+								list.setItemImage(path,urlarr[i]);
+							}
+							list.openSelect();
+							//显示已经选中的效果图
+							showSelectedPreview.call(this);
+						});
+					}
+					//获取效果图列表
+					function getPreviewList(callback){
+						previewset.getAllPreviews({
+							"path":scenepath,
+							"limit":limit,
+							"offset":(currentPage - 1) * limit,
+							"success":function(urls,num){
+								callback(urls,num);
+							},
+							"failed":function(error){
+								console.log(error);
+							}
+						});	
+					}
+					//缓存每页选中的效果图的路径
+					function getPrePageSelectedPreviewPath(selectedpath){
+						allSelectedPreviewPath[currentPage] = selectedpath;
+					}
+					//显示选中的效果图
+					function showSelectedPreview(){
+						var path = allSelectedPreviewPath[currentPage];
+						list.selectByItemId(path);
+					}
+					//获取选中的效果图的总数量
+					function getAllSelected(){
+						var len = 0;
+						for(var key in allSelectedPreviewPath){
+							len += allSelectedPreviewPath[key].length;
+						}
+						return len;
+					}
+					//响应分页事件
+					var dthis = this;
+					pagination.watch(
+						"nowPage", 
+						function()
+						{
+							var selected = list.getSelectNodes();
+							getPrePageSelectedPreviewPath.call(dthis,selected);
+							currentPage = pagination.get("nowPage");
+							initpreviewlist();
+						}
+					);
+					/************************以下是监听添加和删除效果图的事件处理********************************/
+					//添加
+					on(dom.byId("btnaddpreview"),"click",function(){
+						//此处应该弹出窗口，还需一个页面
+						var url = "/modules/previewedit/addpreview.html";
+						var dialogData = {
+							widthradio: 0.4,
+							heightradio:0.5,
+							id:scenepath+"addpreview",
+							title:"添加效果图",
+							url:url,
+							data: {	
+								"scenepath":scenepath
+							},
+							callback:function(spdialog){
+								console.log("handle   "+spdialog);
+								spdialog.on("addpreviewsucc",function()
+								{
+									initpreviewlist();
+									Spolo.dialogEmit("seepreviewlist");
+								});
+							}
+						};
+						Spolo.dialog(dialogData);
+					});
+					//删除效果图
+					on(dom.byId("btndeletepreview"),"click",function(){
+						var selected = list.getSelectNodes();
+						if(selected.length){
+							deldialog.show();
+						}
+						else{
+							Spolo.notify({
+								"text" : "请选择要删除的效果图",
+								"type" : "error",
+								"timeout" : 1000
+							});
+						}
+					});
+					//删除时弹出提示的对话框
+					var div = domConstruct.create("div",
+						{
+							innerHTML:"<center><label>确定删除该效果图吗？</label><br /></center>"
+						}
+					);
+					var btnSure = domConstruct.create("div",
+						{
+							innerHTML:"<button data-dojo-type='dijit/form/Button' style='width:100%'>确定</button>",
+							style:"float:left; width:45px;margin-left:22%"
+						},div
+					);
+					var btnCancel = domConstruct.create("div",
+						{
+							innerHTML:"<button data-dojo-type='dijit/form/Button' style='width:100%'>取消</button>",
+							style:"float:left; width:45px;"
+						},div
+					);
+					var deldialog = new Dialog({
+						title: "删除效果图",
+						content: div,
+						style: "width: 200px;position:relavite;top:20px;font-size:12px;background-color:white"
+					});
+					
+					on(btnSure,"click",function()
+					{
+						var selected = list.getSelectNodes();
+						getPrePageSelectedPreviewPath.call(this,selected);
+						var count = 0;
+						var len = getAllSelected.call(this);
+						for(var key in allSelectedPreviewPath){
+							var prepagePath = allSelectedPreviewPath[key];
+							for(var i = 0;i < prepagePath.length;i++){
+								var path = prepagePath[i];
+								var pre = new preview(path);
+								Mask.show();
+								pre.remove(
+									function(data){
+										console.log(data);
+										count++;
+										if(count == len){
+											initpreviewlist();
+											Spolo.notify({
+												"text" : "删除成功",
+												"type" : "success",
+												"timeout" : 1000
+											});
+											Spolo.dialogEmit("delpreviewsucc");
+											deldialog.hide();
+											Mask.hide();
+										}
+									},
+									function(error){
+										count++;
+										Mask.hide();
+										console.error(error);
+									}
+								);
+							}
+						}
+					});	
+					on(btnCancel,"click",function(){
+						deldialog.hide();
+					});	
+				});
+		</script>
+	</body>
+</html>

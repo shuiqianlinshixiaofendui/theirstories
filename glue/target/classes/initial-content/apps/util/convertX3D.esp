@@ -1,0 +1,42 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/blendercgi.esp");
+
+function convertX3D()
+{
+   var result = "{suc : false, reason : \"Unknown Error\"}";
+   try{
+      var resultHandler = GVAR_bcgi.asyncforward({
+                           cgi : "scene/x3d_preproc.py",
+                           useEmptyBlend : false})
+                           
+      while(!resultHandler.hasResult())
+      {
+         resultHandler.waitFor(3 * 1000);
+      }
+      
+      result = Packages.org.spolo.apps.util.BlenderCGI.trunkResultString(resultHandler.stdout.toString());
+		if(result == "")
+		{
+			var msg = resultHandler.stderr.toString().replaceAll("'","\\'").replaceAll("\n","\\n").replaceAll("\r","\\r");
+			result = "{suc : false, reason : '" + msg + "'}";
+		}      
+   }catch(e){
+      result = "{suc : false, reason : \"" + e + "\"}";
+   }finally{
+      return result;
+   }
+}
+%>

@@ -1,0 +1,38 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+ var GVAR_LoadLibrary = true;
+ load("/apps/users/_validity.esp");
+ 
+ var GVAR_CurrentNode = currentNode;
+ var GVAR_Session = GVAR_CurrentNode.getSession();
+ var GVAR_RootNode = GVAR_Session.getRootNode();
+ 
+ 
+ //判断管理员权限，目前只有admin有权限
+ if(GVAR_Session.getUserID() == 'admin'){
+	var targetPath = '/content/users/' + request.getParameter('username');
+	var targetNode = GVAR_RootNode.getNode(targetPath.substr(1));
+	var year = request.getParameter('year');
+	var month = request.getParameter('month');
+	var date = request.getParameter('date');
+	var hours = request.getParameter('hours');
+	setValidity(year,month,date,hours,targetNode);
+	out.println('{Success:true}');
+ }
+ else
+	out.println('{Success:false,reason:"You are not an administrator!"}')
+
+%>

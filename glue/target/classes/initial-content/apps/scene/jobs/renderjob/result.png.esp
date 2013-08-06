@@ -1,0 +1,93 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+
+//response响应图片
+function responseImageFile(imageFile){
+	try{
+		if(imageFile.exists()){
+			if(request.getParameter('download')&&request.getParameter('download').contentEquals("true")){
+				response.setContentType("application/octet-stream");
+				response.setHeader("Content-Disposition", "attachment; filename=\""+imageFile.getName()+"\"");
+				response.setHeader("content-length", imageFile.length());
+			}else{
+				response.setContentType("image/png");
+				response.setHeader("content-length", imageFile.length());
+			}
+			var inputstream = new Packages.java.io.FileInputStream(imageFile);
+			Packages.org.apache.commons.io.IOUtils.copy(inputstream,response.getOutputStream());  
+			inputstream.close();
+		}
+		else
+		{
+			response.sendError(404);
+		}
+	}catch(e){
+		Packages.java.lang.System.out.println(e);  
+		response.sendError(404);	
+	}
+}
+//获取图片文件的preview
+function getPreView(imageFile){
+	var dir = imageFile.getParentFile(); 
+	var targetImageFile = new Packages.java.io.File(dir.getPath() + GVAR_system.path_separator + "preview" + GVAR_system.path_separator + "preview.png");
+	if(!targetImageFile.exists()){
+		if(!targetImageFile.getParentFile().exists()){
+			targetImageFile.getParentFile().mkdirs();
+		}
+		var bufferedImage = Packages.javax.imageio.ImageIO.read(imageFile);   
+		var width = bufferedImage.getWidth();   
+		var height = bufferedImage.getHeight();  
+		var percentage = Math.round(((200*100)/width));
+		GVAR_system.runTool("ImageMagickConvert", ["-resize "+percentage+"%x"+percentage+"% "+imageFile.getPath() + " "+targetImageFile.getPath()]);
+	}
+	return targetImageFile;
+}
+
+var jobName = request.getParameter('jobName');
+var taskName = request.getParameter('taskName');
+var view = request.getParameter('view');
+
+if(jobName && taskName){
+	//获取job信息对象
+	load("/apps/scene/jobs/jobUtil.esp");
+	var imageFile = JobUtil.getTaskResultImageFile(currentNode,jobName,taskName);
+	//开始检查job结果文件是否存在。
+	if(imageFile && imageFile.exists()){
+		if(view == "preview"){
+			imageFile = getPreView(imageFile);
+		}
+		responseImageFile(imageFile);
+	}else{
+		response.sendError(404);	
+	}
+}else if(jobName){
+	//获取job信息对象
+	load("/apps/scene/jobs/jobUtil.esp");
+	var imageFile = JobUtil.getJobResultImageFile(currentNode,jobName);
+	//开始检查job结果文件是否存在。
+	if(imageFile && imageFile.exists()){
+		if(view == "preview"){
+			imageFile = getPreView(imageFile);
+		}
+		responseImageFile(imageFile);
+	}else{
+		response.sendError(404);	
+	}
+}else{
+	response.sendError(404);	
+}
+%>

@@ -1,0 +1,69 @@
+<%                    
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+var userName = request.getParameter("userName");                                   //得到参数和当前用户ID
+var password = request.getParameter("password");
+var js = request.getResourceResolver().adaptTo(Packages.javax.jcr.Session);       
+var id = js.getUserID();
+var result = new Packages.org.apache.sling.commons.json.JSONObject(); 
+var strRe = "";
+
+//out.println(userName);
+//out.println(password);
+
+if (!userName) {                                                                             
+		//out.println(id);
+		userName =	id;
+}
+
+var result = changePwd(userName,password);
+out.println(result.toString());
+
+function changePwd(username,pwd) { 
+		
+	   if (!password || password == "") {                                                   //对密码合法的判断
+	   	 strRe = "password must not be null";
+	   	 result.put("success", false);
+		    result.put("reason", strRe);
+		    //out.println(result.toString());
+			 return result;
+		}		
+
+		try{                                                                                      // 修改用户名为username的用户密码
+			var jcrSession = request.getResourceResolver().adaptTo(Packages.javax.jcr.Session);
+			var user = jcrSession.getUserManager().getAuthorizable(username);
+			user.changePassword(pwd); 
+			result.put("success", true);
+			// out.println(result.toString());
+			return result;
+		}catch(e) { 
+			var currentUser = js.getUserManager().getAuthorizable(id);
+			if (!currentUser.isAdmin()) {                                                      // 非管理员修改他人密码判断
+					strRe = "You have no permission!";
+					result.put("success", false);
+					result.put("reason", strRe);
+					// out.println(result.toString());
+					return result;
+			} 
+		else {                                                                                 // 对jcr中不存在的用户进行修改判断
+			strRe = "username:'"+username+"' is not exist";
+			result.put("success", false);
+			result.put("reason", strRe);
+			// out.println(result.toString());
+			return result;
+			}
+		}	
+}
+%>

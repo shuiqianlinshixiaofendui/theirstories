@@ -1,0 +1,55 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ 
+response.setCharacterEncoding("UTF-8");
+
+
+var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+var adminSession = slingRepos.loginAdministrative(null);
+var fixPath = "/content/previewlib";
+var fixNode = adminSession.getNode(fixPath);
+
+var nodeList = fixNode.getNodes();
+var node;
+for(var i in nodeList){
+	node = nodeList[i];
+	if(node.getName()=="rep:policy")continue;
+	out.println(node);
+	fixModelPath(node);
+}
+
+// 修正每个模型的地址为公共模型库
+function fixModelPath(previewLibSceneNode){
+	var previewList = previewLibSceneNode.getNodes();
+	var modelList = previewList[0].getNode("model").getNodes();
+	
+	for(var i in previewList){
+		var preview = previewList[i];
+		setModelsName(preview);
+	}
+	
+	function setModelsName(pre){
+		var ml = pre.getNode("model").getNodes();
+		var name;
+		for(var i in ml){
+			name = ml[i].getName();
+			ml[i].setProperty("modelpath", modelList[name]["modelpath"]);
+		}
+	}
+	
+	adminSession.save();
+}
+
+%>

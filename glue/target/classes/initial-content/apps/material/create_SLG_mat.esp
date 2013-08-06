@@ -1,0 +1,39 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+load("/apps/material/defaultMatTypeCfg.esp");
+load("/apps/material/SLG_mat_template.esp");
+
+
+//获取前端传递的参数
+var matName = request.getParameter("matName");
+var matType = request.getParameter("matType");
+
+//将参数转为string
+matName = new String(matName);
+matType = new String(matType);
+
+//调用createmat
+if((matName != "null") && (matType != "null") && (currentNode != null))
+{
+	createmat(currentNode,matName,matType);
+}
+else
+{
+	//返回错误说明
+	out.write("Parameter error!\n");
+}
+
+%>

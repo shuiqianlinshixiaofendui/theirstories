@@ -1,0 +1,73 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+ //创建region节点并设置相关属性，再调用region节点的ocs方法产生ocs文件并上传
+ 
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_WorkSpace;
+
+GVAR_CurrentNode = currentNode;
+GVAR_Session = currentNode.getSession();
+GVAR_WorkSpace = GVAR_Session.getWorkspace();
+GVAR_Path = "C:/tmp";
+ 
+ 
+if(currentNode != null)
+{
+	//currentNode.getProperties();
+	var regionnode = currentNode.addNode("region1","slingevent:Job");
+	regionnode.setProperty("sling:resourceType","renderjob/region");
+	regionnode.setProperty("targetfiletype","picture");
+	//获取job节点以获取job_properties节点从中读取输出路径信息
+	var jobnode = currentNode.getParent();
+
+	var children = jobnode.getNodes();
+
+	var targetfilepath = "";
+	for(var inode in children)
+	{
+		if(children[inode].hasProperties())
+		{	
+			if(children[inode]["sling:resourceType"] == "job_properties")
+			{
+				var ipnodes = children[inode].getNodes();
+				for(var ind in ipnodes)
+				{
+					if(ipnodes[ind]["sling:resourceType"] == "target_properties")
+					{
+						targetfilepath = ipnodes[ind]["targetfilepath"];
+					}
+				}
+			}
+		}
+	}
+	regionnode.setProperty("targetfilepath",targetfilepath);
+	
+	//调用ocs的相应handle产生osc文件并将此文件引入此节点中
+	
+	regionnode.setProperty("rendersetdata",regionnode.getPath() + "/render.ocs");
+	
+	
+	var dispOption = new Packages.org.apache.sling.api.request.RequestDispatcherOptions();
+	var path = regionnode.getPath() + ".ocs";
+	var disp = request.getRequestDispatcher(path,dispOption);
+	var cache_response = new Packages.org.spolo.utils.BufferedServletResponse(response);
+	disp.forward(request,cache_response);
+	
+}
+//out.write(childnode +"\n");
+//childnode["sling:resourceType"] = "jobproperties";
+currentNode.save(); 
+
+%>

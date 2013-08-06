@@ -1,0 +1,25 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+ 
+// out.println("test proc_preview!!!");
+
+
+var GVAR_LoadLibrary = true;
+load("/apps/scene/_createpreview.esp");
+
+var imgpath = request.getRequestParameter("imgpath");
+
+// out.println(imgpath);
+
+out.print(createpreview(currentNode,imgpath).getPath());
+%>

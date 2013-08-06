@@ -1,0 +1,275 @@
+<%
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+*/
+response.setCharacterEncoding("UTF-8")
+
+var startTime = new Date(),
+	parsedReq = parseRequest(request),
+	expression = getXpathExpression(parsedReq),
+	// Switch to Admin Session temporarily
+	adminSession = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository).loginAdministrative(null);
+	queryManager = adminSession.getWorkspace().getQueryManager();
+    Packages.java.lang.System.out.println(expression);
+try{
+	var queryNodes = excQuery(queryManager, "xpath", expression, parsedReq.limit, parsedReq.offset).getNodes();	
+} catch(e) {
+	response.sendError(400);
+}
+
+try{
+	var group = makeGroup(queryNodes, parsedReq.conditions);
+	try{
+		var totalNodes = excQuery(queryManager, "xpath", expression, null, null).getNodes(),
+			totalNum = totalNodes.getSize();
+	} catch(e) {
+		response.sendError(400);
+	}
+
+	var resultJSON = generateGroupResult(group, totalNum),
+		endTime = new Date();
+	resultJSON.put("timems", endTime - startTime);
+
+	var resultJSONString = resultJSON.toString();
+	if(!parsedReq.isiframe){
+		out.println(resultJSONString);	
+	} else {
+		out.println("callback(" + resultJSONString + ");");
+	}
+} catch(e) {
+	response.sendError(500);
+} finally {
+	adminSession.logout();
+}
+
+//-------------
+
+function parseRequest (req) {
+	var reqMap = req.getRequestParameterMap(),
+		reqIter = reqMap.entrySet().iterator(),
+		parsedReq = {};
+	
+	parsedReq.nodePath = req.path || request.getRequestURI().substring(0, request.getRequestURI().indexOf('.'));
+	parsedReq.limit = 15;
+	parsedReq.offset = 0;
+	parsedReq.findSub = 1;
+	parsedReq.isiframe = 0;
+	parsedReq.opt = "or";
+	parsedReq.by = "jcr:score";
+	parsedReq.order = "asc";
+
+	while (reqIter.hasNext()) {
+		var param = reqIter.next(),
+			paramKey = param.getKey(),
+			paramValue = param.getValue()[0].getString().trim();
+		if(paramKey == "bd") {
+			parsedReq.beginDate = paramValue.replace(" ", "+");
+		} else if (paramKey == "ed") {
+			parsedReq.endDate = paramValue.replace(" ", "+");
+		} else if (paramKey == "limit") {
+			parsedReq.limit = Number(paramValue);
+		} else if (paramKey == "offset") {
+			parsedReq.offset = Number(paramValue);
+		} else if (paramKey == "sub") {
+			parsedReq.findSub = Number(paramValue);
+		} else if (paramKey == "type") {
+			parsedReq.type = paramValue;
+		} else if (paramKey == "by") {
+			parsedReq.by = paramValue;
+		} else if (paramKey == "order") {
+			parsedReq.order = (paramValue.equals("asc") || paramValue.equals("des")) ? paramValue : "asc";
+		} else if (paramKey == "isiframe") {
+			parsedReq.isiframe = Number(paramValue);
+		} else {
+			var condition = paramKey.split('_');
+			parsedReq.conditions = parsedReq.conditions || {};
+			paramValue = Packages.org.apache.commons.io.IOUtils.toString(paramValue.getBytes('iso8859-1'), 'utf-8');
+			if(condition.length > 1) {
+				var opt = condition[0],
+					cond = condition[1];
+				if(opt == 0) {
+					parsedReq.conditions.or = parsedReq.conditions.or || {};
+					parsedReq.conditions.or[cond] = paramValue.toLowerCase();
+				} else {
+					parsedReq.conditions.and = parsedReq.conditions.and || {};
+					parsedReq.conditions.and[cond] = paramValue.toLowerCase();
+				}
+			} else {
+				parsedReq.conditions.or = parsedReq.conditions.or || {};
+				parsedReq.conditions.or[condition[0]] = paramValue.toLowerCase();
+			}
+		}
+	}
+
+	return parsedReq;
+}
+
+function getXpathExpression (parsedReq) {
+	for(var f in parsedReq.conditions){
+        var test = parsedReq.conditions[f];
+        Packages.java.lang.System.out.println(f+"  "+test);
+        for(var f2 in test){
+            var test2 = test[f2];
+            Packages.java.lang.System.out.println("      "+f2+"  "+test2);
+        }
+    }
+    var expression = "/jcr:root" + parsedReq.nodePath;
+	expression += parsedReq.findSub ? "//*" : "/*";
+
+	if(parsedReq.type || parsedReq.conditions || parsedReq.beginDate || parsedReq.endDate) {
+		var condArray = new Array();
+		condArray[0] = parsedReq.type ? "fn:lower-case(@sling:resourceType)='" + parsedReq.type + "'" : "",
+		condArray[1] = "";
+		condArray[2] = "";
+		condArray[3] = parsedReq.beginDate ? "@jcr:created>=xs:dateTime('" + parsedReq.beginDate + "')" : "",
+		condArray[4] = parsedReq.endDate ? "@jcr:created<=xs:dateTime('" + parsedReq.endDate + "')" : "";
+
+		if(parsedReq.conditions) {
+			var conditions = parsedReq.conditions;
+			    and = conditions.and,
+			    or = conditions.or;
+
+			if(and) {
+				for(var i in and) {
+					if(i == "areaPath"){
+                        var GVAR_CurrentNode = currentNode;
+                        var GVAR_Session = GVAR_CurrentNode.getSession();
+                        var GVAR_RootNode = GVAR_Session.getRootNode();
+                        Packages.java.lang.System.out.println(GVAR_RootNode);
+                        var targetNode = GVAR_RootNode.getNode((and[i]+"").substr(1));
+                        var max = targetNode.getProperty("max");
+                        var min = targetNode.getProperty("min");
+                        condArray[1] += "@area <='"+ max +"' and @area >= '"+ min +"' , ";
+                    }else{
+                        condArray[1] += "jcr:like(fn:lower-case(@" + i + "),'%" + and[i] + "') or "
+                                      + "jcr:like(fn:lower-case(@" + i + "),'" + and[i] + "%') or "
+                                      + "jcr:like(fn:lower-case(@" + i + "),'%" + and[i] + "%') "
+                                      + ", ";
+                    }
+				}
+				condArray[1] = condArray[1].slice(0, -3);				
+			}
+
+			if(or) {
+				for(var i in or) {
+					condArray[2] += "jcr:like(fn:lower-case(@" + i + "),'%" + or[i] + "') or "
+							      + "jcr:like(fn:lower-case(@" + i + "),'" + or[i] + "%') or "
+							      + "jcr:like(fn:lower-case(@" + i + "),'%" + or[i] + "%') "
+							      + "or ";
+				}
+				condArray[2] = condArray[2].slice(0, -4);				
+			}
+
+		}
+
+		expression += "[";
+		for(var i = 0; i < condArray.length; ++i) {
+			if(condArray[i]) {
+				expression += condArray[i] + ",";
+			} else {
+				continue;
+			}
+		}
+		expression = expression.slice(0, -1) + "]";
+	}
+
+	if(parsedReq.by) {
+		expression += " order by @" + parsedReq.by;
+		var order = parsedReq.order.equals("asc") ? "ascending" : "descending";
+		expression += " " + order;
+	}
+
+	return expression;
+}
+
+function excQuery (queryManager, lang, expression, limit, offset) {
+	var query = queryManager.createQuery(expression, lang);
+
+	if(limit !== null) {
+		if(limit <= 0) {
+			limit = 15;
+		}
+		query.setLimit(String(limit));		
+	}
+
+	if(offset !== null) {
+		if(offset < 0) {
+			offset = 0;
+		}
+		query.setOffset(String(offset));	
+	}
+
+	return query.execute()
+}
+
+function makeGroup(nodeIter, conditions) {
+	var group = {};
+	if(conditions && conditions.or) {
+		for(var i in conditions.or) {
+			group[i] = [];
+		}
+	} else {
+		group["default"] = [];
+	}
+
+	while(nodeIter.hasNext()) {
+		var node = nodeIter.next();
+
+		if(conditions && conditions.or) {
+			for(var i in conditions.or) {
+				if(node.hasProperty(i)) {
+					var nodeProp = node.getProperty(i).getString();
+					if(nodeProp.contains(conditions.or[i])) {
+						group[i].push(node);
+					}
+				}
+			}
+		} else {
+			group["default"].push(node);
+		}
+	}
+
+	return group;
+}
+
+function generateGroupResult(group, totalNum) {
+	var resultJSON = Packages.org.apache.sling.commons.json.JSONObject(),
+		data = Packages.org.apache.sling.commons.json.JSONObject();
+
+	for(var i in group) {
+		var slot = group[i],
+			nodeCount = slot.length;
+		if(nodeCount) {
+			for(var j = 0; j < nodeCount; ++j) {
+				var node = slot[j],
+					nodeName = node.getName(),
+					nodeData = Packages.org.apache.sling.commons.json.JSONObject();
+
+				if(!nodeName.equals("rep:policy")) {
+					nodeData.put("nodeName", nodeName);
+
+					var nodeProps = node.getProperties();
+					for(var prop in nodeProps) {
+						nodeData.put(prop, nodeProps[prop].toString());
+					}
+
+					data.put(node.getPath(), nodeData);
+				}
+			}
+		}
+	}
+
+	resultJSON.put("totalNum", totalNum);
+	resultJSON.put("data", data);
+
+	return resultJSON;
+}
+%>

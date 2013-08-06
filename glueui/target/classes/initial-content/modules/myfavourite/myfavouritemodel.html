@@ -1,0 +1,366 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            模型
+        </title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/myfavouritemodel.css" media="screen"/>
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/CategorySelect/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+    </head>
+    <body class="claro">
+		<div id="bordercontainerContent" dojoType="dijit.layout.BorderContainer" gutters=false>
+			<div dojoType="dijit.layout.ContentPane" region="top" id="addModel" >
+				<button id="btnAddFavModel" style="display:none;"> 添加选中模型 </button>
+			</div>
+			<div dojoType="dijit.layout.ContentPane" region="center">
+				<div id="myfavouritemodelContent" dojoType="dijit.layout.BorderContainer" gutters=false>
+					<div dojoType="dijit.layout.ContentPane" region="top" id="searchmodel">
+						<div id="searchmodelinput"></div>
+						<button type="button" id="btnSearchModel"></button>	
+					</div>		
+					<div dojoType="dijit.layout.ContentPane" region="center" class="myfavouritemodellist_modellist" id="modellist">				
+					</div>
+					<div dojoType="dijit.layout.ContentPane" region="bottom" id="modellist_pager" class="myfavouritemodellist_pager">				
+					</div>
+				</div>
+			</div>
+		</div>
+	<script type="text/javascript">
+		require(
+			[
+				"dojo/parser","dojo/ready","dojo/dom","dojo/dom-style","dojo/on","dojo/query", 
+				"dijit/form/Button","dijit/registry","dijit/layout/BorderContainer", "dijit/layout/ContentPane",
+				"dijit/layout/TabContainer","dojo/store/Memory", 
+				"dijit/form/FilteringSelect","widgets/Pagination/Pagination","widgets/Category/Category",
+				"widgets/CategorySelect/CategorySelect","dojo/dom-class",
+				"widgets/List/List","spolo/data/folder/favourite","spolo/data/model",
+				"dojo/keys","widgets/Mask/Mask","dojo/NodeList-traverse"
+				
+			],function(
+				parser, ready, dom, domStyle, on, query, Button,registry,
+				BorderContainer,ContentPane,TabContainer,Memory,FilteringSelect,Pagination,Category,CategorySelect,
+				domclass,List,favourite,model,keys,Mask
+			){
+				ready(function(){
+					this.scene = this.parent.scene;
+					var scene = this.scene;
+					var iframe = this.parent.iframe;
+					var list = new List();
+					list.placeAt("modellist");
+					var json = 
+					{
+						total:0
+					};
+					var pagination = new Pagination(json).placeAt("modellist_pager");//初始化分页组件
+					var currentPage = 1;
+					var limit = 10;
+					var inputvalue;
+					var jsondata = {};//缓冲每一页的模型对象
+					var allSelectModel = {};//记录所有页中选中的对象
+					initSearch();//初始化搜索框
+					initModelList();//初始化收藏的模型列表
+					var addmodel = getParameter("addmodel");
+					if(addmodel == "true")
+					{
+						domStyle.set(dom.byId("btnAddFavModel"),"display","block");
+					}
+					//搜索的UI
+					function initSearch(){
+						var filteringSelect = new FilteringSelect({
+							//store: dthis.stateStore,
+							searchAttr: "resourcename",
+							style:"margin:15px 0 20px 32%;height:22px;width:360px;font-size:15px;padding:2px 0 2px 0",
+							hasDownArrow:false,
+							forceWidth:true,
+							required:false,
+							invalidMessage:false,
+							trim:true,
+							autoComplete:false,
+							onKeyUp:function(evt){
+								inputvalue = filteringSelect.get('displayedValue');
+								switch(evt.keyCode)
+								{
+									case keys.ENTER:
+										if(inputvalue.trim() != ""){
+											currentPage = 1;
+											initModelList.call(this);
+										}
+										break;
+								}
+							},
+							validate:function() 
+							{
+							}
+						}, "searchmodelinput");	
+						new Button({
+							label:"查询",
+							style:"font-size:14px;margin:-4px 0 0 25px;",
+							onClick:function(){
+								if(inputvalue.trim() != ""){
+									currentPage = 1;
+									initModelList.call(this);
+								}
+							}
+						},"btnSearchModel");
+					}
+					/***************以下是处理列表的方法*************************/
+					//调用后端的查询方法
+					function searchmodels(callback){
+						var offset = (currentPage - 1) * limit;
+						favourite.getAllFavModels({
+							value:inputvalue,
+							limit:limit,
+							offset:offset.toString(),
+							success:function(data,num){
+								jsondata = data;
+								callback(data,num);
+							},
+							failed:function(err){
+								console.log(err);
+							}
+						});
+					}
+					//格式化时间
+					function format(obj){
+						if(obj<10)
+							return "0" +""+ obj;
+						else
+							return obj;
+					}
+					//初始化list中的内容
+					function initList(data){
+						var modelpath = [];
+						for(var key in data)
+						{
+							modelpath.push(key);
+						}
+						list.addItems(modelpath,true);
+						list.openSelect();
+						setModelName.call(this,data);
+						setModelFavtime.call(this,data);
+						setModelImage.call(this,data);
+					}
+					//设置模型的缩略图
+					function setModelImage(data){
+						function getModelImage(key){
+							model.getImage(
+								key,
+								function(url){
+									list.setItemImage(key,url);
+								},
+								function(error){
+									var img =  "/modules/scenedetail/images/nopreview.jpg";
+									list.setItemImage(key,img);
+								}
+							);
+						}
+						for(var key in data){
+							getModelImage.call(this,key);
+						}
+					}
+					//设置模型的名称
+					function setModelName(data){
+						for(var key in data){
+							var modelname = data[key]["resourceName"];
+							list.addDomNode(key,"<div>名称：" + modelname + "</div>");
+						}
+					}
+					//设置模型的收藏时间
+					function setModelFavtime(data){
+						for(var key in data){
+							var favtime = data[key]["favtime"];
+							var _date = new Date(favtime);
+							var datestring = format(_date.getFullYear()) + "-"
+								+ format(_date.getMonth()+1) + "-"
+								+ format(_date.getDate()) + " "
+								+ format(_date.getHours()) + ":"
+								+ format(_date.getMinutes()) + ":"
+								+ format(_date.getSeconds());
+							list.addDomNode(key,"<div>收藏时间：" + datestring + "</div>");
+						}
+					}
+					//初始化列表
+					function initModelList(){
+						searchmodels.call(this,function(data,num){
+							console.log(data);
+							pagination.refresh(Math.ceil(num/limit),currentPage);
+							initList.call(this,data);
+							selectedModelPath.call(this);
+						});
+					}
+					//响应分页事件
+					pagination.watch(
+						"nowPage", 
+						function()
+						{
+							var patharr = list.getSelectNodes();
+							if(patharr.length){
+								getPerPageSelectedModel.call(this);//获取当前页选中的模型
+							}
+							currentPage = pagination.get("nowPage");
+							initModelList.call(this);
+						}
+					);
+					//根据参数名，获取值
+					function getParameter(param){
+						var value = "";
+						var paramSearch = param+"=";
+						var paramStr = location.search;
+						var decode_paramStr = decodeURIComponent(paramStr).substring(1);
+						var paramsArr = new Array();
+						if(decode_paramStr.search(/&/)!=-1){
+							paramsArr = decode_paramStr.split("&");
+						}
+						if(paramsArr[0]){
+							arrayUtil.forEach(paramsArr,function(item,i){
+								if(item.indexOf(param+"=")!=-1){
+									value = item.substr(item.indexOf(param+"=")+paramSearch.length);
+								}
+							});
+						}else{
+							value = decode_paramStr.substr(decode_paramStr.indexOf(param+"=")+paramSearch.length);
+						}
+						return value;
+					}
+					//给添加模型按钮添加事件
+					on(dom.byId("btnAddFavModel"),"click",function(){
+						//获取选中的模型
+						getPerPageSelectedModel.call(this);
+						addModelsToCurrentScene.call(this,allSelectModel);
+						//console.log(getAllSelectedModel());
+						Mask.show();
+						scene.saveItems(success, error);
+					});
+					/**************************以下为添加模型的一系列操作和方法*********************************/
+					//获取当前页中选中的模型的路径数组
+					function getSelectedModelPath(){
+						var patharr = list.getSelectNodes();
+						if(patharr.length){
+							return patharr;
+						}
+						else{
+							Spolo.notify({
+								text : '请选择模型！',
+								type : 'error',
+								timeout : 1000
+							});
+						}
+					}
+					//根据模型路径得到当前页中选中的模型对象
+					function getModelObjByPath(patharr){
+						var modelobj = [];
+						for(var i = 0;i < patharr.length;i++){
+							var obj = {};
+							var path = patharr[i];
+							obj[path] = jsondata[path];
+							modelobj.push(obj);
+						}
+						return modelobj;
+					}
+					//获取每一页中选中的模型对象
+					function getPerPageSelectedModel(){
+						var currentselectedmodel = getSelectedModelPath.call(this);//获取当前页选中的模型
+						var currentSelectedModel = getModelObjByPath.call(this,currentselectedmodel);
+						allSelectModel[currentPage] = currentSelectedModel;
+					}
+					//获取所有页的选中的模型对象
+					function getAllSelectedModel(){
+						var array = [];
+						console.log(allSelectModel);
+						for(var key in allSelectModel){
+							array = array.concat(allSelectModel[key]);
+						}
+						return array;
+					}
+					//缓存选中模型的全路径,并改变选中模型的状态
+					function selectedModelPath()
+					{
+						var selectedItems = allSelectModel[currentPage];
+						if(!selectedItems){
+							selectedItems = getModelObjByPath.call(this,[]);
+						}
+						else{
+							var array = [];
+							for(var i = 0;i < selectedItems.length; i++){
+								for(var key in selectedItems[i]){
+									array.push(key);
+								}
+							}
+							console.log(selectedItems);
+							list.selectByItemId(array);
+						}
+					}
+					//将选中的模型添加到场景中
+					function addModelsToCurrentScene(data){
+						if(data){//这里的data数据存储的比较麻烦，因为在返回的数据中的refermodel不好获取，暂时先实现吧
+							for(var key in data){
+								console.log(data);
+								for(var i = 0;i < data[key].length;i++){
+									for(var j in data[key][i]){
+										var name = data[key][i][j]["resourceName"];
+										var referModel = j;
+										var ID = data[key][i][j]["ID"];
+										var json = {
+											name:name,
+											referModel:referModel,
+											type:"MESH",
+											ID:ID
+										};
+										scene.addItemsByCount(json);
+									}
+								}
+							}
+						}
+					}
+					//添加成功或者失败的方法
+					function success(res)
+					{
+						Mask.hide();
+						iframe.refreshEditItems();
+						Spolo.notify({
+							text : "添加模型成功！",
+							type : "success",
+							timeout : 1000
+						});
+					}
+					function error(res)
+					{
+						Mask.hide();
+						Spolo.notify({
+							text : "添加模型失败！",
+							type : "error",
+							timeout : 1000
+						});
+					}
+				});	
+			});
+	</script>	
+    </body>
+</html>

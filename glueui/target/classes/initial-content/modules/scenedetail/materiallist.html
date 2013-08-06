@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            场景详细信息
+        </title>
+
+		<script type="text/javascript" >
+			dojoConfig = {
+				//parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "scenedetail",
+						location: "/modules/scenedetail"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+        <!-- <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/> -->
+		<link rel="stylesheet" href="css/update.css" media="screen" />
+		
+    </head>
+    
+    <body class="claro">
+	
+		这里是更新场景
+		
+		
+	<script type="text/javascript">
+		
+		require(
+			[
+				"dojo/parser","dojo/ready","dojo/dom","dojo/dom-style"
+				
+			],function(
+				parser, ready, dom, domStyle
+			){
+				ready(function(){
+					// 获取父级页面的 scene 对象
+					this.scene = this.parent.scene;
+					
+					
+				});
+			}
+		);
+	</script>
+		
+		
+    </body>
+
+</html>
+

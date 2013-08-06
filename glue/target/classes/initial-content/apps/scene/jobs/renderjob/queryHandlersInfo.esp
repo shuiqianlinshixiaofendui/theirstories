@@ -1,0 +1,66 @@
+<%
+	response.setCharacterEncoding("UTF-8");
+	response.setContentType("text/html");
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/scene/jobs/jcrUtil.esp");
+load("/apps/util/request.esp");
+
+var r1 = {};
+try{
+	var totally =0;
+	var totally_notbusy =0;
+	var octane =0;
+	var octane_notbusy 	=0;
+	var slg =0;
+	var slg_notbusy =0;
+	//所有
+	var totally_querySQL = "/jcr:root/var/xmpp/handler/*[@type='render']";
+	var nodes = JcrUtil.xpathQuery(totally_querySQL);
+	//遍历自己去计数（因为 nodeiterator的getsize不能正常工作）
+	while(nodes.hasNext()){
+		var node = nodes.next();
+		var render = node.getProperty("render").getString();
+		var busy = node.getProperty("busy").getString();
+		if(render == "octane"){
+			octane++;
+			if(busy == "false"){
+				octane_notbusy++;
+				totally_notbusy++;
+			}
+		}else{
+			slg++;
+			if(busy == "false"){
+				slg_notbusy++;
+				totally_notbusy++;
+			}
+		}
+		totally++;
+	}
+	//生成结果
+	var data = new Packages.org.apache.sling.commons.json.JSONObject();
+	data.put('totally',totally);
+	data.put('totally_notbusy',totally_notbusy);
+	data.put('octane',octane);
+	data.put('octane_notbusy',octane_notbusy);
+	data.put('slg',slg);
+	data.put('slg_notbusy',slg_notbusy);
+	r1='{"result":true,"data":'+data.toString()+'}';
+}catch(e){
+	Packages.java.lang.System.out.println(e);
+	r1='{"result":false,"reason":"'+e.message+'"}';
+}
+out.println(r1);
+%>
+

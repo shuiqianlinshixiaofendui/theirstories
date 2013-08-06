@@ -1,0 +1,35 @@
+{
+	"resourceName" : "模型类型",
+	"sling:resourceType" : "folder",
+	"jcr:primaryType" : "sling:Folder",
+	"room" : {
+		"resourceName" : "居室",
+		"sling:resourceType" : "folder",
+		"jcr:primaryType" : "sling:Folder",
+		"isradio":"true"
+	},
+	"modelstyle" : {
+		"resourceName":"风格",
+		"sling:resourceType":"folder",
+		"jcr:primaryType":"sling:Folder",
+		"isradio":"false"
+	},
+	"colorSystem"  : {
+		"resourceName" : "色系",
+		"sling:resourceType" : "folder",
+		"jcr:primaryType" : "sling:Folder",
+		"isradio":"true"
+	},
+	"modelbrand" : {
+		"resourceName":"品牌",
+		"sling:resourceType":"folder",
+		"jcr:primaryType":"sling:Folder",
+		"isradio":"true"
+	},
+	"modelmadeof" : {
+		"resourceName":"主材",
+		"sling:resourceType":"folder",
+		"jcr:primaryType":"sling:Folder",
+		"isradio":"true"
+	}
+}

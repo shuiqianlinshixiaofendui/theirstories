@@ -1,0 +1,132 @@
+<%
+
+/* 
+ *  This file is part of the SPP(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://spp.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://spp.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+ */
+
+
+var GVAR_LoadLibrary = true;
+load("/apps/util/sysconfig.esp");
+load("/apps/util/blendercgi.esp");
+load("/apps/util/request.esp"); 
+ 
+ 
+var GVAR_CurrentNode;
+var GVAR_Session;
+var GVAR_RootNode;
+
+
+GVAR_CurrentNode = currentNode;
+
+GVAR_Session = GVAR_CurrentNode.getSession();
+
+GVAR_RootNode = GVAR_Session.getRootNode();
+ 
+ 
+// out.println("test check model");
+
+
+function check_models(modelprop1,modelprop2)
+{
+	var prop1_json = new Packages.org.apache.sling.commons.json.JSONObject(modelprop1);
+	
+	var prop2_json = new Packages.org.apache.sling.commons.json.JSONObject(modelprop2);
+	
+	var it_props = prop1_json.keys();
+	
+	for( ;it_props.hasNext(); )
+	{
+		var propname = it_props.next();
+		if(propname == "name")
+		{
+			continue;
+		}
+		// out.println(propname);
+		// out.println(prop1_json.get(propname));
+		// out.println(prop2_json.get(propname));
+		
+		if(String(prop1_json.get(propname)) != String(prop2_json.get(propname)))
+		{
+			// out.println("false");
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+
+function checkIdenticalModels(modelpatharr)
+{
+	if(modelpatharr.length > 1)
+	{
+		var modelpath = modelpatharr.pop();
+		
+		if(modelpath[0] = "/")
+		{
+			modelpath = modelpath.substr(1);
+		}
+		
+		// out.println(modelpath);
+		
+		var modelnode = GVAR_RootNode.getNode(modelpath);
+		// out.println(modelnode.name);
+		
+		var tm_modelprop = GVAR_bcgi.forward({cgi : "model/getProp.py",node : modelnode, useEmptyBlend : false});
+		
+		// out.println(tm_modelprop);
+		
+		// out.println("tm");
+		
+		for(var i in modelpatharr)
+		{
+			// out.println(modelpatharr[i]);
+			
+			var modelpath = modelpatharr[i];
+			
+			if(modelpath[0] = "/")
+			{
+				modelpath = modelpath.substr(1);
+			}
+			
+			// out.println(modelpath);
+			
+			var modelnode = GVAR_RootNode.getNode(modelpath);
+			// out.println(modelnode.name);
+			
+			var modelprop = GVAR_bcgi.forward({cgi : "model/getProp.py",node : modelnode, useEmptyBlend : false});
+			
+			// out.println(modelprop);
+			
+			if(check_models(tm_modelprop,modelprop) == false)
+			{
+				return "{\"suc\" : \"false\"}";
+			}
+			
+		}
+		
+		return "{\"suc\" : \"true\"}";
+	}
+	
+	return "{\"suc\" : \"error\"}";
+
+}
+
+var models = request.getRequestParameter("models");
+
+models = String(models);
+
+var modelpatharr = models.split(",");
+
+out.print(checkIdenticalModels(modelpatharr));
+
+
+%>

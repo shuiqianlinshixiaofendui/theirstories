@@ -1,0 +1,67 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+response.setContentType("application/json");
+
+var GVAR_LoadLibrary = true;
+load("/apps/material/_createEmpty.esp");
+
+
+
+//切换到管理员身份
+function changeToAdmin(){
+	var slingRepos = sling.getService(Packages.org.apache.sling.jcr.api.SlingRepository);
+	adminSession = slingRepos.loginAdministrative(null);
+	return adminSession;
+}
+
+//获取材质节点名称
+function getmatNodeName(){
+	var matNodeName = "mat";
+	var date = new Date();
+	matNodeName += ""+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds()+date.getMilliseconds();
+	var num = Math.ceil(Math.random()*10000000);
+	matNodeName+=""+ num ;
+	return matNodeName;
+}
+
+function createEmptyMaterial(matlibnode,mat_prop)
+{
+	if(matlibnode.getPath() == "/content/materiallib")
+	{
+		// out.println("matlib");
+		var GVAR_Session;
+		GVAR_Session = changeToAdmin();
+		var GVAR_WorkSpace = GVAR_Session.getWorkspace();
+		var GVAR_RootNode = GVAR_Session.getRootNode();
+		var matNodeName = getmatNodeName();
+		matlibnode = GVAR_RootNode.getNode(matlibnode.getPath().substr(1));
+		var matnode = matlibnode.addNode(matNodeName,"sling:Folder");
+		GVAR_Session.save();
+		
+		// out.println(matnode);
+		
+		var ret = createEmpty(matnode,mat_prop);
+		
+		if(ret.get("suc") == true)
+		{
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+
+%>

@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>UploadMaterial</title>
+		<link rel="stylesheet" type="text/css" href="/libs/dijit/themes/claro/claro.css"  media="screen">
+		<!-- <link rel="stylesheet" type="text/css"href="speich.net/fileUploader/resources/uploader.css"/> -->
+		<link rel="stylesheet" media="screen" href="/widgets/Category/css/main.css">
+		<link rel="stylesheet" type="text/css" href="css/Main.css"/>
+		<script>
+			dojoConfig = {
+				parseOnLoad: true,
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},{
+						name: "widgets",
+						location: "/widgets"
+					}
+				],
+			};
+		</script> 
+		<script type="text/javascript" src="/libs/dojo/dojo.js"></script> 
+		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script> 
+		<script type="text/javascript" src="/script/spolo.js"></script> 
+		
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+		<link rel="stylesheet" href="/widgets/Mask/css/main.css" media="screen">
+		
+	</head>
+	<body  class="claro">	
+		<div data-dojo-type="dijit/layout/BorderContainer" gutters="false" style="width: 800px; height: 550px;margin: 0 auto;background-color: #fff;">
+			<div data-dojo-type="dijit/layout/BorderContainer" gutters="false" data-dojo-props="region:'left'" style="width:400px;height:100%;">
+				<div id="previewPane" class="materialPreviewPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
+					<div id="previewBox" class="previewBox">
+					<div id="fileReaderSWFObject"></div>
+						<span class="imgBox">
+							<img class="previewShow" src="" ></img>
+						</span>
+						<div id="filepre" class="prompt">
+							<label id="preivewMsg">拖拽图片文件到这里</label>
+						</div>
+						<span id="toSelectPreviewBg" class="selectBox">
+							<span class="selectLabel">选择缩率图</span>
+						</span>
+						<a href="javascript:void(0)" id="toSelectPreviewBt" class="selectBox">选择缩率图</a>
+					</div>
+				</div>
+				<div id="filePane" class="materialFilePane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+					<div id="fileBox" class="fileBox">
+						<div id="filepro" class="prompt">
+							<label id="fileMsg">拖拽材质文件到这里</label>
+						</div>
+						<div role="button" class="bluebtn btnfont toSelectMaterial" id="toSelectMaterial">从您的计算机中选择材质文件</div>
+					</div>
+				</div>
+			</div>
+			<div class="materialPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+				<div class="materialInfo">
+					<div class="uploadinfo">
+						<div class="infoPane materialNamePane">
+							<div class="filed infoLabel materialNameLabel">
+								<font class="requireIcon">*</font>材质名称
+							</div>
+							<div class="filed infoWidget materialWidget">
+								<input class="textwidget" type="text" name="materilName" id="materialName" value="" required="true" data-dojo-props="missingMessage:'材质名称不能为空！'" data-dojo-type="dijit/form/ValidationTextBox"></input>
+							</div>
+						</div>
+						<div class="infoPane materialCategoryPane">
+							<div class="filed infoLabel materialCategoryLabel">
+								材质分类
+							</div>
+							<div class="filed infoWidget materialWidget">
+								<div role="button" class="bluebtn btnfont materialCategory" style="-webkit-user-select: none;" id="materialCategory" >选择分类</div>
+								<!-- <input class="textwidget" type="text" name="materialCategory" id="materialCategory" value="" required="true" data-dojo-type="dijit/form/ValidationTextBox"></input> -->
+							</div>
+						</div>
+						<div class="infoPane materialKeywordsPane">
+							<div class="filed infoLabel materialKeywordsLabel">
+								&nbsp关键字
+							</div>
+							<div class="filed infoWidget materialWidget">
+								<input class="textwidget" type="text" name="materialKeywords" id="materialKeywords" value="" required="false" data-dojo-type="dijit/form/ValidationTextBox"></input>
+							</div>
+						</div>
+						<div class="infoPane materialDescribePane">
+							<div class="filed infoLabel materialDescribeLabel">
+								&nbsp描述
+							</div>
+							<div class="filed infoWidget materialWidget">
+								<textarea class="textareawidget" type="text" name="materialDescribe" id="materialDescribe" value="" rows="4" cols="35" style="width:auto;" required="false" data-dojo-type="dijit/form/SimpleTextarea"></textarea>
+							</div>
+						</div>
+					</div>
+					<div id="resultinfo" class="resultinfo">
+						
+					</div>
+				</div>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
+				<div class="buttonList">
+					<div role="button" class="bluebtn btnfont uploadMaterialBtn" style="-webkit-user-select: none;" id="upMaterialBtn" >上传材质</div>
+				</div>
+			</div>
+			<div class="uploadMaterialPane">
+				<form id="uploadMaterial" enctype="multipart/form-data">
+					<input type="file" name="maPreview" id="maPreview"></input>
+					<input type="file" name="maFile" id="maFile"></input>
+					<input type="text" name="maName" id="maName"></input>
+					<input type="text" name="maCategory" id="maCategory"></input>
+					<input type="text" name="maKeywords" id="maKeywords"></input>
+					<textarea type="text" name="maDescribe" id="maDescribe"></textarea>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

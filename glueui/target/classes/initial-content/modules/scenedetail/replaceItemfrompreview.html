@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            从效果图替换模型
+        </title>
+		<script type="text/javascript" >
+			dojoConfig = {
+				parseOnLoad: true, 
+				packages: [
+					{
+						name: "spolo",
+						location: "/script/spolo"
+					},
+					{
+						name: "widgets",
+						location: "/widgets"
+					},
+					{
+						name: "scenedetail",
+						location: "/modules/scenedetail"
+					}
+				]
+			};
+		</script>
+		
+        <script type="text/javascript" src="/libs/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/system/sling.js"></script>
+		<script type="text/javascript" src="/script/spolo.js"></script>
+        <script type="text/javascript" src="/libs/dijit/dijit.js"></script>
+		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css"  media="screen"/>
+		<link rel="stylesheet" href="css/additem.css" media="screen" />
+		<link rel="stylesheet" href="/widgets/ModelListItem/css/main.css" media="screen"/>
+		<link rel="stylesheet" href="/widgets/Category/css/main.css" media="screen"/>
+		<link rel="stylesheet" href="/widgets/Pagination/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/List/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/LibView/css/main.css" media="screen">
+		<link rel="stylesheet" href="/widgets/Toolbar/css/main.css" media="screen">
+    </head>
+    <body class="claro">
+		<div id="modelLibContent" dojoType="dijit.layout.BorderContainer" gutters=false>
+			<div id="modelLibs" dojoType="dijit.layout.ContentPane" region="center">
+				<div data-dojo-type="dijit.layout.TabContainer">
+					<div id="publicPreviewLib" data-dojo-type="dijit.layout.ContentPane" title="云端效果图" data-dojo-props="selected:true">
+						
+					</div>
+					<div id="privatePreviewLib" data-dojo-type="dijit.layout.ContentPane" title="我的效果图">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	<script type="text/javascript">
+		
+		require(
+			[
+				"dojo/parser","dojo/ready","dojo/dom","dojo/dom-style","dojo/on","dojo/json",
+				"dojo/_base/array",	"dojo/query","dijit/registry",
+				"dijit/layout/BorderContainer", "dijit/layout/ContentPane",
+				"dijit/layout/TabContainer","scenedetail/js/preview"
+				
+			],function(
+				parser, ready, dom, domStyle, on, jsonUtil,
+				arrayUtil, query, registry,BorderContainer,ContentPane,TabContainer,preview
+			){
+				//根据参数名，获取值
+				function getParameter(param){
+					var value = "";
+					var paramSearch = param+"=";
+					var paramStr = location.search;
+					var decode_paramStr = decodeURIComponent(paramStr).substring(1);
+					var paramsArr = new Array();
+					if(decode_paramStr.search(/&/)!=-1){
+						paramsArr = decode_paramStr.split("&");
+					}
+					if(paramsArr[0]){
+						arrayUtil.forEach(paramsArr,function(item,i){
+							if(item.indexOf(param+"=")!=-1){
+								value = item.substr(item.indexOf(param+"=")+paramSearch.length);
+							}
+						});
+					}else{
+						value = decode_paramStr.substr(decode_paramStr.indexOf(param+"=")+paramSearch.length);
+					}
+					return value;
+					
+				}
+				ready(function(){
+					var oldModel = getParameter("insteadNode");
+					var data = Spolo.getDialogData();
+					var scene = data["scene"];
+					var iframe = data["iframe"];
+					if(oldModel != ""){
+						oldModel = jsonUtil.parse(oldModel);
+					}
+					var json = {
+						isRadio : true,
+						isInsteadModel : true,
+						oldModel : oldModel,
+						scene:scene,
+						iframe:iframe
+					};
+					preview.initMyPreview("privatePreviewLib",json);
+					preview.initPreviewLib("publicPreviewLib",json);
+				});
+			});
+	</script>	
+    </body>
+</html>

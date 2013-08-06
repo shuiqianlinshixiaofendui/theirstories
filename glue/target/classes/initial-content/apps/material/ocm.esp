@@ -1,0 +1,4614 @@
+<%
+/**
+ *  This file is part of the spp(Superpolo Platform).
+ *  Copyright (C) by SanPolo Co.Ltd.
+ *  All rights reserved.
+ *
+ *  See http://www.spolo.org/ for more information.
+ *
+ *  SanPolo Co.Ltd
+ *  http://www.spolo.org/
+ *  Any copyright issues, please contact: copr@spolo.org
+**/
+
+response.setCharacterEncoding("UTF-8");
+
+
+//处理diffuse属性
+function process_diffuse(diffusenode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var diffuse_resourceType = diffusenode["sling:resourceType"];
+	if(diffuse_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的diffuse节点模板
+		var diffuse_str = "<NodePin>\
+						<typename>diffuse</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>diffuse</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var diffuse_instr = new Packages.org.xml.sax.InputSource();
+		diffuse_instr.setCharacterStream(new Packages.java.io.StringReader(diffuse_str));
+		
+		var diffuse_xml = builder.parse(diffuse_instr);
+		
+		//获取diffuse_xml中的NodePin节点
+		var diffuse_NodePin = diffuse_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取diffuse_xml中的Node节点
+		var diffuse_Node = diffuse_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = diffuse_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = diffusenode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取diffuse_xml中的id节点
+		var diffuse_id = diffuse_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		diffuse_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将diffuse_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(diffuse_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(diffuse_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的diffuse节点模板
+		var diffuse_str = "<NodePin>\
+						<typename>diffuse</typename>\
+						<id>2</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>diffuse</name>\
+						 <typename>floattexture</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <value>0</value>\
+						  <minvalue>0</minvalue>\
+						  <maxvalue>1</maxvalue>\
+						  <usetexturealphaui>false</usetexturealphaui>\
+						  <isloglincapable>false</isloglincapable>\
+						  <uselogscale>false</uselogscale>\
+						  <resolution>0.001</resolution>\
+						  <modified>true</modified>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+						</NodePin>";
+		var diffuse_instr = new Packages.org.xml.sax.InputSource();
+		diffuse_instr.setCharacterStream(new Packages.java.io.StringReader(diffuse_str));
+		
+		var diffuse_xml = builder.parse(diffuse_instr);
+		
+		//获取diffuse_xml中的NodePin节点
+		var diffuse_NodePin = diffuse_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取diffuse_xml中的Node节点
+		var diffuse_Node = diffuse_xml.getElementsByTagName("Node").item(0);
+		value_node = diffuse_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = diffusenode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取diffuse_xml中的id节点
+		var diffuse_id = diffuse_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		diffuse_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将diffuse_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(diffuse_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(diffuse_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的diffuse节点模板
+		var diffuse_str = "<NodePin>\
+							<typename>diffuse</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>diffuse</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var diffuse_instr = new Packages.org.xml.sax.InputSource();
+		diffuse_instr.setCharacterStream(new Packages.java.io.StringReader(diffuse_str));
+		
+		var diffuse_xml = builder.parse(diffuse_instr);
+		
+		//获取diffuse_xml中的NodePin节点
+		var diffuse_NodePin = diffuse_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取diffuse_xml中的Node节点
+		var diffuse_Node = diffuse_xml.getElementsByTagName("Node").item(0);
+		
+		//获取diffuse_xml中的inputnodepins节点
+		var diffuse_inputnodepins = diffuse_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取diffuse_xml中的linkedfilename节点
+		linkedfilename_node = diffuse_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = diffusenode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取diffuse_xml中的id节点
+		var diffuse_id = diffuse_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取diffusenode的power子节点
+		var powernode =  diffusenode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到diffuse_xml中inputnodepins子节点之下
+			var tmpnode = diffuse_xml.importNode(power_NodePin,true);
+			diffuse_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取diffusenode的gamma子节点
+		var gammanode =  diffusenode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到diffuse_xml中inputnodepins子节点之下
+			var tmpnode = diffuse_xml.importNode(gamma_NodePin,true);
+			diffuse_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取diffusenode的scale子节点
+		var scalenode =  diffusenode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到diffuse_xml中inputnodepins子节点之下
+			var tmpnode = diffuse_xml.importNode(scale_NodePin,true);
+			diffuse_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取diffusenode的invert子节点
+		var invertnode =  diffusenode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到diffuse_xml中inputnodepins子节点之下
+			var tmpnode = diffuse_xml.importNode(invert_NodePin,true);
+			diffuse_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		diffuse_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将diffuse_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(diffuse_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+}
+
+
+
+//处理bump属性
+function process_bump(bumpnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var bump_resourceType = bumpnode["sling:resourceType"];
+	if(bump_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的bump节点模板
+		var bump_str = "<NodePin>\
+						<typename>bump</typename>\
+						<id>2</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>bump</name>\
+						 <typename>floattexture</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <value>0</value>\
+						  <minvalue>0</minvalue>\
+						  <maxvalue>1</maxvalue>\
+						  <usetexturealphaui>false</usetexturealphaui>\
+						  <isloglincapable>false</isloglincapable>\
+						  <uselogscale>false</uselogscale>\
+						  <resolution>0.001</resolution>\
+						  <modified>true</modified>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+						</NodePin>";
+		var bump_instr = new Packages.org.xml.sax.InputSource();
+		bump_instr.setCharacterStream(new Packages.java.io.StringReader(bump_str));
+		
+		var bump_xml = builder.parse(bump_instr);
+		
+		//获取bump_xml中的NodePin节点
+		var bump_NodePin = bump_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取bump_xml中的Node节点
+		var bump_Node = bump_xml.getElementsByTagName("Node").item(0);
+		value_node = bump_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = bumpnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取bump_xml中的id节点
+		var bump_id = bump_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		bump_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将bump_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(bump_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(bump_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的bump节点模板
+		var bump_str = "<NodePin>\
+						<typename>bump</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>bump</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var bump_instr = new Packages.org.xml.sax.InputSource();
+		bump_instr.setCharacterStream(new Packages.java.io.StringReader(bump_str));
+		
+		var bump_xml = builder.parse(bump_instr);
+		
+		//获取bump_xml中的NodePin节点
+		var bump_NodePin = bump_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取bump_xml中的Node节点
+		var bump_Node = bump_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = bump_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = bumpnode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取bump_xml中的id节点
+		var bump_id = bump_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		bump_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将bump_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(bump_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(bump_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的bump节点模板
+		var bump_str = "<NodePin>\
+							<typename>bump</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>bump</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var bump_instr = new Packages.org.xml.sax.InputSource();
+		bump_instr.setCharacterStream(new Packages.java.io.StringReader(bump_str));
+		
+		var bump_xml = builder.parse(bump_instr);
+		
+		//获取bump_xml中的NodePin节点
+		var bump_NodePin = bump_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取bump_xml中的Node节点
+		var bump_Node = bump_xml.getElementsByTagName("Node").item(0);
+		
+		//获取bump_xml中的inputnodepins节点
+		var bump_inputnodepins = bump_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取bump_xml中的linkedfilename节点
+		linkedfilename_node = bump_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = bumpnode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取bump_xml中的id节点
+		var bump_id = bump_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取bumpnode的power子节点
+		var powernode =  bumpnode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到bump_xml中inputnodepins子节点之下
+			var tmpnode = bump_xml.importNode(power_NodePin,true);
+			bump_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取bumpnode的gamma子节点
+		var gammanode =  bumpnode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到bump_xml中inputnodepins子节点之下
+			var tmpnode = bump_xml.importNode(gamma_NodePin,true);
+			bump_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取bumpnode的scale子节点
+		var scalenode =  bumpnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到bump_xml中inputnodepins子节点之下
+			var tmpnode = bump_xml.importNode(scale_NodePin,true);
+			bump_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取bumpnode的invert子节点
+		var invertnode =  bumpnode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到bump_xml中inputnodepins子节点之下
+			var tmpnode = bump_xml.importNode(invert_NodePin,true);
+			bump_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		bump_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将bump_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(bump_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+
+//处理normal属性
+function process_normal(normalnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var normal_resourceType = normalnode["sling:resourceType"];
+	if(normal_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的normal节点模板
+		var normal_str = "<NodePin>\
+							<typename>normal</typename>\
+							<id>2</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>normal</name>\
+							 <typename>floattexture</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <parameters>\
+							  <value>0</value>\
+							  <minvalue>0</minvalue>\
+							  <maxvalue>1</maxvalue>\
+							  <usetexturealphaui>false</usetexturealphaui>\
+							  <isloglincapable>false</isloglincapable>\
+							  <uselogscale>false</uselogscale>\
+							  <resolution>0.001</resolution>\
+							  <modified>true</modified>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						 </NodePin>";
+		var normal_instr = new Packages.org.xml.sax.InputSource();
+		normal_instr.setCharacterStream(new Packages.java.io.StringReader(normal_str));
+		
+		var normal_xml = builder.parse(normal_instr);
+		
+		//获取normal_xml中的NodePin节点
+		var normal_NodePin = normal_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取normal_xml中的Node节点
+		var normal_Node = normal_xml.getElementsByTagName("Node").item(0);
+		value_node = normal_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = normalnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取normal_xml中的id节点
+		var normal_id = normal_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		normal_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将normal_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(normal_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(normal_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的normal节点模板
+		var normal_str = "<NodePin>\
+						<typename>normal</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>normal</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var normal_instr = new Packages.org.xml.sax.InputSource();
+		normal_instr.setCharacterStream(new Packages.java.io.StringReader(normal_str));
+		
+		var normal_xml = builder.parse(normal_instr);
+		
+		//获取normal_xml中的NodePin节点
+		var normal_NodePin = normal_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取normal_xml中的Node节点
+		var normal_Node = normal_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = normal_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = normalnode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取normal_xml中的id节点
+		var normal_id = normal_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		normal_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将normal_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(normal_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	
+	if(normal_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的normal节点模板
+		var normal_str = "<NodePin>\
+							<typename>normal</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>normal</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var normal_instr = new Packages.org.xml.sax.InputSource();
+		normal_instr.setCharacterStream(new Packages.java.io.StringReader(normal_str));
+		
+		var normal_xml = builder.parse(normal_instr);
+		
+		//获取normal_xml中的NodePin节点
+		var normal_NodePin = normal_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取normal_xml中的Node节点
+		var normal_Node = normal_xml.getElementsByTagName("Node").item(0);
+		
+		//获取normal_xml中的inputnodepins节点
+		var normal_inputnodepins = normal_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取normal_xml中的linkedfilename节点
+		linkedfilename_node = normal_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = normalnode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取normal_xml中的id节点
+		var normal_id = normal_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取normalnode的power子节点
+		var powernode =  normalnode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到normal_xml中inputnodepins子节点之下
+			var tmpnode = normal_xml.importNode(power_NodePin,true);
+			normal_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取normalnode的gamma子节点
+		var gammanode =  normalnode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到normal_xml中inputnodepins子节点之下
+			var tmpnode = normal_xml.importNode(gamma_NodePin,true);
+			normal_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取normalnode的scale子节点
+		var scalenode =  normalnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到normal_xml中inputnodepins子节点之下
+			var tmpnode = normal_xml.importNode(scale_NodePin,true);
+			normal_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取normalnode的invert子节点
+		var invertnode =  normalnode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到normal_xml中inputnodepins子节点之下
+			var tmpnode = normal_xml.importNode(invert_NodePin,true);
+			normal_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		normal_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将normal_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(normal_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+
+//处理opacity属性
+function process_opacity(opacitynode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var opacity_resourceType = opacitynode["sling:resourceType"];
+	if(opacity_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的opacity节点模板
+		var opacity_str = "<NodePin>\
+							<typename>opacity</typename>\
+							<id>2</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>opacity</name>\
+							 <typename>floattexture</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <parameters>\
+							  <value>0</value>\
+							  <minvalue>0</minvalue>\
+							  <maxvalue>1</maxvalue>\
+							  <usetexturealphaui>false</usetexturealphaui>\
+							  <isloglincapable>false</isloglincapable>\
+							  <uselogscale>false</uselogscale>\
+							  <resolution>0.001</resolution>\
+							  <modified>true</modified>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						  </NodePin>";
+		var opacity_instr = new Packages.org.xml.sax.InputSource();
+		opacity_instr.setCharacterStream(new Packages.java.io.StringReader(opacity_str));
+		
+		var opacity_xml = builder.parse(opacity_instr);
+		
+		//获取opacity_xml中的NodePin节点
+		var opacity_NodePin = opacity_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取opacity_xml中的Node节点
+		var opacity_Node = opacity_xml.getElementsByTagName("Node").item(0);
+		value_node = opacity_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = opacitynode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取opacity_xml中的id节点
+		var opacity_id = opacity_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		opacity_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将opacity_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(opacity_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(opacity_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的opacity节点模板
+		var opacity_str = "<NodePin>\
+						<typename>opacity</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>opacity</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var opacity_instr = new Packages.org.xml.sax.InputSource();
+		opacity_instr.setCharacterStream(new Packages.java.io.StringReader(opacity_str));
+		
+		var opacity_xml = builder.parse(opacity_instr);
+		
+		//获取opacity_xml中的NodePin节点
+		var opacity_NodePin = opacity_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取opacity_xml中的Node节点
+		var opacity_Node = opacity_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = opacity_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = opacitynode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取opacity_xml中的id节点
+		var opacity_id = opacity_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		opacity_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将opacity_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(opacity_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+
+	
+	if(opacity_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的opacity节点模板
+		var opacity_str = "<NodePin>\
+							<typename>opacity</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>opacity</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var opacity_instr = new Packages.org.xml.sax.InputSource();
+		opacity_instr.setCharacterStream(new Packages.java.io.StringReader(opacity_str));
+		
+		var opacity_xml = builder.parse(opacity_instr);
+		
+		//获取opacity_xml中的NodePin节点
+		var opacity_NodePin = opacity_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取opacity_xml中的Node节点
+		var opacity_Node = opacity_xml.getElementsByTagName("Node").item(0);
+		
+		//获取opacity_xml中的inputnodepins节点
+		var opacity_inputnodepins = opacity_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取opacity_xml中的linkedfilename节点
+		linkedfilename_node = opacity_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = opacitynode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取opacity_xml中的id节点
+		var opacity_id = opacity_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取opacitynode的power子节点
+		var powernode =  opacitynode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到opacity_xml中inputnodepins子节点之下
+			var tmpnode = opacity_xml.importNode(power_NodePin,true);
+			opacity_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取opacitynode的gamma子节点
+		var gammanode =  opacitynode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到opacity_xml中inputnodepins子节点之下
+			var tmpnode = opacity_xml.importNode(gamma_NodePin,true);
+			opacity_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取opacitynode的scale子节点
+		var scalenode =  opacitynode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到opacity_xml中inputnodepins子节点之下
+			var tmpnode = opacity_xml.importNode(scale_NodePin,true);
+			opacity_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取opacitynode的invert子节点
+		var invertnode =  opacitynode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到opacity_xml中inputnodepins子节点之下
+			var tmpnode = opacity_xml.importNode(invert_NodePin,true);
+			opacity_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		opacity_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将opacity_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(opacity_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+//处理smooth属性
+function process_smooth(smoothnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var smooth_resourceType = smoothnode["sling:resourceType"];
+	if(smooth_resourceType == "bool")
+	{
+		//创建bool类型属性的smooth节点模板
+		var smooth_str =   "<NodePin>\
+							<typename>smooth</typename>\
+							<id>5</id>\
+							<pintype>20003</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>smooth</name>\
+							 <typename>bool</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <parameters>\
+							  <value>true</value>\
+							  <modified>true</modified>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var smooth_instr = new Packages.org.xml.sax.InputSource();
+		smooth_instr.setCharacterStream(new Packages.java.io.StringReader(smooth_str));
+		
+		var smooth_xml = builder.parse(smooth_instr);
+		
+		//获取smooth_xml中的NodePin节点
+		var smooth_NodePin = smooth_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取smooth_xml中的Node节点
+		var smooth_Node = smooth_xml.getElementsByTagName("Node").item(0);
+		value_node = smooth_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = smoothnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取smooth_xml中的id节点
+		var smooth_id = smooth_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		smooth_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将smooth_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(smooth_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+//处理emission属性
+function process_emission(emissionnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var emission_resourceType = emissionnode["sling:resourceType"];
+	if(emission_resourceType == "null emission")
+	{
+		//创建floattexture类型属性的emission节点模板
+		var emission_str = "<NodePin>\
+							<typename>emission</typename>\
+							<id>6</id>\
+							<pintype>20006</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>emission</name>\
+							 <typename>null emission</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var emission_instr = new Packages.org.xml.sax.InputSource();
+		emission_instr.setCharacterStream(new Packages.java.io.StringReader(emission_str));
+		
+		var emission_xml = builder.parse(emission_instr);
+		
+		//获取emission_xml中的NodePin节点
+		var emission_NodePin = emission_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取emission_xml中的id节点
+		var emission_id = emission_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		emission_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将emission_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(emission_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+//处理medium属性
+function process_medium(mediumnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var medium_resourceType = mediumnode["sling:resourceType"];
+	if(medium_resourceType == "absorption")
+	{
+		//创建absorption类型属性的medium节点模板
+		var medium_str =  "<NodePin>\
+							<typename>medium</typename>\
+							<id>7</id>\
+							<pintype>20012</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>medium</name>\
+							 <typename>absorption</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var medium_instr = new Packages.org.xml.sax.InputSource();
+		medium_instr.setCharacterStream(new Packages.java.io.StringReader(medium_str));
+		
+		var medium_xml = builder.parse(medium_instr);
+		
+		//获取medium_xml中的NodePin节点
+		var medium_NodePin = medium_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取medium_xml中的Node节点
+		var medium_Node = medium_xml.getElementsByTagName("Node").item(0);
+		
+		//获取medium_xml中的id节点
+		var medium_id = medium_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//设置id
+		medium_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//获取medium的inputnodepins子节点
+		var medium_inputnodepins = medium_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取mediumnode的priority子节点
+		var prioritynode =  mediumnode["priority"];
+		var priority_resourceType = prioritynode["sling:resourceType"];
+		if(priority_resourceType == "int")
+		{
+			//创建absorption类型属性的priority节点模板
+			var priority_str =   "<NodePin>\
+								   <typename>priority</typename>\
+								   <id>0</id>\
+								   <pintype>20002</pintype>\
+								   <hasinternalnode>true</hasinternalnode>\
+								   <Node>\
+									<name>priority</name>\
+									<typename>int</typename>\
+									<id>1</id>\
+									<position>0 0</position>\
+									<parameters>\
+									 <value>10</value>\
+									 <minvalue>0</minvalue>\
+									 <maxvalue>100</maxvalue>\
+									 <isloglincapable>false</isloglincapable>\
+									 <uselogscale>false</uselogscale>\
+									 <modified>true</modified>\
+									</parameters>\
+									<inputnodepins>\
+									</inputnodepins>\
+								   </Node>\
+								  </NodePin>";
+			var priority_instr = new Packages.org.xml.sax.InputSource();
+			priority_instr.setCharacterStream(new Packages.java.io.StringReader(priority_str));
+			
+			var priority_xml = builder.parse(priority_instr);
+			
+			
+			//获取priority_xml中的NodePin节点
+			var priority_NodePin = priority_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取priority_xml中的Node节点
+			var priority_Node = priority_xml.getElementsByTagName("Node").item(0);
+			value_node = priority_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = prioritynode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将priority_xml添加到medium_xml中inputnodepins子节点之下
+			var tmpnode = medium_xml.importNode(priority_NodePin,true);
+			medium_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//获取mediumnode的absorption子节点
+		var absorptionnode =  mediumnode["absorption"];
+		var absorption_resourceType = absorptionnode["sling:resourceType"];
+		if(absorption_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的absorption节点模板
+		    var absorption_str = "<NodePin>\
+								   <typename>absorption</typename>\
+								   <id>1</id>\
+								   <pintype>20000</pintype>\
+								   <hasinternalnode>true</hasinternalnode>\
+								   <Node>\
+									<name>absorption</name>\
+									<typename>floattexture</typename>\
+									<id>1</id>\
+									<position>0 0</position>\
+									<parameters>\
+									 <value>0</value>\
+									 <minvalue>0</minvalue>\
+									 <maxvalue>1</maxvalue>\
+									 <usetexturealphaui>false</usetexturealphaui>\
+									 <isloglincapable>false</isloglincapable>\
+									 <uselogscale>false</uselogscale>\
+									 <resolution>0.001</resolution>\
+									 <modified>true</modified>\
+									</parameters>\
+									<inputnodepins>\
+									</inputnodepins>\
+								   </Node>\
+								  </NodePin>";
+			var absorption_instr = new Packages.org.xml.sax.InputSource();
+			absorption_instr.setCharacterStream(new Packages.java.io.StringReader(absorption_str));
+			
+			var absorption_xml = builder.parse(absorption_instr);
+			
+			
+			//获取absorption_xml中的NodePin节点
+			var absorption_NodePin = absorption_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取absorption_xml中的Node节点
+			var absorption_Node = absorption_xml.getElementsByTagName("Node").item(0);
+			value_node = absorption_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = absorptionnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将absorption_xml添加到medium_xml中inputnodepins子节点之下
+			var tmpnode = medium_xml.importNode(absorption_NodePin,true);
+			medium_inputnodepins.appendChild(tmpnode);
+		}
+		
+		//获取mediumnode的scale子节点
+		var scalenode =  mediumnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>100</value>\
+								 <minvalue>0.01</minvalue>\
+								 <maxvalue>10000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到medium_xml中inputnodepins子节点之下
+			var tmpnode = medium_xml.importNode(scale_NodePin,true);
+			medium_inputnodepins.appendChild(tmpnode);
+		}
+		
+		//获取mediumnode的ray_step子节点
+		var ray_stepnode =  mediumnode["ray_step"];
+		var ray_step_resourceType = ray_stepnode["sling:resourceType"];
+		if(ray_step_resourceType == "float")
+		{
+			//创建absorption类型属性的ray_step节点模板
+			var ray_step_str =   "<NodePin>\
+							   <typename>ray_step</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>ray_step</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>100</value>\
+								 <minvalue>0.01</minvalue>\
+								 <maxvalue>10000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogray_step>true</uselogray_step>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+			var ray_step_instr = new Packages.org.xml.sax.InputSource();
+			ray_step_instr.setCharacterStream(new Packages.java.io.StringReader(ray_step_str));
+			
+			var ray_step_xml = builder.parse(ray_step_instr);
+			
+			
+			//获取ray_step_xml中的NodePin节点
+			var ray_step_NodePin = ray_step_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取ray_step_xml中的Node节点
+			var ray_step_Node = ray_step_xml.getElementsByTagName("Node").item(0);
+			value_node = ray_step_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = ray_stepnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将ray_step_xml添加到medium_xml中inputnodepins子节点之下
+			var tmpnode = medium_xml.importNode(ray_step_NodePin,true);
+			medium_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		
+		
+		
+		//将medium_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(medium_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+//处理specular属性
+function process_specular(specularnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var specular_resourceType = specularnode["sling:resourceType"];
+	
+	if(specular_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的specular节点模板
+		var specular_str = "<NodePin>\
+						<typename>specular</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>specular</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var specular_instr = new Packages.org.xml.sax.InputSource();
+		specular_instr.setCharacterStream(new Packages.java.io.StringReader(specular_str));
+		
+		var specular_xml = builder.parse(specular_instr);
+		
+		//获取specular_xml中的NodePin节点
+		var specular_NodePin = specular_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取specular_xml中的Node节点
+		var specular_Node = specular_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = specular_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = specularnode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取specular_xml中的id节点
+		var specular_id = specular_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		specular_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将specular_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(specular_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	
+	if(specular_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的specular节点模板
+		var specular_str = "<NodePin>\
+						<typename>specular</typename>\
+						<id>2</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>specular</name>\
+						 <typename>floattexture</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <value>0</value>\
+						  <minvalue>0</minvalue>\
+						  <maxvalue>1</maxvalue>\
+						  <usetexturealphaui>false</usetexturealphaui>\
+						  <isloglincapable>false</isloglincapable>\
+						  <uselogscale>false</uselogscale>\
+						  <resolution>0.001</resolution>\
+						  <modified>true</modified>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+						</NodePin>";
+		var specular_instr = new Packages.org.xml.sax.InputSource();
+		specular_instr.setCharacterStream(new Packages.java.io.StringReader(specular_str));
+		
+		var specular_xml = builder.parse(specular_instr);
+		
+		//获取specular_xml中的NodePin节点
+		var specular_NodePin = specular_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取specular_xml中的Node节点
+		var specular_Node = specular_xml.getElementsByTagName("Node").item(0);
+		value_node = specular_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = specularnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取specular_xml中的id节点
+		var specular_id = specular_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		specular_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将specular_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(specular_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(specular_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的specular节点模板
+		var specular_str = "<NodePin>\
+							<typename>specular</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>specular</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var specular_instr = new Packages.org.xml.sax.InputSource();
+		specular_instr.setCharacterStream(new Packages.java.io.StringReader(specular_str));
+		
+		var specular_xml = builder.parse(specular_instr);
+		
+		//获取specular_xml中的NodePin节点
+		var specular_NodePin = specular_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取specular_xml中的Node节点
+		var specular_Node = specular_xml.getElementsByTagName("Node").item(0);
+		
+		//获取specular_xml中的inputnodepins节点
+		var specular_inputnodepins = specular_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取specular_xml中的linkedfilename节点
+		linkedfilename_node = specular_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = specularnode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取specular_xml中的id节点
+		var specular_id = specular_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取specularnode的power子节点
+		var powernode =  specularnode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到specular_xml中inputnodepins子节点之下
+			var tmpnode = specular_xml.importNode(power_NodePin,true);
+			specular_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取specularnode的gamma子节点
+		var gammanode =  specularnode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到specular_xml中inputnodepins子节点之下
+			var tmpnode = specular_xml.importNode(gamma_NodePin,true);
+			specular_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取specularnode的scale子节点
+		var scalenode =  specularnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到specular_xml中inputnodepins子节点之下
+			var tmpnode = specular_xml.importNode(scale_NodePin,true);
+			specular_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取specularnode的invert子节点
+		var invertnode =  specularnode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到specular_xml中inputnodepins子节点之下
+			var tmpnode = specular_xml.importNode(invert_NodePin,true);
+			specular_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		specular_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将specular_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(specular_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+//处理roughness属性
+function process_roughness(roughnessnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var roughness_resourceType = roughnessnode["sling:resourceType"];
+	
+	if(roughness_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的roughness节点模板
+		var roughness_str = "<NodePin>\
+						<typename>roughness</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>roughness</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var roughness_instr = new Packages.org.xml.sax.InputSource();
+		roughness_instr.setCharacterStream(new Packages.java.io.StringReader(roughness_str));
+		
+		var roughness_xml = builder.parse(roughness_instr);
+		
+		//获取roughness_xml中的NodePin节点
+		var roughness_NodePin = roughness_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取roughness_xml中的Node节点
+		var roughness_Node = roughness_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = roughness_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = roughnessnode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取roughness_xml中的id节点
+		var roughness_id = roughness_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		roughness_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将roughness_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(roughness_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	
+	if(roughness_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的roughness节点模板
+		var roughness_str = "<NodePin>\
+							<typename>roughness</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>roughness</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var roughness_instr = new Packages.org.xml.sax.InputSource();
+		roughness_instr.setCharacterStream(new Packages.java.io.StringReader(roughness_str));
+		
+		var roughness_xml = builder.parse(roughness_instr);
+		
+		//获取roughness_xml中的NodePin节点
+		var roughness_NodePin = roughness_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取roughness_xml中的Node节点
+		var roughness_Node = roughness_xml.getElementsByTagName("Node").item(0);
+		
+		//获取roughness_xml中的inputnodepins节点
+		var roughness_inputnodepins = roughness_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取roughness_xml中的linkedfilename节点
+		linkedfilename_node = roughness_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = roughnessnode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取roughness_xml中的id节点
+		var roughness_id = roughness_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取roughnessnode的power子节点
+		var powernode =  roughnessnode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到roughness_xml中inputnodepins子节点之下
+			var tmpnode = roughness_xml.importNode(power_NodePin,true);
+			roughness_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取roughnessnode的gamma子节点
+		var gammanode =  roughnessnode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到roughness_xml中inputnodepins子节点之下
+			var tmpnode = roughness_xml.importNode(gamma_NodePin,true);
+			roughness_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取roughnessnode的scale子节点
+		var scalenode =  roughnessnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到roughness_xml中inputnodepins子节点之下
+			var tmpnode = roughness_xml.importNode(scale_NodePin,true);
+			roughness_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取roughnessnode的invert子节点
+		var invertnode =  roughnessnode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到roughness_xml中inputnodepins子节点之下
+			var tmpnode = roughness_xml.importNode(invert_NodePin,true);
+			roughness_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		roughness_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将roughness_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(roughness_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(roughness_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的roughness节点模板
+		var roughness_str = "<NodePin>\
+						<typename>roughness</typename>\
+						<id>2</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>roughness</name>\
+						 <typename>floattexture</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <value>0</value>\
+						  <minvalue>0</minvalue>\
+						  <maxvalue>1</maxvalue>\
+						  <usetexturealphaui>false</usetexturealphaui>\
+						  <isloglincapable>false</isloglincapable>\
+						  <uselogscale>false</uselogscale>\
+						  <resolution>0.001</resolution>\
+						  <modified>true</modified>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+						</NodePin>";
+		var roughness_instr = new Packages.org.xml.sax.InputSource();
+		roughness_instr.setCharacterStream(new Packages.java.io.StringReader(roughness_str));
+		
+		var roughness_xml = builder.parse(roughness_instr);
+		
+		//获取roughness_xml中的NodePin节点
+		var roughness_NodePin = roughness_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取roughness_xml中的Node节点
+		var roughness_Node = roughness_xml.getElementsByTagName("Node").item(0);
+		value_node = roughness_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = roughnessnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取roughness_xml中的id节点
+		var roughness_id = roughness_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		roughness_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将roughness_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(roughness_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+//处理filmwidth属性
+function process_filmwidth(filmwidthnode, ocmxml, ocm_inputnodepins, id)	
+{
+	//获取属性类型
+	var filmwidth_resourceType = filmwidthnode["sling:resourceType"];
+	
+	if(filmwidth_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的filmwidth节点模板
+		var filmwidth_str = "<NodePin>\
+						<typename>filmwidth</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>filmwidth</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var filmwidth_instr = new Packages.org.xml.sax.InputSource();
+		filmwidth_instr.setCharacterStream(new Packages.java.io.StringReader(filmwidth_str));
+		
+		var filmwidth_xml = builder.parse(filmwidth_instr);
+		
+		//获取filmwidth_xml中的NodePin节点
+		var filmwidth_NodePin = filmwidth_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取filmwidth_xml中的Node节点
+		var filmwidth_Node = filmwidth_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = filmwidth_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = filmwidthnode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取filmwidth_xml中的id节点
+		var filmwidth_id = filmwidth_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		filmwidth_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将filmwidth_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(filmwidth_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	
+	if(filmwidth_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的filmwidth节点模板
+		var filmwidth_str = "<NodePin>\
+							<typename>filmwidth</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>filmwidth</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var filmwidth_instr = new Packages.org.xml.sax.InputSource();
+		filmwidth_instr.setCharacterStream(new Packages.java.io.StringReader(filmwidth_str));
+		
+		var filmwidth_xml = builder.parse(filmwidth_instr);
+		
+		//获取filmwidth_xml中的NodePin节点
+		var filmwidth_NodePin = filmwidth_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取filmwidth_xml中的Node节点
+		var filmwidth_Node = filmwidth_xml.getElementsByTagName("Node").item(0);
+		
+		//获取filmwidth_xml中的inputnodepins节点
+		var filmwidth_inputnodepins = filmwidth_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取filmwidth_xml中的linkedfilename节点
+		linkedfilename_node = filmwidth_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = filmwidthnode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取filmwidth_xml中的id节点
+		var filmwidth_id = filmwidth_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取filmwidthnode的power子节点
+		var powernode =  filmwidthnode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到filmwidth_xml中inputnodepins子节点之下
+			var tmpnode = filmwidth_xml.importNode(power_NodePin,true);
+			filmwidth_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取filmwidthnode的gamma子节点
+		var gammanode =  filmwidthnode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到filmwidth_xml中inputnodepins子节点之下
+			var tmpnode = filmwidth_xml.importNode(gamma_NodePin,true);
+			filmwidth_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取filmwidthnode的scale子节点
+		var scalenode =  filmwidthnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到filmwidth_xml中inputnodepins子节点之下
+			var tmpnode = filmwidth_xml.importNode(scale_NodePin,true);
+			filmwidth_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取filmwidthnode的invert子节点
+		var invertnode =  filmwidthnode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到filmwidth_xml中inputnodepins子节点之下
+			var tmpnode = filmwidth_xml.importNode(invert_NodePin,true);
+			filmwidth_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		filmwidth_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将filmwidth_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(filmwidth_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(filmwidth_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的filmwidth节点模板
+		var filmwidth_str = "<NodePin>\
+						<typename>filmwidth</typename>\
+						<id>2</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>filmwidth</name>\
+						 <typename>floattexture</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <value>0</value>\
+						  <minvalue>0</minvalue>\
+						  <maxvalue>1</maxvalue>\
+						  <usetexturealphaui>false</usetexturealphaui>\
+						  <isloglincapable>false</isloglincapable>\
+						  <uselogscale>false</uselogscale>\
+						  <resolution>0.001</resolution>\
+						  <modified>true</modified>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+						</NodePin>";
+		var filmwidth_instr = new Packages.org.xml.sax.InputSource();
+		filmwidth_instr.setCharacterStream(new Packages.java.io.StringReader(filmwidth_str));
+		
+		var filmwidth_xml = builder.parse(filmwidth_instr);
+		
+		//获取filmwidth_xml中的NodePin节点
+		var filmwidth_NodePin = filmwidth_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取filmwidth_xml中的Node节点
+		var filmwidth_Node = filmwidth_xml.getElementsByTagName("Node").item(0);
+		value_node = filmwidth_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = filmwidthnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取filmwidth_xml中的id节点
+		var filmwidth_id = filmwidth_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		filmwidth_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将filmwidth_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(filmwidth_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}	
+	
+//处理filmindex属性
+function process_filmindex(filmindexnode, ocmxml, ocm_inputnodepins, id)		
+{
+	//获取属性类型
+	var filmindex_resourceType = filmindexnode["sling:resourceType"];
+	if(filmindex_resourceType == "float")
+	{
+		//创建floattexture类型属性的filmindex节点模板
+		var filmindex_str = "<NodePin>\
+								<typename>filmindex</typename>\
+								<id>4</id>\
+								<pintype>20001</pintype>\
+								<hasinternalnode>true</hasinternalnode>\
+								<Node>\
+								 <name>filmindex</name>\
+								 <typename>float</typename>\
+								 <id>1</id>\
+								 <position>0 0</position>\
+								 <parameters>\
+								  <value>1.45</value>\
+								  <minvalue>1</minvalue>\
+								  <maxvalue>8</maxvalue>\
+								  <usetextureui>false</usetextureui>\
+								  <usetexturealphaui>false</usetexturealphaui>\
+								  <isloglincapable>true</isloglincapable>\
+								  <uselogscale>true</uselogscale>\
+								  <modified>true</modified>\
+								 </parameters>\
+								 <inputnodepins>\
+								 </inputnodepins>\
+								</Node>\
+							</NodePin>";
+		var filmindex_instr = new Packages.org.xml.sax.InputSource();
+		filmindex_instr.setCharacterStream(new Packages.java.io.StringReader(filmindex_str));
+		
+		var filmindex_xml = builder.parse(filmindex_instr);
+		
+		//获取filmindex_xml中的NodePin节点
+		var filmindex_NodePin = filmindex_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取filmindex_xml中的Node节点
+		var filmindex_Node = filmindex_xml.getElementsByTagName("Node").item(0);
+		value_node = filmindex_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = filmindexnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取filmindex_xml中的id节点
+		var filmindex_id = filmindex_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		filmindex_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将filmindex_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(filmindex_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}	
+	
+//处理index属性
+function process_index(indexnode, ocmxml, ocm_inputnodepins, id)	
+{
+	//获取属性类型
+	var index_resourceType = indexnode["sling:resourceType"];
+	if(index_resourceType == "float")
+	{
+		//创建floattexture类型属性的index节点模板
+		var index_str = "<NodePin>\
+								<typename>index</typename>\
+								<id>4</id>\
+								<pintype>20001</pintype>\
+								<hasinternalnode>true</hasinternalnode>\
+								<Node>\
+								 <name>index</name>\
+								 <typename>float</typename>\
+								 <id>1</id>\
+								 <position>0 0</position>\
+								 <parameters>\
+								  <value>1.45</value>\
+								  <minvalue>0</minvalue>\
+								  <maxvalue>8</maxvalue>\
+								  <usetextureui>false</usetextureui>\
+								  <usetexturealphaui>false</usetexturealphaui>\
+								  <isloglincapable>true</isloglincapable>\
+								  <uselogscale>true</uselogscale>\
+								  <modified>true</modified>\
+								 </parameters>\
+								 <inputnodepins>\
+								 </inputnodepins>\
+								</Node>\
+							</NodePin>";
+		var index_instr = new Packages.org.xml.sax.InputSource();
+		index_instr.setCharacterStream(new Packages.java.io.StringReader(index_str));
+		
+		var index_xml = builder.parse(index_instr);
+		
+		//获取index_xml中的NodePin节点
+		var index_NodePin = index_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取index_xml中的Node节点
+		var index_Node = index_xml.getElementsByTagName("Node").item(0);
+		value_node = index_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = indexnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取index_xml中的id节点
+		var index_id = index_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		index_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将index_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(index_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}	
+	
+
+
+//处理reflection属性
+function process_reflection(reflectionnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var reflection_resourceType = reflectionnode["sling:resourceType"];
+	
+	if(reflection_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的reflection节点模板
+		var reflection_str = "<NodePin>\
+							<typename>reflection</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>reflection</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var reflection_instr = new Packages.org.xml.sax.InputSource();
+		reflection_instr.setCharacterStream(new Packages.java.io.StringReader(reflection_str));
+		
+		var reflection_xml = builder.parse(reflection_instr);
+		
+		//获取reflection_xml中的NodePin节点
+		var reflection_NodePin = reflection_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取reflection_xml中的Node节点
+		var reflection_Node = reflection_xml.getElementsByTagName("Node").item(0);
+		
+		//获取reflection_xml中的inputnodepins节点
+		var reflection_inputnodepins = reflection_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取reflection_xml中的linkedfilename节点
+		linkedfilename_node = reflection_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = reflectionnode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取reflection_xml中的id节点
+		var reflection_id = reflection_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取reflectionnode的power子节点
+		var powernode =  reflectionnode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到reflection_xml中inputnodepins子节点之下
+			var tmpnode = reflection_xml.importNode(power_NodePin,true);
+			reflection_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取reflectionnode的gamma子节点
+		var gammanode =  reflectionnode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到reflection_xml中inputnodepins子节点之下
+			var tmpnode = reflection_xml.importNode(gamma_NodePin,true);
+			reflection_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取reflectionnode的scale子节点
+		var scalenode =  reflectionnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到reflection_xml中inputnodepins子节点之下
+			var tmpnode = reflection_xml.importNode(scale_NodePin,true);
+			reflection_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取reflectionnode的invert子节点
+		var invertnode =  reflectionnode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到reflection_xml中inputnodepins子节点之下
+			var tmpnode = reflection_xml.importNode(invert_NodePin,true);
+			reflection_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		reflection_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将reflection_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(reflection_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(reflection_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的reflection节点模板
+		var reflection_str = "<NodePin>\
+						<typename>reflection</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>reflection</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var reflection_instr = new Packages.org.xml.sax.InputSource();
+		reflection_instr.setCharacterStream(new Packages.java.io.StringReader(reflection_str));
+		
+		var reflection_xml = builder.parse(reflection_instr);
+		
+		//获取reflection_xml中的NodePin节点
+		var reflection_NodePin = reflection_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取reflection_xml中的Node节点
+		var reflection_Node = reflection_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = reflection_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = reflectionnode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取reflection_xml中的id节点
+		var reflection_id = reflection_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		reflection_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将reflection_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(reflection_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(reflection_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的reflection节点模板
+		var reflection_str = "<NodePin>\
+						<typename>reflection</typename>\
+						<id>2</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>reflection</name>\
+						 <typename>floattexture</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <value>0</value>\
+						  <minvalue>0</minvalue>\
+						  <maxvalue>1</maxvalue>\
+						  <usetexturealphaui>false</usetexturealphaui>\
+						  <isloglincapable>false</isloglincapable>\
+						  <uselogscale>false</uselogscale>\
+						  <resolution>0.001</resolution>\
+						  <modified>true</modified>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+						</NodePin>";
+		var reflection_instr = new Packages.org.xml.sax.InputSource();
+		reflection_instr.setCharacterStream(new Packages.java.io.StringReader(reflection_str));
+		
+		var reflection_xml = builder.parse(reflection_instr);
+		
+		//获取reflection_xml中的NodePin节点
+		var reflection_NodePin = reflection_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取reflection_xml中的Node节点
+		var reflection_Node = reflection_xml.getElementsByTagName("Node").item(0);
+		value_node = reflection_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = reflectionnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取reflection_xml中的id节点
+		var reflection_id = reflection_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		reflection_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将reflection_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(reflection_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+	
+//处理transmission属性
+function process_transmission(transmissionnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var transmission_resourceType = transmissionnode["sling:resourceType"];
+	
+	
+	if(transmission_resourceType == "image")
+	{
+		//创建RGBspectrum类型属性的transmission节点模板
+		var transmission_str = "<NodePin>\
+							<typename>transmission</typename>\
+							<id>0</id>\
+							<pintype>20000</pintype>\
+							<hasinternalnode>true</hasinternalnode>\
+							<Node>\
+							 <name>transmission</name>\
+							 <typename>image</typename>\
+							 <id>1</id>\
+							 <position>0 0</position>\
+							 <linkedfilename>ocs:1.jpg.png</linkedfilename>\
+							 <parameters>\
+							 </parameters>\
+							 <inputnodepins>\
+							 </inputnodepins>\
+							</Node>\
+						   </NodePin>";
+		var transmission_instr = new Packages.org.xml.sax.InputSource();
+		transmission_instr.setCharacterStream(new Packages.java.io.StringReader(transmission_str));
+		
+		var transmission_xml = builder.parse(transmission_instr);
+		
+		//获取transmission_xml中的NodePin节点
+		var transmission_NodePin = transmission_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取transmission_xml中的Node节点
+		var transmission_Node = transmission_xml.getElementsByTagName("Node").item(0);
+		
+		//获取transmission_xml中的inputnodepins节点
+		var transmission_inputnodepins = transmission_Node.getElementsByTagName("inputnodepins").item(0);
+		
+		//获取transmission_xml中的linkedfilename节点
+		linkedfilename_node = transmission_Node.getElementsByTagName("linkedfilename").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var linkedfilename = transmissionnode["linkedfilename"];
+		
+		//设置rgbvalue属性
+		linkedfilename_node.getChildNodes().item(0).setNodeValue(linkedfilename);
+		
+		
+		//获取transmission_xml中的id节点
+		var transmission_id = transmission_NodePin.getElementsByTagName("id").item(0);
+		
+		
+		//处理power属性
+		//获取transmissionnode的power子节点
+		var powernode =  transmissionnode["power"];
+		var power_resourceType = powernode["sling:resourceType"];
+		if(power_resourceType == "floattexture")
+		{
+			//创建absorption类型属性的power节点模板
+			var power_str =   "<NodePin>\
+							   <typename>power</typename>\
+							   <id>0</id>\
+							   <pintype>20000</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>power</name>\
+								<typename>floattexture</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>0.9</value>\
+								 <minvalue>0</minvalue>\
+								 <maxvalue>1</maxvalue>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>false</isloglincapable>\
+								 <uselogscale>false</uselogscale>\
+								 <resolution>0.001</resolution>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var power_instr = new Packages.org.xml.sax.InputSource();
+			power_instr.setCharacterStream(new Packages.java.io.StringReader(power_str));
+			
+			var power_xml = builder.parse(power_instr);
+			
+			
+			//获取power_xml中的NodePin节点
+			var power_NodePin = power_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取power_xml中的Node节点
+			var power_Node = power_xml.getElementsByTagName("Node").item(0);
+			value_node = power_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = powernode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将power_xml添加到transmission_xml中inputnodepins子节点之下
+			var tmpnode = transmission_xml.importNode(power_NodePin,true);
+			transmission_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理gamma属性
+		//获取transmissionnode的gamma子节点
+		var gammanode =  transmissionnode["gamma"];
+		var gamma_resourceType = gammanode["sling:resourceType"];
+		if(gamma_resourceType == "float")
+		{
+			//创建absorption类型属性的gamma节点模板
+			var gamma_str =   "<NodePin>\
+							   <typename>gamma</typename>\
+							   <id>1</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>gamma</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>2.2</value>\
+								 <minvalue>0.1</minvalue>\
+								 <maxvalue>8</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var gamma_instr = new Packages.org.xml.sax.InputSource();
+			gamma_instr.setCharacterStream(new Packages.java.io.StringReader(gamma_str));
+			
+			var gamma_xml = builder.parse(gamma_instr);
+			
+			
+			//获取gamma_xml中的NodePin节点
+			var gamma_NodePin = gamma_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取gamma_xml中的Node节点
+			var gamma_Node = gamma_xml.getElementsByTagName("Node").item(0);
+			value_node = gamma_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = gammanode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将gamma_xml添加到transmission_xml中inputnodepins子节点之下
+			var tmpnode = transmission_xml.importNode(gamma_NodePin,true);
+			transmission_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理scale属性
+		//获取transmissionnode的scale子节点
+		var scalenode =  transmissionnode["scale"];
+		var scale_resourceType = scalenode["sling:resourceType"];
+		if(scale_resourceType == "float")
+		{
+			//创建absorption类型属性的scale节点模板
+			var scale_str =   "<NodePin>\
+							   <typename>scale</typename>\
+							   <id>2</id>\
+							   <pintype>20001</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>scale</name>\
+								<typename>float</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>1</value>\
+								 <minvalue>0.001</minvalue>\
+								 <maxvalue>1000</maxvalue>\
+								 <usetextureui>false</usetextureui>\
+								 <usetexturealphaui>false</usetexturealphaui>\
+								 <isloglincapable>true</isloglincapable>\
+								 <uselogscale>true</uselogscale>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var scale_instr = new Packages.org.xml.sax.InputSource();
+			scale_instr.setCharacterStream(new Packages.java.io.StringReader(scale_str));
+			
+			var scale_xml = builder.parse(scale_instr);
+			
+			
+			//获取scale_xml中的NodePin节点
+			var scale_NodePin = scale_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取scale_xml中的Node节点
+			var scale_Node = scale_xml.getElementsByTagName("Node").item(0);
+			value_node = scale_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = scalenode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将scale_xml添加到transmission_xml中inputnodepins子节点之下
+			var tmpnode = transmission_xml.importNode(scale_NodePin,true);
+			transmission_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//处理invert属性
+		//获取transmissionnode的invert子节点
+		var invertnode =  transmissionnode["invert"];
+		var invert_resourceType = invertnode["sling:resourceType"];
+		if(invert_resourceType == "bool")
+		{
+			//创建absorption类型属性的invert节点模板
+			var invert_str =   "<NodePin>\
+							   <typename>invert</typename>\
+							   <id>3</id>\
+							   <pintype>20003</pintype>\
+							   <hasinternalnode>true</hasinternalnode>\
+							   <Node>\
+								<name>invert</name>\
+								<typename>bool</typename>\
+								<id>1</id>\
+								<position>0 0</position>\
+								<parameters>\
+								 <value>false</value>\
+								 <modified>true</modified>\
+								</parameters>\
+								<inputnodepins>\
+								</inputnodepins>\
+							   </Node>\
+							  </NodePin>";
+							  
+			var invert_instr = new Packages.org.xml.sax.InputSource();
+			invert_instr.setCharacterStream(new Packages.java.io.StringReader(invert_str));
+			
+			var invert_xml = builder.parse(invert_instr);
+			
+			
+			//获取invert_xml中的NodePin节点
+			var invert_NodePin = invert_xml.getElementsByTagName("NodePin").item(0);
+			
+			//获取invert_xml中的Node节点
+			var invert_Node = invert_xml.getElementsByTagName("Node").item(0);
+			value_node = invert_Node.getElementsByTagName("value").item(0);
+			
+			//获取jcr中的value属性
+			var value = invertnode["value"];
+			
+			//设置value属性
+			value_node.getChildNodes().item(0).setNodeValue(value);
+			
+			
+			//将invert_xml添加到transmission_xml中inputnodepins子节点之下
+			var tmpnode = transmission_xml.importNode(invert_NodePin,true);
+			transmission_inputnodepins.appendChild(tmpnode);
+		}
+		
+		
+		//设置id
+		transmission_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将transmission_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(transmission_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(transmission_resourceType == "null")
+	{
+		//创建null类型属性的transmission节点模板
+		var transmission_str = "<NodePin>\
+								<typename>transmission</typename>\
+								<id>1</id>\
+								<pintype>20000</pintype>\
+								<hasinternalnodegraph>false</hasinternalnodegraph>\
+							   </NodePin>";
+		var transmission_instr = new Packages.org.xml.sax.InputSource();
+		transmission_instr.setCharacterStream(new Packages.java.io.StringReader(transmission_str));
+		
+		var transmission_xml = builder.parse(transmission_instr);
+		
+		//获取transmission_xml中的NodePin节点
+		var transmission_NodePin = transmission_xml.getElementsByTagName("NodePin").item(0);
+		
+		
+		//获取transmission_xml中的id节点
+		var transmission_id = transmission_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		transmission_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将transmission_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(transmission_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(transmission_resourceType == "RGBspectrum")
+	{
+		//创建RGBspectrum类型属性的transmission节点模板
+		var transmission_str = "<NodePin>\
+						<typename>transmission</typename>\
+						<id>0</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>transmission</name>\
+						 <typename>RGBspectrum</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <rgbvalue>0.9 0.9 0.9</rgbvalue>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+					   </NodePin>";
+		var transmission_instr = new Packages.org.xml.sax.InputSource();
+		transmission_instr.setCharacterStream(new Packages.java.io.StringReader(transmission_str));
+		
+		var transmission_xml = builder.parse(transmission_instr);
+		
+		//获取transmission_xml中的NodePin节点
+		var transmission_NodePin = transmission_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取transmission_xml中的Node节点
+		var transmission_Node = transmission_xml.getElementsByTagName("Node").item(0);
+		rgbvalue_node = transmission_Node.getElementsByTagName("rgbvalue").item(0);
+		
+		//获取jcr中的rgbvalue属性
+		var rgbvalue = transmissionnode["rgbvalue"];
+		
+		//设置rgbvalue属性
+		rgbvalue_node.getChildNodes().item(0).setNodeValue(rgbvalue);
+		
+		
+		//获取transmission_xml中的id节点
+		var transmission_id = transmission_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		transmission_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将transmission_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(transmission_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+	
+	if(transmission_resourceType == "floattexture")
+	{
+		//创建floattexture类型属性的transmission节点模板
+		var transmission_str = "<NodePin>\
+						<typename>transmission</typename>\
+						<id>2</id>\
+						<pintype>20000</pintype>\
+						<hasinternalnode>true</hasinternalnode>\
+						<Node>\
+						 <name>transmission</name>\
+						 <typename>floattexture</typename>\
+						 <id>1</id>\
+						 <position>0 0</position>\
+						 <parameters>\
+						  <value>0</value>\
+						  <minvalue>0</minvalue>\
+						  <maxvalue>1</maxvalue>\
+						  <usetexturealphaui>false</usetexturealphaui>\
+						  <isloglincapable>false</isloglincapable>\
+						  <uselogscale>false</uselogscale>\
+						  <resolution>0.001</resolution>\
+						  <modified>true</modified>\
+						 </parameters>\
+						 <inputnodepins>\
+						 </inputnodepins>\
+						</Node>\
+						</NodePin>";
+		var transmission_instr = new Packages.org.xml.sax.InputSource();
+		transmission_instr.setCharacterStream(new Packages.java.io.StringReader(transmission_str));
+		
+		var transmission_xml = builder.parse(transmission_instr);
+		
+		//获取transmission_xml中的NodePin节点
+		var transmission_NodePin = transmission_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取transmission_xml中的Node节点
+		var transmission_Node = transmission_xml.getElementsByTagName("Node").item(0);
+		value_node = transmission_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = transmissionnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取transmission_xml中的id节点
+		var transmission_id = transmission_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		transmission_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将transmission_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(transmission_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+	
+
+//处理dispersion_coefficient_B属性
+function process_dispersion_coefficient_B(dispersion_coefficient_Bnode, ocmxml, ocm_inputnodepins, id)
+{
+	//获取属性类型
+	var dispersion_coefficient_B_resourceType = dispersion_coefficient_Bnode["sling:resourceType"];
+	
+	if(dispersion_coefficient_B_resourceType == "float")
+	{
+		//创建floattexture类型属性的dispersion_coefficient_B节点模板
+		var dispersion_coefficient_B_str = "<NodePin>\
+											<typename>dispersion_coefficient_B</typename>\
+											<id>10</id>\
+											<pintype>20001</pintype>\
+											<hasinternalnode>true</hasinternalnode>\
+											<Node>\
+											 <name>dispersion_coefficient_B</name>\
+											 <typename>float</typename>\
+											 <id>1</id>\
+											 <position>0 0</position>\
+											 <parameters>\
+											  <value>0</value>\
+											  <minvalue>0</minvalue>\
+											  <maxvalue>0.1</maxvalue>\
+											  <usetextureui>false</usetextureui>\
+											  <usetexturealphaui>false</usetexturealphaui>\
+											  <isloglincapable>false</isloglincapable>\
+											  <uselogscale>false</uselogscale>\
+											  <modified>true</modified>\
+											 </parameters>\
+											 <inputnodepins>\
+											 </inputnodepins>\
+											</Node>\
+										   </NodePin>";
+		var dispersion_coefficient_B_instr = new Packages.org.xml.sax.InputSource();
+		dispersion_coefficient_B_instr.setCharacterStream(new Packages.java.io.StringReader(dispersion_coefficient_B_str));
+		
+		var dispersion_coefficient_B_xml = builder.parse(dispersion_coefficient_B_instr);
+		
+		//获取dispersion_coefficient_B_xml中的NodePin节点
+		var dispersion_coefficient_B_NodePin = dispersion_coefficient_B_xml.getElementsByTagName("NodePin").item(0);
+		
+		//获取dispersion_coefficient_B_xml中的Node节点
+		var dispersion_coefficient_B_Node = dispersion_coefficient_B_xml.getElementsByTagName("Node").item(0);
+		value_node = dispersion_coefficient_B_Node.getElementsByTagName("value").item(0);
+		
+		//获取jcr中的value属性
+		var value = dispersion_coefficient_Bnode["value"];
+		
+		//设置value属性
+		value_node.getChildNodes().item(0).setNodeValue(value);
+		
+		
+		//获取dispersion_coefficient_B_xml中的id节点
+		var dispersion_coefficient_B_id = dispersion_coefficient_B_NodePin.getElementsByTagName("id").item(0);
+		
+		//设置id
+		dispersion_coefficient_B_id.getChildNodes().item(0).setNodeValue(id);
+		
+		
+		//将dispersion_coefficient_B_xml添加到ocmxml中inputnodepins子节点之下
+		var tmpnode = ocmxml.importNode(dispersion_coefficient_B_NodePin,true);
+		ocm_inputnodepins.appendChild(tmpnode);
+	}
+}
+
+	
+	out.write("test ocm!!!\n");
+
+	var ocm_str =  "<?xml version='1.0' encoding='utf-8'?>\
+					<OCS_1_0_30_Macro>\
+					 <Node>\
+					  <name>Diffuse Material</name>\
+					  <typename>diffuse</typename>\
+					  <id>1</id>\
+					  <position>0.427 0.5425</position>\
+					  <inputnodepins>  \
+					  </inputnodepins>\
+					 </Node>\
+					</OCS_1_0_30_Macro>";
+
+	var instr = new Packages.org.xml.sax.InputSource();
+	instr.setCharacterStream(new Packages.java.io.StringReader(ocm_str));
+
+	var factory = new Packages.javax.xml.parsers.DocumentBuilderFactory.newInstance();
+	var builder = factory.newDocumentBuilder();
+	var ocmxml = builder.parse(instr);
+
+	var ocm_Node = ocmxml.getElementsByTagName("Node").item(0);
+
+	var ocm_inputnodepins = ocmxml.getElementsByTagName("inputnodepins").item(0);
+
+	//获取material的matdata子节点
+	var matdatanode = currentNode["matdata"];
+	if(matdatanode == null)
+	{
+		out.write("error : matdata node is not found!!!\n");
+	}
+
+	out.write(matdatanode + "\n");
+
+	//获取matdata的类型
+	var mattypename = matdatanode["typename"];
+	out.write(mattypename + "\n");
+
+	//处理diffuse类型材质
+	if(mattypename == "diffuse")
+	{
+		var id = 0;
+		out.write("process diffuse material\n");
+		
+		//设置matname
+		var name_node = ocm_Node.getElementsByTagName("name").item(0);
+		name_node.getChildNodes().item(0).setNodeValue(matdatanode["matname"]);
+		
+		//设置typename
+		var typename_node = ocm_Node.getElementsByTagName("typename").item(0);
+		typename_node.getChildNodes().item(0).setNodeValue(matdatanode["typename"]);
+		
+		
+		//获取diffuse属性子节点
+		var diffusenode = matdatanode["diffuse"];
+		if((diffusenode != null) && (diffusenode["typename"] == "diffuse"))
+		{
+			process_diffuse(diffusenode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+		
+		
+		//获取transmission属性子节点
+		var transmissionnode = matdatanode["transmission"];
+		if(transmissionnode != null)
+		{
+			process_transmission(transmissionnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+		
+	
+
+		//获取bump属性子节点
+		var bumpnode = matdatanode["bump"];
+		if((bumpnode != null) && (bumpnode["typename"] == "bump"))
+		{
+			process_bump(bumpnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取normal属性子节点
+		var normalnode = matdatanode["normal"];
+		if((normalnode != null) && (normalnode["typename"] == "normal"))
+		{
+			process_normal(normalnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+		//获取opacity属性子节点
+		var opacitynode = matdatanode["opacity"];
+		if((opacitynode != null) && (opacitynode["typename"] == "opacity"))
+		{
+			process_opacity(opacitynode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+
+		//获取smooth属性子节点
+		var smoothnode = matdatanode["smooth"];
+		if((smoothnode != null) && (smoothnode["typename"] == "smooth"))
+		{
+			process_smooth(smoothnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取emission属性子节点
+		var emissionnode = matdatanode["emission"];
+		if((emissionnode != null) && (emissionnode["typename"] == "emission"))
+		{
+			process_emission(emissionnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取medium属性子节点
+		var mediumnode = matdatanode["medium"];
+		if((mediumnode != null) && (mediumnode["typename"] == "medium"))
+		{
+			process_medium(mediumnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+		
+	}
+
+
+	//处理glossy类型材质
+	if(mattypename == "glossy")
+	{
+		var id = 0;
+		out.write("process glossy material\n");
+		
+		//设置matname
+		var name_node = ocm_Node.getElementsByTagName("name").item(0);
+		name_node.getChildNodes().item(0).setNodeValue(matdatanode["matname"]);
+		
+		//设置typename
+		var typename_node = ocm_Node.getElementsByTagName("typename").item(0);
+		typename_node.getChildNodes().item(0).setNodeValue(matdatanode["typename"]);
+		
+		
+		//获取diffuse属性子节点
+		var diffusenode = matdatanode["diffuse"];
+		if((diffusenode != null) && (diffusenode["typename"] == "diffuse"))
+		{
+			process_diffuse(diffusenode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+		
+		
+		//获取specular属性子节点
+		var specularnode = matdatanode["specular"];
+		if((specularnode != null) && (specularnode["typename"] == "specular"))
+		{
+			process_specular(specularnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取roughness属性子节点
+		var roughnessnode = matdatanode["roughness"];
+		if((roughnessnode != null) && (roughnessnode["typename"] == "roughness"))
+		{
+			process_roughness(roughnessnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取filmwidth属性子节点
+		var filmwidthnode = matdatanode["filmwidth"];
+		if((filmwidthnode != null) && (filmwidthnode["typename"] == "filmwidth"))
+		{
+			process_filmwidth(filmwidthnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取filmindex属性子节点
+		var filmindexnode = matdatanode["filmindex"];
+		if((filmindexnode != null) && (filmindexnode["typename"] == "filmindex"))
+		{
+			process_filmindex(filmindexnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取bump属性子节点
+		var bumpnode = matdatanode["bump"];
+		if((bumpnode != null) && (bumpnode["typename"] == "bump"))
+		{
+			process_bump(bumpnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取normal属性子节点
+		var normalnode = matdatanode["normal"];
+		if((normalnode != null) && (normalnode["typename"] == "normal"))
+		{
+			process_normal(normalnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+		//获取opacity属性子节点
+		var opacitynode = matdatanode["opacity"];
+		if((opacitynode != null) && (opacitynode["typename"] == "opacity"))
+		{
+			process_opacity(opacitynode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+
+		//获取smooth属性子节点
+		var smoothnode = matdatanode["smooth"];
+		if((smoothnode != null) && (smoothnode["typename"] == "smooth"))
+		{
+			process_smooth(smoothnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取index属性子节点
+		var indexnode = matdatanode["index"];
+		if((indexnode != null) && (indexnode["typename"] == "index"))
+		{
+			process_index(indexnode, ocmxml, ocm_inputnodepins, id)
+		}
+
+
+
+	}
+
+	
+	
+	
+	//处理specular类型材质
+	if(mattypename == "specular")
+	{
+		var id = 0;
+		out.write("process specular material\n");
+		
+		//设置matname
+		var name_node = ocm_Node.getElementsByTagName("name").item(0);
+		name_node.getChildNodes().item(0).setNodeValue(matdatanode["matname"]);
+		
+		//设置typename
+		var typename_node = ocm_Node.getElementsByTagName("typename").item(0);
+		typename_node.getChildNodes().item(0).setNodeValue(matdatanode["typename"]);
+		
+		
+		//获取reflection属性子节点
+		var reflectionnode = matdatanode["reflection"];
+		if((reflectionnode != null) && (reflectionnode["typename"] == "reflection"))
+		{
+			process_reflection(reflectionnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+		
+		
+		//获取transmission属性子节点
+		var transmissionnode = matdatanode["transmission"];
+		if((transmissionnode != null) && (transmissionnode["typename"] == "transmission"))
+		{
+			process_transmission(transmissionnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+		
+		//获取index属性子节点
+		var indexnode = matdatanode["index"];
+		if((indexnode != null) && (indexnode["typename"] == "index"))
+		{
+			process_index(indexnode, ocmxml, ocm_inputnodepins, id)
+		}
+		
+		
+		//获取filmwidth属性子节点
+		var filmwidthnode = matdatanode["filmwidth"];
+		if((filmwidthnode != null) && (filmwidthnode["typename"] == "filmwidth"))
+		{
+			process_filmwidth(filmwidthnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取filmindex属性子节点
+		var filmindexnode = matdatanode["filmindex"];
+		if((filmindexnode != null) && (filmindexnode["typename"] == "filmindex"))
+		{
+			process_filmindex(filmindexnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取bump属性子节点
+		var bumpnode = matdatanode["bump"];
+		if((bumpnode != null) && (bumpnode["typename"] == "bump"))
+		{
+			process_bump(bumpnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取normal属性子节点
+		var normalnode = matdatanode["normal"];
+		if((normalnode != null) && (normalnode["typename"] == "normal"))
+		{
+			process_normal(normalnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+		//获取opacity属性子节点
+		var opacitynode = matdatanode["opacity"];
+		if((opacitynode != null) && (opacitynode["typename"] == "opacity"))
+		{
+			process_opacity(opacitynode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+
+		//获取smooth属性子节点
+		var smoothnode = matdatanode["smooth"];
+		if((smoothnode != null) && (smoothnode["typename"] == "smooth"))
+		{
+			process_smooth(smoothnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+		//获取roughness属性子节点
+		var roughnessnode = matdatanode["roughness"];
+		if((roughnessnode != null) && (roughnessnode["typename"] == "roughness"))
+		{
+			process_roughness(roughnessnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+	
+		
+		//获取dispersion_coefficient_B属性子节点
+		var dispersion_coefficient_Bnode = matdatanode["roughness"];
+		if((dispersion_coefficient_Bnode != null) && (dispersion_coefficient_Bnode["typename"] == "dispersion_coefficient_B"))
+		{
+			process_dispersion_coefficient_B(dispersion_coefficient_Bnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+		
+		
+		//获取medium属性子节点
+		var mediumnode = matdatanode["medium"];
+		if((mediumnode != null) && (mediumnode["typename"] == "medium"))
+		{
+			process_medium(mediumnode, ocmxml, ocm_inputnodepins, id);
+			id++;
+		}
+
+
+	}
+	
+	
+//将ocm文件直接存入jcr中
+	//获取octane子节点
+	var octanenode = currentNode["octane"];
+	
+	//创建xml transformer
+	var transfactory = new Packages.javax.xml.transform.TransformerFactory.newInstance();
+	var transformer = transfactory.newTransformer();
+	
+	//创建stringWriter与xml StreamResult
+	var stringWriter = new Packages.java.io.StringWriter();
+	var result = new Packages.javax.xml.transform.stream.StreamResult(stringWriter);
+	
+	//将xml数据写入result中
+	transformer.transform(new Packages.javax.xml.transform.dom.DOMSource(ocmxml), result);
+
+	//如果已经存在ocm节点则删除
+	if(octanenode["l1mat.ocm"] != null)
+	{
+		octanenode["l1mat.ocm"].remove();
+		octanenode.save();
+	}
+
+	//添加ocm节点
+	var fileNode = octanenode.addNode("l1mat.ocm", "nt:file");
+	var resNode = fileNode.addNode("jcr:content", "nt:resource");
+	
+	//将数据写入ocm节点之下
+	resNode.setProperty("jcr:data", stringWriter.getBuffer());
+		
+	currentNode.save();	
+
+
+
+%>
