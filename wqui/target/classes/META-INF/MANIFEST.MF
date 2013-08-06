@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Built-By: CZM
+Bundle-Category: sling
+Tool: Bnd-0.0.357
+Bundle-Name: WeiQiang UI Bundle
+Created-By: Apache Maven Bundle Plugin
+Sling-Initial-Content: initial-content;overwrite:=false;uninstall:=fal
+ se,                            initial-content/modules;overwrite:=tru
+ e;uninstall:=true;path:=/modules,							initial-content/libs;overwrit
+ e:=true;uninstall:=true;path:=/script,                            ini
+ tial-content/widgets;overwrite:=true;uninstall:=true;path:=/widgets
+Bundle-Vendor: The Apache Software Foundation
+Build-Jdk: 1.6.0_45
+Bundle-Version: 1.0.0
+Bnd-LastModified: 1375771819139
+Bundle-ManifestVersion: 2
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-Description: this is WeiQiang ui package
+Bundle-SymbolicName: learn.wq.ui
+Bundle-DocURL: http://sling.apache.org
+

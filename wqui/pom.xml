@@ -7,14 +7,14 @@
         <version>10</version>
     </parent>
 
-	<groupId>org.spolo.glueui</groupId>
-	<artifactId>org.spolo.glueui</artifactId>
+	<groupId>learn.wq.ui</groupId>
+	<artifactId>learn.wq.ui</artifactId>
 	<version>1.0.0</version>
 	<packaging>bundle</packaging>
 
-	<name>Superpolo GlueUI Bundle</name>
+	<name>WeiQiang UI Bundle</name>
 
-	<description>this is spolo glue ui package</description>
+	<description>this is WeiQiang ui package</description>
 
 	<build>
 		<plugins>
@@ -35,18 +35,9 @@
                         <Sling-Initial-Content>
 							initial-content;overwrite:=false;uninstall:=false,
                             initial-content/modules;overwrite:=true;uninstall:=true;path:=/modules,
-							initial-content/script;overwrite:=true;uninstall:=true;path:=/script,
+							initial-content/libs;overwrite:=true;uninstall:=true;path:=/script,
                             initial-content/widgets;overwrite:=true;uninstall:=true;path:=/widgets
                         </Sling-Initial-Content>
-                        <Bundle-Vendor>
-                            SanPolo Co.LTD
-                        </Bundle-Vendor>
-                        <Bundle-License>
-                            http://www.spolo.org/licenses/LICENSE.txt
-                        </Bundle-License>
-                        <Bundle-DocURL>
-                            http://glue.spolo.org/documents
-                        </Bundle-DocURL>
 						<!--<Bundle-ClassPath>
 							${sling.home}/libs/
 						</Bundle-ClassPath>-->

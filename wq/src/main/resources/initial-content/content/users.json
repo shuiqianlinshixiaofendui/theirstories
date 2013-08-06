@@ -1,0 +1,21 @@
+{
+	"sling:resourceType":"folder",
+	"jcr:primaryType":"sling:Folder",
+	"admin":{
+		"sling:resourceType":"users",
+		"jcr:primaryType":"sling:Folder",
+		"nickname":"管理员",
+		"picture":{
+			"sling:resourceType":"picture",
+			"jcr:primaryType":"sling:Folder"
+		},
+		"piclib":{
+			"sling:resourceType":"pictures",
+			"jcr:primaryType":"sling:Folder",
+			"defaultCategory":{
+				"sling:resourceType":"pictures",
+				"jcr:primaryType":"sling:Folder"
+			}
+		}
+	}
+}

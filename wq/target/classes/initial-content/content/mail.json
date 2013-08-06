@@ -1,4 +1,0 @@
-{
-	"sling:resourceType":"mail",
-	"jcr:primaryType":"sling:Folder"
-}

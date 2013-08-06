@@ -1,7 +1,0 @@
-{
-        "sling:resourceType":"module",
-        "jcr:primaryType":"sling:Folder",
-		"resourceName":"应用管理",
-		"isActive":false,
-		"isTopMenu":true
-}

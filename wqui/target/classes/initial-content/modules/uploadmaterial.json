@@ -1,8 +1,0 @@
-{
-        "sling:resourceType":"module",
-        "jcr:primaryType":"sling:Folder",
-		"name":"上传材质",
-		"description":"你可以通过这个应用上传材质",
-		"isActive":true,
-		"isTopMenu":true
-}

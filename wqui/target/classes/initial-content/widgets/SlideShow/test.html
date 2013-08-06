@@ -1,63 +1,0 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>图片浏览</title>
-		<script type="text/javascript">
-			var dojoConfig = {
-				parseOnLoad: true, 
-				packages:[
-					{
-						name: "widgets",
-						location: "/widgets"
-					},
-					{
-						name:"spolo",
-						location:"/script/spolo"
-					}
-					
-				]
-			};
-		</script>
-		<link href="css/main.css" rel="stylesheet" type="text/css">
-		<script type="text/javascript" src="/libs/dojo/dojo.js"></script>
-		<script type="text/javascript" src="/libs/dijit/dijit.js"></script>
-		<script type="text/javascript" src="/libs/sling/explorer/js/jquery-1.4.2.min.js"></script>
-		<link rel="stylesheet" href="/libs/dijit/themes/claro/claro.css" media="screen">		<style type="text/css">
-			html,body{
-				width:100%;
-				height:100%;
-			}			#testContainer{				width:990px;
-				height:100%;				margin:0 auto;			}		</style>
-	</head>	<body class="claro">		<div id="testContainer">			
-		</div>		<script type="text/javascript">			require(				[					"widgets/SlideShow/SlideShow",					"dojo/on"				],				function(SlideShow){					var slideshow = new SlideShow();					slideshow.placeAt("testContainer");					var json = {
-						"/content/users/admin/previewlib/scene2013226153091124449495/preview" : {
-							"jcr:created" : "2013-03-26T15:30:12.935+08:00",
-							"jcr:createdBy" : "admin",
-							"jcr:primaryType" : "sling:Folder",
-							"nodeName" : "preview",
-							"resourceName" : "preview",
-							"scene" : "/content/users/admin/scenelib/scene2013226153091124449495",
-							"sling:resourceType" : "preview"
-						},
-						"/content/users/admin/previewlib/scene2013226153091124449495/sucai01_guitai" : {
-							"jcr:created" : "2013-03-26T15:30:12.899+08:00",
-							"jcr:createdBy" : "admin",
-							"jcr:primaryType" : "sling:Folder",
-							"nodeName" : "sucai01_guitai",
-							"resourceName" : "sucai01_guitai",
-							"scene" : "/content/users/admin/scenelib/scene2013226153091124449495",
-							"sling:resourceType" : "preview"
-						},
-						"/content/users/admin/previewlib/scene2013226153091124449495/sucai01_taideng" : {
-							"jcr:created" : "2013-03-26T15:30:12.970+08:00",
-							"jcr:createdBy" : "admin",
-							"jcr:primaryType" : "sling:Folder",
-							"nodeName" : "sucai01_taideng",
-							"resourceName" : "sucai01_taideng",
-							"scene" : "/content/users/admin/scenelib/scene2013226153091124449495",
-							"sling:resourceType" : "preview"
-						}
-					}					slideshow.addPreviewItem(json);				});		</script>
-	</body>
-</html>

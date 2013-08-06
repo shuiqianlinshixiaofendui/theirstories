@@ -1,8 +1,0 @@
-{
-        "sling:resourceType":"module",
-        "jcr:primaryType":"sling:Folder",
-		"resourceName":"云端材质库",
-		"description":"云端材质库",
-		"isActive":true,
-		"isTopMenu":true
-}

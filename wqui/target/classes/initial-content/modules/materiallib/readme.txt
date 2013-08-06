@@ -1,1 +1,0 @@
-如果运行在 gutil 中， 需要在当前目录的 libs 中放入 dojo 、 dijit 、 dojox 包。

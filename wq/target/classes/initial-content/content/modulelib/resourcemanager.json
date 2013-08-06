@@ -1,8 +1,0 @@
-{
-        "sling:resourceType":"module",
-        "jcr:primaryType":"sling:Folder",
-		"name":"资源管理",
-		"description":"对分类树进行维护",
-		"isActive":true,
-		"isTopMenu":true
-}

@@ -1,0 +1,6 @@
+{
+	"resourceName":"图片",
+	"sling:resourceType":"picture",
+	"sling:resourceSuperType":"folder",
+	"jcr:primaryType":"sling:Folder"
+}

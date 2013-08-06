@@ -1,8 +1,0 @@
-{
-        "sling:resourceType":"module",
-        "jcr:primaryType":"sling:Folder",
-		"resourceName":"统计系统",
-		"description":"对工作量进行统计",
-		"isActive":true,
-		"isTopMenu":true
-}

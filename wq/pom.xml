@@ -7,14 +7,14 @@
         <version>10</version>
     </parent>
 
-	<groupId>org.spolo.glue</groupId>
-	<artifactId>org.spolo.glue</artifactId>
+	<groupId>learn.wq.server</groupId>
+	<artifactId>learn.wq.server</artifactId>
 	<version>1.0.0</version>
 	<packaging>bundle</packaging>
 
-	<name>Superpolo WebTools Bundle</name>
+	<name>WeiQiang Bundle</name>
 
-	<description>this is spolo web tool-chain package</description>
+	<description>this is weiqiang web tool-chain package</description>
 
 	<build>
 		<plugins>
@@ -35,22 +35,13 @@
                         <Sling-Initial-Content>
 							initial-content;overwrite:=false;uninstall:=false,
                             initial-content/apps;overwrite:=true;uninstall:=true;path:=/apps,
-                            initial-content/content/modulelib;overwrite:=true;uninstall:=true;path:=/content/modulelib,
-                            initial-content/content/modellib;overwrite:=false;uninstall:=false;path:=/content/modellib,
-                            initial-content/content/modelcategory;overwrite:=false;uninstall:=false;path:=/content/modelcategory,
-                            initial-content/content/materiallib;overwrite:=false;uninstall:=false;path:=/content/materiallib,
-                            initial-content/content/materiallibcategory;overwrite:=false;uninstall:=false;path:=/content/materiallibcategory,
-                            initial-content/content/users;overwrite:=false;uninstall:=false;path:=/content/users
+                            initial-content/content/users;overwrite:=false;uninstall:=false;path:=/content/users,
+                            initial-content/content/piclib;overwrite:=true;uninstall:=true;path:=/content/piclib,
+                            initial-content/content/picture;overwrite:=true;uninstall:=true;path:=/content/picture                                                      
                         </Sling-Initial-Content>
                         <Bundle-Vendor>
-                            SanPolo Co.LTD
-                        </Bundle-Vendor>
-                        <Bundle-License>
-                            http://www.spolo.org/licenses/LICENSE.txt
-                        </Bundle-License>
-                        <Bundle-DocURL>
-                            http://glue.spolo.org/documents
-                        </Bundle-DocURL>
+                            WeiQiang Team
+                        </Bundle-Vendor>                       
 						<!--<Bundle-ClassPath>
 							${sling.home}/libs/
 						</Bundle-ClassPath>-->

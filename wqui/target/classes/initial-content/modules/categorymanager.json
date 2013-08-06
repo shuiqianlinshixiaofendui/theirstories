@@ -1,9 +1,0 @@
-{
-        
-		"resourceName":"云端分类管理",
-		"description":"对云端分类树进行维护",
-		"isActive":true,
-		"isTopMenu":true,
-		"sling:resourceType":"module",
-		"jcr:primaryType":"sling:Folder"
-}

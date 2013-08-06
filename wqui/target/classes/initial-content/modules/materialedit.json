@@ -1,8 +1,0 @@
-{		
-	"resourceName":"二级材质属性编辑",
-	"description":"对二级材质属性进行查看编辑",
-	//"isActive":true,
-	//"isTopMenu":false,
-	"sling:resourceType":"material",
-	"jcr:primaryType":"sling:Folder"
-}

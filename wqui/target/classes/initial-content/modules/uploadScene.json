@@ -1,8 +1,0 @@
-{
-        "sling:resourceType":"module",
-        "jcr:primaryType":"sling:Folder",
-		"name":"新建场景",
-		"description":"你可以通过这个应用新建一个场景",
-		"isActive":true,
-		"isTopMenu":true
-}
